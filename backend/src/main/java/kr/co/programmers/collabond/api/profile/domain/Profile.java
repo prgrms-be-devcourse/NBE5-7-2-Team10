@@ -42,10 +42,10 @@ public class Profile extends UpdatedEntity {
     private Integer collaboCount;
 
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
-    List<Image> images;
+    private List<Image> images;
 
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
-    List<ProfileTag> tags;
+    private List<ProfileTag> tags;
 
     /**
      * true - 활성 / false - 비활성

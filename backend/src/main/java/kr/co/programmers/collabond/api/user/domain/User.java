@@ -1,10 +1,13 @@
 package kr.co.programmers.collabond.api.user.domain;
 
 import jakarta.persistence.*;
+import kr.co.programmers.collabond.api.profile.domain.Profile;
 import kr.co.programmers.collabond.shared.domain.UpdatedEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -21,6 +24,9 @@ public class User extends UpdatedEntity {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Profile> profiles;
 
     @Builder
     public User(String email, String nickname, Role role) {

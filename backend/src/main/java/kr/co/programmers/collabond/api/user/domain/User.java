@@ -30,8 +30,14 @@ public class User extends UpdatedEntity {
     }
 
     public User update(String email, String nickname) {
-        this.email = email;
-        this.nickname = nickname;
+        if (email != null) {
+            this.email = email;
+        }
+
+        if (nickname != null) {
+            this.nickname = nickname;
+        }
+
         return this;
     }
 }

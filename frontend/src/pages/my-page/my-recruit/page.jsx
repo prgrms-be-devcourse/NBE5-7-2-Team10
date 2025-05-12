@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
-import '../../globals.css';
+import { Link } from "react-router-dom";
+import "../../globals.css";
 
 export default function MyPosts() {
   // 샘플 데이터
@@ -49,7 +49,7 @@ export default function MyPosts() {
       proposals: 9,
       deadline: "2023-02-25",
     },
-  ]
+  ];
 
   return (
     <div className="container py-10">
@@ -117,7 +117,9 @@ export default function MyPosts() {
           <div className="card">
             <div className="card-header">
               <h3 className="card-title">모집 공고 목록</h3>
-              <p className="card-description">내가 작성한 모든 모집 공고 목록입니다.</p>
+              <p className="card-description">
+                내가 작성한 모든 모집 공고 목록입니다.
+              </p>
             </div>
             <div className="card-content">
               <div className="space-y-4">
@@ -127,9 +129,17 @@ export default function MyPosts() {
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
                           <h3 className="font-semibold">{post.title}</h3>
-                          {post.status === "active" && <span className="badge badge-success">진행중</span>}
-                          {post.status === "closed" && <span className="badge badge-outline">마감</span>}
-                          {post.status === "expired" && <span className="badge badge-secondary">기간만료</span>}
+                          {post.status === "active" && (
+                            <span className="badge badge-success">진행중</span>
+                          )}
+                          {post.status === "closed" && (
+                            <span className="badge badge-outline">마감</span>
+                          )}
+                          {post.status === "expired" && (
+                            <span className="badge badge-secondary">
+                              기간만료
+                            </span>
+                          )}
                         </div>
                         <div className="text-sm text-muted mt-1">
                           작성일: {post.date} · 마감일: {post.deadline}
@@ -172,15 +182,24 @@ export default function MyPosts() {
                       </div>
                     </div>
                     <div className="flex flex-wrap gap-2 mt-4">
-                      <Link href={`#view-${post.id}`} className="button button-outline button-sm">
+                      <Link
+                        href={`#view-${post.id}`}
+                        className="button button-outline button-sm"
+                      >
                         상세보기
                       </Link>
-                      <Link href={`/received-proposals?postId=${post.id}`} className="button button-outline button-sm">
+                      <Link
+                        href={`/received-proposals?postId=${post.id}`}
+                        className="button button-outline button-sm"
+                      >
                         제안 보기 ({post.proposals})
                       </Link>
                       {post.status === "active" && (
                         <>
-                          <Link href={`#edit-${post.id}`} className="button button-outline button-sm">
+                          <Link
+                            href={`#edit-${post.id}`}
+                            className="button button-outline button-sm"
+                          >
                             <span className="icon icon-sm mr-1">
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -239,5 +258,5 @@ export default function MyPosts() {
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
-import '../../globals.css';
+import { Link } from "react-router-dom";
+import "../../globals.css";
 
 export default function CreateCharacterProfile() {
   return (
@@ -8,7 +8,8 @@ export default function CreateCharacterProfile() {
         <div className="card-header">
           <h2 className="card-title">새 캐릭터 프로필 생성</h2>
           <p className="card-description">
-            새로운 캐릭터 프로필을 생성하세요. IP 제공자는 여러 개의 캐릭터 프로필을 만들 수 있습니다.
+            새로운 캐릭터 프로필을 생성하세요. IP 제공자는 여러 개의 캐릭터
+            프로필을 만들 수 있습니다.
           </p>
         </div>
         <div className="card-content">
@@ -23,25 +24,40 @@ export default function CreateCharacterProfile() {
                 </label>
                 <div className="flex items-center gap-4">
                   <div className="avatar avatar-large">
-                    <img src="/placeholder.svg?height=80&width=80&text=캐릭터" alt="캐릭터 이미지" />
+                    <img
+                      src="/placeholder.svg?height=80&width=80&text=캐릭터"
+                      alt="캐릭터 이미지"
+                    />
                   </div>
                   <div className="space-y-2">
-                    <button type="button" className="button button-outline button-sm">
+                    <button
+                      type="button"
+                      className="button button-outline button-sm"
+                    >
                       이미지 업로드
                     </button>
-                    <button type="button" className="button button-outline button-sm button-danger">
+                    <button
+                      type="button"
+                      className="button button-outline button-sm button-danger"
+                    >
                       이미지 삭제
                     </button>
                   </div>
                 </div>
-                <p className="text-sm text-muted">대표 캐릭터 이미지를 업로드하세요. (권장 크기: 500x500px)</p>
+                <p className="text-sm text-muted">
+                  대표 캐릭터 이미지를 업로드하세요. (권장 크기: 500x500px)
+                </p>
               </div>
 
               <div className="space-y-2">
                 <label className="label" htmlFor="characterName">
                   캐릭터 이름
                 </label>
-                <input className="input" id="characterName" placeholder="캐릭터 이름을 입력하세요" />
+                <input
+                  className="input"
+                  id="characterName"
+                  placeholder="캐릭터 이름을 입력하세요"
+                />
               </div>
 
               <div className="space-y-2">
@@ -64,7 +80,11 @@ export default function CreateCharacterProfile() {
                 <label className="label" htmlFor="shortDescription">
                   짧은 소개
                 </label>
-                <input className="input" id="shortDescription" placeholder="캐릭터에 대한 짧은 소개를 입력하세요" />
+                <input
+                  className="input"
+                  id="shortDescription"
+                  placeholder="캐릭터에 대한 짧은 소개를 입력하세요"
+                />
                 <p className="text-sm text-muted">50자 이내로 작성하세요.</p>
               </div>
             </div>
@@ -138,14 +158,27 @@ export default function CreateCharacterProfile() {
                   선호하는 콜라보레이션 유형
                 </label>
                 <div className="flex flex-wrap gap-2">
-                  {["메뉴 콜라보", "인테리어/공간", "굿즈 제작", "이벤트/프로모션", "브랜딩", "패키지 디자인"].map(
-                    (type, index) => (
-                      <label key={index} className="flex items-center gap-1 border rounded px-2 py-1">
-                        <input type="checkbox" className="checkbox" name="collaborationTypes" value={type} />
-                        <span>{type}</span>
-                      </label>
-                    ),
-                  )}
+                  {[
+                    "메뉴 콜라보",
+                    "인테리어/공간",
+                    "굿즈 제작",
+                    "이벤트/프로모션",
+                    "브랜딩",
+                    "패키지 디자인",
+                  ].map((type, index) => (
+                    <label
+                      key={index}
+                      className="flex items-center gap-1 border rounded px-2 py-1"
+                    >
+                      <input
+                        type="checkbox"
+                        className="checkbox"
+                        name="collaborationTypes"
+                        value={type}
+                      />
+                      <span>{type}</span>
+                    </label>
+                  ))}
                 </div>
               </div>
 
@@ -154,14 +187,29 @@ export default function CreateCharacterProfile() {
                   선호하는 비즈니스 유형
                 </label>
                 <div className="flex flex-wrap gap-2">
-                  {["카페", "레스토랑", "베이커리", "디저트", "패스트푸드", "주점", "편의점", "팝업스토어"].map(
-                    (type, index) => (
-                      <label key={index} className="flex items-center gap-1 border rounded px-2 py-1">
-                        <input type="checkbox" className="checkbox" name="preferredBusinessTypes" value={type} />
-                        <span>{type}</span>
-                      </label>
-                    ),
-                  )}
+                  {[
+                    "카페",
+                    "레스토랑",
+                    "베이커리",
+                    "디저트",
+                    "패스트푸드",
+                    "주점",
+                    "편의점",
+                    "팝업스토어",
+                  ].map((type, index) => (
+                    <label
+                      key={index}
+                      className="flex items-center gap-1 border rounded px-2 py-1"
+                    >
+                      <input
+                        type="checkbox"
+                        className="checkbox"
+                        name="preferredBusinessTypes"
+                        value={type}
+                      />
+                      <span>{type}</span>
+                    </label>
+                  ))}
                 </div>
               </div>
 
@@ -201,7 +249,12 @@ export default function CreateCharacterProfile() {
                   추가 이미지
                 </label>
                 <div className="file-upload">
-                  <input type="file" id="additionalImages" multiple className="file-input" />
+                  <input
+                    type="file"
+                    id="additionalImages"
+                    multiple
+                    className="file-input"
+                  />
                   <label htmlFor="additionalImages" className="file-label">
                     <span className="icon">
                       <svg
@@ -213,7 +266,14 @@ export default function CreateCharacterProfile() {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                       >
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <rect
+                          x="3"
+                          y="3"
+                          width="18"
+                          height="18"
+                          rx="2"
+                          ry="2"
+                        ></rect>
                         <circle cx="8.5" cy="8.5" r="1.5"></circle>
                         <polyline points="21 15 16 10 5 21"></polyline>
                       </svg>
@@ -221,7 +281,8 @@ export default function CreateCharacterProfile() {
                     <span>이미지 선택 (최대 10개)</span>
                   </label>
                   <p className="text-sm text-muted mt-1">
-                    캐릭터의 다양한 포즈, 표정, 활용 예시 등의 이미지를 업로드하세요.
+                    캐릭터의 다양한 포즈, 표정, 활용 예시 등의 이미지를
+                    업로드하세요.
                   </p>
                 </div>
               </div>
@@ -230,8 +291,14 @@ export default function CreateCharacterProfile() {
                 <label className="label" htmlFor="tags">
                   태그
                 </label>
-                <input className="input" id="tags" placeholder="관련 태그를 입력하세요 (쉼표로 구분)" />
-                <p className="text-sm text-muted">예: 귀여운, 동물, 힐링, 유머, 감성</p>
+                <input
+                  className="input"
+                  id="tags"
+                  placeholder="관련 태그를 입력하세요 (쉼표로 구분)"
+                />
+                <p className="text-sm text-muted">
+                  예: 귀여운, 동물, 힐링, 유머, 감성
+                </p>
               </div>
 
               <div className="space-y-2">
@@ -240,7 +307,9 @@ export default function CreateCharacterProfile() {
                 </label>
                 <select className="select" id="visibility">
                   <option value="public">공개 (모든 사용자에게 공개)</option>
-                  <option value="limited">제한 공개 (초대된 사용자에게만 공개)</option>
+                  <option value="limited">
+                    제한 공개 (초대된 사용자에게만 공개)
+                  </option>
                   <option value="private">비공개 (나만 볼 수 있음)</option>
                 </select>
               </div>
@@ -257,5 +326,5 @@ export default function CreateCharacterProfile() {
         </div>
       </div>
     </div>
-  )
+  );
 }

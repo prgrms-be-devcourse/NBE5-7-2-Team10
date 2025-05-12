@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
-import '../../globals.css';
+import { Link } from "react-router-dom";
+import "../../globals.css";
 
 export default function CreateStoreProfile() {
   return (
@@ -7,7 +7,10 @@ export default function CreateStoreProfile() {
       <div className="card max-width-800 mx-auto">
         <div className="card-header">
           <h2 className="card-title">가게 프로필 생성</h2>
-          <p className="card-description">가게 프로필을 생성하세요. 점주는 하나의 가게 프로필만 가질 수 있습니다.</p>
+          <p className="card-description">
+            가게 프로필을 생성하세요. 점주는 하나의 가게 프로필만 가질 수
+            있습니다.
+          </p>
         </div>
         <div className="card-content">
           <form className="space-y-6">
@@ -21,25 +24,40 @@ export default function CreateStoreProfile() {
                 </label>
                 <div className="flex items-center gap-4">
                   <div className="avatar avatar-large">
-                    <img src="/placeholder.svg?height=80&width=80&text=가게" alt="가게 이미지" />
+                    <img
+                      src="/placeholder.svg?height=80&width=80&text=가게"
+                      alt="가게 이미지"
+                    />
                   </div>
                   <div className="space-y-2">
-                    <button type="button" className="button button-outline button-sm">
+                    <button
+                      type="button"
+                      className="button button-outline button-sm"
+                    >
                       이미지 업로드
                     </button>
-                    <button type="button" className="button button-outline button-sm button-danger">
+                    <button
+                      type="button"
+                      className="button button-outline button-sm button-danger"
+                    >
                       이미지 삭제
                     </button>
                   </div>
                 </div>
-                <p className="text-sm text-muted">가게 대표 이미지를 업로드하세요. (권장 크기: 500x500px)</p>
+                <p className="text-sm text-muted">
+                  가게 대표 이미지를 업로드하세요. (권장 크기: 500x500px)
+                </p>
               </div>
 
               <div className="space-y-2">
                 <label className="label" htmlFor="storeName">
                   가게 이름
                 </label>
-                <input className="input" id="storeName" placeholder="가게 이름을 입력하세요" />
+                <input
+                  className="input"
+                  id="storeName"
+                  placeholder="가게 이름을 입력하세요"
+                />
               </div>
 
               <div className="space-y-2">
@@ -64,7 +82,11 @@ export default function CreateStoreProfile() {
                 <label className="label" htmlFor="shortDescription">
                   짧은 소개
                 </label>
-                <input className="input" id="shortDescription" placeholder="가게에 대한 짧은 소개를 입력하세요" />
+                <input
+                  className="input"
+                  id="shortDescription"
+                  placeholder="가게에 대한 짧은 소개를 입력하세요"
+                />
                 <p className="text-sm text-muted">50자 이내로 작성하세요.</p>
               </div>
             </div>
@@ -79,7 +101,11 @@ export default function CreateStoreProfile() {
                 <label className="label" htmlFor="address">
                   주소
                 </label>
-                <input className="input" id="address" placeholder="가게 주소를 입력하세요" />
+                <input
+                  className="input"
+                  id="address"
+                  placeholder="가게 주소를 입력하세요"
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -101,14 +127,22 @@ export default function CreateStoreProfile() {
                 <label className="label" htmlFor="phoneNumber">
                   전화번호
                 </label>
-                <input className="input" id="phoneNumber" placeholder="가게 전화번호를 입력하세요" />
+                <input
+                  className="input"
+                  id="phoneNumber"
+                  placeholder="가게 전화번호를 입력하세요"
+                />
               </div>
 
               <div className="space-y-2">
                 <label className="label" htmlFor="website">
                   웹사이트 (선택사항)
                 </label>
-                <input className="input" id="website" placeholder="가게 웹사이트 URL을 입력하세요" />
+                <input
+                  className="input"
+                  id="website"
+                  placeholder="가게 웹사이트 URL을 입력하세요"
+                />
               </div>
             </div>
 
@@ -181,14 +215,27 @@ export default function CreateStoreProfile() {
                   관심 있는 콜라보레이션 유형
                 </label>
                 <div className="flex flex-wrap gap-2">
-                  {["메뉴 콜라보", "인테리어/공간", "굿즈 제작", "이벤트/프로모션", "브랜딩", "패키지 디자인"].map(
-                    (type, index) => (
-                      <label key={index} className="flex items-center gap-1 border rounded px-2 py-1">
-                        <input type="checkbox" className="checkbox" name="collaborationTypes" value={type} />
-                        <span>{type}</span>
-                      </label>
-                    ),
-                  )}
+                  {[
+                    "메뉴 콜라보",
+                    "인테리어/공간",
+                    "굿즈 제작",
+                    "이벤트/프로모션",
+                    "브랜딩",
+                    "패키지 디자인",
+                  ].map((type, index) => (
+                    <label
+                      key={index}
+                      className="flex items-center gap-1 border rounded px-2 py-1"
+                    >
+                      <input
+                        type="checkbox"
+                        className="checkbox"
+                        name="collaborationTypes"
+                        value={type}
+                      />
+                      <span>{type}</span>
+                    </label>
+                  ))}
                 </div>
               </div>
 
@@ -197,9 +244,26 @@ export default function CreateStoreProfile() {
                   선호하는 캐릭터 유형
                 </label>
                 <div className="flex flex-wrap gap-2">
-                  {["마스코트", "동물", "인간형", "판타지", "음식", "사물", "귀여운", "심플한"].map((type, index) => (
-                    <label key={index} className="flex items-center gap-1 border rounded px-2 py-1">
-                      <input type="checkbox" className="checkbox" name="preferredCharacterTypes" value={type} />
+                  {[
+                    "마스코트",
+                    "동물",
+                    "인간형",
+                    "판타지",
+                    "음식",
+                    "사물",
+                    "귀여운",
+                    "심플한",
+                  ].map((type, index) => (
+                    <label
+                      key={index}
+                      className="flex items-center gap-1 border rounded px-2 py-1"
+                    >
+                      <input
+                        type="checkbox"
+                        className="checkbox"
+                        name="preferredCharacterTypes"
+                        value={type}
+                      />
                       <span>{type}</span>
                     </label>
                   ))}
@@ -242,7 +306,12 @@ export default function CreateStoreProfile() {
                   추가 이미지
                 </label>
                 <div className="file-upload">
-                  <input type="file" id="additionalImages" multiple className="file-input" />
+                  <input
+                    type="file"
+                    id="additionalImages"
+                    multiple
+                    className="file-input"
+                  />
                   <label htmlFor="additionalImages" className="file-label">
                     <span className="icon">
                       <svg
@@ -254,7 +323,14 @@ export default function CreateStoreProfile() {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                       >
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <rect
+                          x="3"
+                          y="3"
+                          width="18"
+                          height="18"
+                          rx="2"
+                          ry="2"
+                        ></rect>
                         <circle cx="8.5" cy="8.5" r="1.5"></circle>
                         <polyline points="21 15 16 10 5 21"></polyline>
                       </svg>
@@ -262,7 +338,8 @@ export default function CreateStoreProfile() {
                     <span>이미지 선택 (최대 10개)</span>
                   </label>
                   <p className="text-sm text-muted mt-1">
-                    가게 내부/외부, 메뉴, 분위기 등을 보여주는 이미지를 업로드하세요.
+                    가게 내부/외부, 메뉴, 분위기 등을 보여주는 이미지를
+                    업로드하세요.
                   </p>
                 </div>
               </div>
@@ -282,8 +359,14 @@ export default function CreateStoreProfile() {
                 <label className="label" htmlFor="tags">
                   태그
                 </label>
-                <input className="input" id="tags" placeholder="관련 태그를 입력하세요 (쉼표로 구분)" />
-                <p className="text-sm text-muted">예: 분위기좋은, 데이트, 인스타감성, 맛집, 핫플레이스</p>
+                <input
+                  className="input"
+                  id="tags"
+                  placeholder="관련 태그를 입력하세요 (쉼표로 구분)"
+                />
+                <p className="text-sm text-muted">
+                  예: 분위기좋은, 데이트, 인스타감성, 맛집, 핫플레이스
+                </p>
               </div>
             </div>
           </form>
@@ -298,5 +381,5 @@ export default function CreateStoreProfile() {
         </div>
       </div>
     </div>
-  )
+  );
 }

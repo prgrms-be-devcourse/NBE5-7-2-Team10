@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 
 export default function StoreOwnerMyPage() {
   // 샘플 데이터 - 실제로는 서버에서 가져올 데이터
@@ -8,7 +8,7 @@ export default function StoreOwnerMyPage() {
     nickname: "cafe_master",
     joinDate: "2023-02-20",
     role: "store_owner",
-  }
+  };
 
   const storeProfile = {
     id: 1,
@@ -19,7 +19,7 @@ export default function StoreOwnerMyPage() {
     createdAt: "2023-03-05",
     status: "active",
     collaborations: 2,
-  }
+  };
 
   const recentActivities = [
     {
@@ -49,7 +49,7 @@ export default function StoreOwnerMyPage() {
       date: "2023-05-05",
       target: "김민수",
     },
-  ]
+  ];
 
   const activeCollaborations = [
     {
@@ -72,7 +72,7 @@ export default function StoreOwnerMyPage() {
       status: "진행중",
       image: "/placeholder.svg?height=40&width=40&text=고양이",
     },
-  ]
+  ];
 
   return (
     <div className="container py-10">
@@ -81,14 +81,20 @@ export default function StoreOwnerMyPage() {
         <div className="space-y-6">
           <div className="flex flex-col items-center space-y-4">
             <div className="avatar avatar-large store-owner-avatar">
-              <img src="/placeholder.svg?height=128&width=128" alt="사용자 프로필" />
+              <img
+                src="/placeholder.svg?height=128&width=128"
+                alt="사용자 프로필"
+              />
             </div>
             <div className="text-center">
               <h2 className="font-bold">{user.nickname}</h2>
               <p className="text-sm text-muted">{user.email}</p>
               <div className="badge badge-store-owner mt-2">점주</div>
             </div>
-            <Link href="/edit-profile" className="button button-store-owner w-full">
+            <Link
+              href="/edit-profile"
+              className="button button-store-owner w-full"
+            >
               회원 정보 수정
             </Link>
           </div>
@@ -96,7 +102,10 @@ export default function StoreOwnerMyPage() {
           <div className="separator"></div>
 
           <nav className="space-y-2">
-            <button className="button button-ghost w-full" style={{ justifyContent: "flex-start" }}>
+            <button
+              className="button button-ghost w-full"
+              style={{ justifyContent: "flex-start" }}
+            >
               <span className="icon mr-2">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -154,7 +163,11 @@ export default function StoreOwnerMyPage() {
               </span>
               <span>보낸 제안 목록</span>
             </Link>
-            <Link href="/my-posts" className="button button-ghost w-full" style={{ justifyContent: "flex-start" }}>
+            <Link
+              href="/my-posts"
+              className="button button-ghost w-full"
+              style={{ justifyContent: "flex-start" }}
+            >
               <span className="icon mr-2">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -198,7 +211,10 @@ export default function StoreOwnerMyPage() {
 
           <div className="separator"></div>
 
-          <button className="button button-ghost w-full button-danger" style={{ justifyContent: "flex-start" }}>
+          <button
+            className="button button-ghost w-full button-danger"
+            style={{ justifyContent: "flex-start" }}
+          >
             <span className="icon mr-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -242,7 +258,10 @@ export default function StoreOwnerMyPage() {
                   <div className="card-header">
                     <div className="flex justify-between items-center">
                       <h3 className="card-title">내 가게 프로필</h3>
-                      <Link href={`/edit-store-profile/${storeProfile.id}`} className="button button-outline button-sm">
+                      <Link
+                        href={`/edit-store-profile/${storeProfile.id}`}
+                        className="button button-outline button-sm"
+                      >
                         편집
                       </Link>
                     </div>
@@ -251,12 +270,17 @@ export default function StoreOwnerMyPage() {
                     <div className="flex flex-col md:flex-row gap-6">
                       <div className="flex-shrink-0">
                         <div className="avatar avatar-large">
-                          <img src={storeProfile.image || "/placeholder.svg"} alt={storeProfile.name} />
+                          <img
+                            src={storeProfile.image || "/placeholder.svg"}
+                            alt={storeProfile.name}
+                          />
                         </div>
                       </div>
                       <div className="flex-1 space-y-4">
                         <div>
-                          <h3 className="font-semibold text-xl">{storeProfile.name}</h3>
+                          <h3 className="font-semibold text-xl">
+                            {storeProfile.name}
+                          </h3>
                           <p className="text-muted">{storeProfile.type}</p>
                         </div>
 
@@ -299,9 +323,13 @@ export default function StoreOwnerMyPage() {
                             <p className="text-sm text-muted">상태</p>
                             <p>
                               {storeProfile.status === "active" ? (
-                                <span className="badge badge-store-owner">활성</span>
+                                <span className="badge badge-store-owner">
+                                  활성
+                                </span>
                               ) : (
-                                <span className="badge badge-outline">비활성</span>
+                                <span className="badge badge-outline">
+                                  비활성
+                                </span>
                               )}
                             </p>
                           </div>
@@ -312,10 +340,16 @@ export default function StoreOwnerMyPage() {
                         </div>
 
                         <div className="flex gap-2">
-                          <Link href={`/store-profile/${storeProfile.id}`} className="button button-outline button-sm">
+                          <Link
+                            href={`/store-profile/${storeProfile.id}`}
+                            className="button button-outline button-sm"
+                          >
                             공개 프로필 보기
                           </Link>
-                          <Link href="/create-post" className="button button-store-owner button-sm">
+                          <Link
+                            href="/create-post"
+                            className="button button-store-owner button-sm"
+                          >
                             새 모집 공고 작성
                           </Link>
                         </div>
@@ -342,12 +376,17 @@ export default function StoreOwnerMyPage() {
                           <polyline points="9 22 9 12 15 12 15 22"></polyline>
                         </svg>
                       </div>
-                      <h3 className="font-semibold text-lg mb-2">아직 가게 프로필이 없습니다</h3>
+                      <h3 className="font-semibold text-lg mb-2">
+                        아직 가게 프로필이 없습니다
+                      </h3>
                       <p className="text-muted mb-4">
-                        콜라보레이션을 시작하려면 가게 프로필을 생성해주세요. 점주는 하나의 가게 프로필만 가질 수
-                        있습니다.
+                        콜라보레이션을 시작하려면 가게 프로필을 생성해주세요.
+                        점주는 하나의 가게 프로필만 가질 수 있습니다.
                       </p>
-                      <Link href="/create-store-profile" className="button button-store-owner">
+                      <Link
+                        href="/create-store-profile"
+                        className="button button-store-owner"
+                      >
                         가게 프로필 생성하기
                       </Link>
                     </div>
@@ -362,7 +401,10 @@ export default function StoreOwnerMyPage() {
                     <div key={i} className="item-card">
                       <div className="flex items-center gap-3 mb-2">
                         <div className="avatar">
-                          <img src={`/placeholder.svg?height=40&width=40&text=캐릭터${i}`} alt={`귀여운 캐릭터 ${i}`} />
+                          <img
+                            src={`/placeholder.svg?height=40&width=40&text=캐릭터${i}`}
+                            alt={`귀여운 캐릭터 ${i}`}
+                          />
                         </div>
                         <div>
                           <h4 className="font-medium">{`귀여운 캐릭터 ${i}`}</h4>
@@ -370,14 +412,18 @@ export default function StoreOwnerMyPage() {
                         </div>
                       </div>
                       <p className="text-sm mb-3">
-                        다양한 연령층에게 인기 있는 귀여운 캐릭터입니다. 카페, 레스토랑 등 다양한 업종과의 콜라보레이션
-                        경험이 있습니다.
+                        다양한 연령층에게 인기 있는 귀여운 캐릭터입니다. 카페,
+                        레스토랑 등 다양한 업종과의 콜라보레이션 경험이
+                        있습니다.
                       </p>
                       <div className="flex justify-between text-sm text-muted mb-3">
                         <span>콜라보 경험: 5회</span>
                         <span>유형: 동물</span>
                       </div>
-                      <Link href={`/character-profile/${i}`} className="button button-store-owner button-sm w-full">
+                      <Link
+                        href={`/character-profile/${i}`}
+                        className="button button-store-owner button-sm w-full"
+                      >
                         자세히 보기
                       </Link>
                     </div>
@@ -394,17 +440,23 @@ export default function StoreOwnerMyPage() {
                     <div key={collab.id} className="item-card">
                       <div className="flex items-start gap-3">
                         <div className="avatar">
-                          <img src={collab.image || "/placeholder.svg"} alt={collab.partnerProfile} />
+                          <img
+                            src={collab.image || "/placeholder.svg"}
+                            alt={collab.partnerProfile}
+                          />
                         </div>
                         <div className="flex-1">
                           <div className="flex justify-between items-start">
                             <div>
                               <h4 className="font-medium">{collab.title}</h4>
                               <p className="text-sm">
-                                파트너: {collab.partner} ({collab.partnerProfile})
+                                파트너: {collab.partner} (
+                                {collab.partnerProfile})
                               </p>
                             </div>
-                            <span className="badge badge-store-owner">{collab.status}</span>
+                            <span className="badge badge-store-owner">
+                              {collab.status}
+                            </span>
                           </div>
                           <div className="flex justify-between text-sm text-muted mt-2">
                             <span>
@@ -448,15 +500,24 @@ export default function StoreOwnerMyPage() {
                           <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                         </svg>
                       </div>
-                      <h3 className="font-semibold text-lg mb-2">진행 중인 콜라보레이션이 없습니다</h3>
+                      <h3 className="font-semibold text-lg mb-2">
+                        진행 중인 콜라보레이션이 없습니다
+                      </h3>
                       <p className="text-muted mb-4">
-                        새로운 콜라보레이션을 시작하려면 모집 공고를 작성하거나 IP 제공자에게 직접 제안해보세요.
+                        새로운 콜라보레이션을 시작하려면 모집 공고를 작성하거나
+                        IP 제공자에게 직접 제안해보세요.
                       </p>
                       <div className="flex justify-center gap-3">
-                        <Link href="/create-post" className="button button-store-owner">
+                        <Link
+                          href="/create-post"
+                          className="button button-store-owner"
+                        >
                           모집 공고 작성하기
                         </Link>
-                        <Link href="/browse-characters" className="button button-outline">
+                        <Link
+                          href="/browse-characters"
+                          className="button button-outline"
+                        >
                           IP 둘러보기
                         </Link>
                       </div>
@@ -542,7 +603,9 @@ export default function StoreOwnerMyPage() {
                         <h4 className="font-medium">{activity.title}</h4>
                         <div className="flex justify-between mt-1">
                           <p className="text-sm text-muted">{activity.date}</p>
-                          {activity.target && <p className="text-sm">{activity.target}</p>}
+                          {activity.target && (
+                            <p className="text-sm">{activity.target}</p>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -590,9 +653,13 @@ export default function StoreOwnerMyPage() {
                     <div className="flex justify-between items-center">
                       <div>
                         <p>비밀번호</p>
-                        <p className="text-sm text-muted">마지막 변경: 45일 전</p>
+                        <p className="text-sm text-muted">
+                          마지막 변경: 45일 전
+                        </p>
                       </div>
-                      <button className="button button-outline button-sm">변경</button>
+                      <button className="button button-outline button-sm">
+                        변경
+                      </button>
                     </div>
                   </div>
 
@@ -603,7 +670,9 @@ export default function StoreOwnerMyPage() {
                     <div className="flex justify-between items-center">
                       <div>
                         <p>이메일 알림</p>
-                        <p className="text-sm text-muted">새로운 제안, 메시지 등의 알림을 이메일로 받습니다.</p>
+                        <p className="text-sm text-muted">
+                          새로운 제안, 메시지 등의 알림을 이메일로 받습니다.
+                        </p>
                       </div>
                       <label className="switch">
                         <input type="checkbox" defaultChecked />
@@ -613,7 +682,10 @@ export default function StoreOwnerMyPage() {
                   </div>
                 </div>
                 <div className="card-footer">
-                  <Link href="/edit-account" className="button button-store-owner">
+                  <Link
+                    href="/edit-account"
+                    className="button button-store-owner"
+                  >
                     계정 정보 수정
                   </Link>
                 </div>
@@ -623,5 +695,5 @@ export default function StoreOwnerMyPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

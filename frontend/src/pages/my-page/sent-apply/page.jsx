@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
-import '../../globals.css';
+import { Link } from "react-router-dom";
+import "../../globals.css";
 
 export default function SentProposals() {
   // 샘플 데이터
@@ -45,7 +45,8 @@ export default function SentProposals() {
       companyLogo: "/placeholder.svg?height=40&width=40&text=AC",
       date: "2023-04-20",
       status: "pending",
-      message: "카페 굿즈 제작에 저희 일러스트 IP를 활용해보세요. 독특한 스타일로 차별화된 굿즈를 만들 수 있습니다...",
+      message:
+        "카페 굿즈 제작에 저희 일러스트 IP를 활용해보세요. 독특한 스타일로 차별화된 굿즈를 만들 수 있습니다...",
     },
     {
       id: 5,
@@ -55,9 +56,10 @@ export default function SentProposals() {
       companyLogo: "/placeholder.svg?height=40&width=40&text=모던",
       date: "2023-04-15",
       status: "accepted",
-      message: "메뉴판 디자인에 저희 IP를 활용해보세요. 세련된 디자인으로 고객들에게 좋은 인상을 남길 수 있습니다...",
+      message:
+        "메뉴판 디자인에 저희 IP를 활용해보세요. 세련된 디자인으로 고객들에게 좋은 인상을 남길 수 있습니다...",
     },
-  ]
+  ];
 
   return (
     <div className="container py-10">
@@ -106,7 +108,9 @@ export default function SentProposals() {
           <div className="card">
             <div className="card-header">
               <h3 className="card-title">모든 제안</h3>
-              <p className="card-description">내가 보낸 모든 제안 목록입니다.</p>
+              <p className="card-description">
+                내가 보낸 모든 제안 목록입니다.
+              </p>
             </div>
             <div className="card-content">
               <div className="space-y-4">
@@ -115,19 +119,36 @@ export default function SentProposals() {
                     <div className="flex flex-col md-flex-row gap-4">
                       <div className="flex-shrink-0">
                         <div className="avatar">
-                          <img src={proposal.companyLogo || "/placeholder.svg"} alt={proposal.company} />
+                          <img
+                            src={proposal.companyLogo || "/placeholder.svg"}
+                            alt={proposal.company}
+                          />
                         </div>
                       </div>
                       <div className="flex-1">
                         <div className="flex flex-col md-flex-row md-items-center justify-between gap-2">
                           <div>
-                            <h3 className="font-semibold">{proposal.postTitle}</h3>
-                            <p className="text-sm text-muted">{proposal.company}</p>
+                            <h3 className="font-semibold">
+                              {proposal.postTitle}
+                            </h3>
+                            <p className="text-sm text-muted">
+                              {proposal.company}
+                            </p>
                           </div>
                           <div className="flex items-center gap-2">
-                            {proposal.status === "pending" && <span className="badge badge-warning">대기중</span>}
-                            {proposal.status === "accepted" && <span className="badge badge-success">수락됨</span>}
-                            {proposal.status === "rejected" && <span className="badge badge-error">거절됨</span>}
+                            {proposal.status === "pending" && (
+                              <span className="badge badge-warning">
+                                대기중
+                              </span>
+                            )}
+                            {proposal.status === "accepted" && (
+                              <span className="badge badge-success">
+                                수락됨
+                              </span>
+                            )}
+                            {proposal.status === "rejected" && (
+                              <span className="badge badge-error">거절됨</span>
+                            )}
                           </div>
                         </div>
                         <div className="flex items-center gap-4 mt-2 text-sm text-muted">
@@ -142,7 +163,14 @@ export default function SentProposals() {
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                               >
-                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <rect
+                                  x="3"
+                                  y="4"
+                                  width="18"
+                                  height="18"
+                                  rx="2"
+                                  ry="2"
+                                ></rect>
                                 <line x1="16" y1="2" x2="16" y2="6"></line>
                                 <line x1="8" y1="2" x2="8" y2="6"></line>
                                 <line x1="3" y1="10" x2="21" y2="10"></line>
@@ -157,10 +185,16 @@ export default function SentProposals() {
                             : proposal.message}
                         </div>
                         <div className="flex flex-wrap gap-2 mt-4">
-                          <Link href={`#view-proposal-${proposal.id}`} className="button button-outline button-sm">
+                          <Link
+                            href={`#view-proposal-${proposal.id}`}
+                            className="button button-outline button-sm"
+                          >
                             제안 상세보기
                           </Link>
-                          <Link href={`#view-post-${proposal.postId}`} className="button button-outline button-sm">
+                          <Link
+                            href={`#view-post-${proposal.postId}`}
+                            className="button button-outline button-sm"
+                          >
                             <span className="icon icon-sm mr-1">
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -179,7 +213,9 @@ export default function SentProposals() {
                             공고 보기
                           </Link>
                           {proposal.status === "pending" && (
-                            <button className="button button-outline button-sm button-danger">제안 취소</button>
+                            <button className="button button-outline button-sm button-danger">
+                              제안 취소
+                            </button>
                           )}
                         </div>
                       </div>
@@ -204,5 +240,5 @@ export default function SentProposals() {
         </div>
       </div>
     </div>
-  )
+  );
 }

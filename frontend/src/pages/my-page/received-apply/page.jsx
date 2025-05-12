@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
-import '../../globals.css';
+import { Link } from "react-router-dom";
+import "../../globals.css";
 
 export default function ReceivedProposals() {
   // 샘플 데이터
@@ -64,7 +64,7 @@ export default function ReceivedProposals() {
       message:
         "자연을 테마로 한 아트워크 IP를 제공합니다. 식당 분위기에 따라 다양한 스타일로 커스터마이징이 가능합니다.",
     },
-  ]
+  ];
 
   return (
     <div className="container py-10">
@@ -113,7 +113,9 @@ export default function ReceivedProposals() {
           <div className="card">
             <div className="card-header">
               <h3 className="card-title">모든 제안</h3>
-              <p className="card-description">내 공고에 받은 모든 제안 목록입니다.</p>
+              <p className="card-description">
+                내 공고에 받은 모든 제안 목록입니다.
+              </p>
             </div>
             <div className="card-content">
               <div className="space-y-4">
@@ -122,22 +124,41 @@ export default function ReceivedProposals() {
                     <div className="flex flex-col md-flex-row gap-4">
                       <div className="flex-shrink-0">
                         <div className="avatar">
-                          <img src={proposal.applicantImage || "/placeholder.svg"} alt={proposal.applicant} />
+                          <img
+                            src={proposal.applicantImage || "/placeholder.svg"}
+                            alt={proposal.applicant}
+                          />
                         </div>
                       </div>
                       <div className="flex-1">
                         <div className="flex flex-col md-flex-row md-items-center justify-between gap-2">
                           <div>
                             <div className="flex items-center gap-2">
-                              <h3 className="font-semibold">{proposal.applicant}</h3>
-                              <span className="text-sm text-muted">@{proposal.applicantNickname}</span>
+                              <h3 className="font-semibold">
+                                {proposal.applicant}
+                              </h3>
+                              <span className="text-sm text-muted">
+                                @{proposal.applicantNickname}
+                              </span>
                             </div>
-                            <p className="text-sm text-muted">공고: {proposal.postTitle}</p>
+                            <p className="text-sm text-muted">
+                              공고: {proposal.postTitle}
+                            </p>
                           </div>
                           <div className="flex items-center gap-2">
-                            {proposal.status === "pending" && <span className="badge badge-warning">대기중</span>}
-                            {proposal.status === "accepted" && <span className="badge badge-success">수락됨</span>}
-                            {proposal.status === "rejected" && <span className="badge badge-error">거절됨</span>}
+                            {proposal.status === "pending" && (
+                              <span className="badge badge-warning">
+                                대기중
+                              </span>
+                            )}
+                            {proposal.status === "accepted" && (
+                              <span className="badge badge-success">
+                                수락됨
+                              </span>
+                            )}
+                            {proposal.status === "rejected" && (
+                              <span className="badge badge-error">거절됨</span>
+                            )}
                           </div>
                         </div>
                         <div className="flex items-center gap-4 mt-2 text-sm text-muted">
@@ -152,7 +173,14 @@ export default function ReceivedProposals() {
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                               >
-                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <rect
+                                  x="3"
+                                  y="4"
+                                  width="18"
+                                  height="18"
+                                  rx="2"
+                                  ry="2"
+                                ></rect>
                                 <line x1="16" y1="2" x2="16" y2="6"></line>
                                 <line x1="8" y1="2" x2="8" y2="6"></line>
                                 <line x1="3" y1="10" x2="21" y2="10"></line>
@@ -167,7 +195,10 @@ export default function ReceivedProposals() {
                             : proposal.message}
                         </div>
                         <div className="flex flex-wrap gap-2 mt-4">
-                          <Link href={`#view-proposal-${proposal.id}`} className="button button-outline button-sm">
+                          <Link
+                            href={`#view-proposal-${proposal.id}`}
+                            className="button button-outline button-sm"
+                          >
                             제안 상세보기
                           </Link>
                           <Link
@@ -266,5 +297,5 @@ export default function ReceivedProposals() {
         </div>
       </div>
     </div>
-  )
+  );
 }

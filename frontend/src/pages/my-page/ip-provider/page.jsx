@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
-import '../../globals.css';
+import { Link } from "react-router-dom";
+import "../../globals.css";
 
 export default function IPProviderMyPage() {
   // 샘플 데이터 - 실제로는 서버에서 가져올 데이터
@@ -9,7 +9,7 @@ export default function IPProviderMyPage() {
     nickname: "creative_minsu",
     joinDate: "2023-01-15",
     role: "ip_provider",
-  }
+  };
 
   const characterProfiles = [
     {
@@ -39,7 +39,7 @@ export default function IPProviderMyPage() {
       status: "inactive",
       collaborations: 0,
     },
-  ]
+  ];
 
   const recentActivities = [
     {
@@ -69,7 +69,7 @@ export default function IPProviderMyPage() {
       date: "2023-04-18",
       target: "달콤 디저트",
     },
-  ]
+  ];
 
   return (
     <div className="container py-10">
@@ -78,14 +78,20 @@ export default function IPProviderMyPage() {
         <div className="space-y-6">
           <div className="flex flex-col items-center space-y-4">
             <div className="avatar avatar-large ip-provider-avatar">
-              <img src="/placeholder.svg?height=128&width=128" alt="사용자 프로필" />
+              <img
+                src="/placeholder.svg?height=128&width=128"
+                alt="사용자 프로필"
+              />
             </div>
             <div className="text-center">
               <h2 className="font-bold">{user.nickname}</h2>
               <p className="text-sm text-muted">{user.email}</p>
               <div className="badge badge-ip-provider mt-2">IP 제공자</div>
             </div>
-            <Link href="/edit-profile" className="button button-ip-provider w-full">
+            <Link
+              href="/edit-profile"
+              className="button button-ip-provider w-full"
+            >
               회원 정보 수정
             </Link>
           </div>
@@ -93,7 +99,10 @@ export default function IPProviderMyPage() {
           <div className="separator"></div>
 
           <nav className="space-y-2">
-            <button className="button button-ghost w-full" style={{ justifyContent: "flex-start" }}>
+            <button
+              className="button button-ghost w-full"
+              style={{ justifyContent: "flex-start" }}
+            >
               <span className="icon mr-2">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -151,7 +160,11 @@ export default function IPProviderMyPage() {
               </span>
               <span>보낸 제안 목록</span>
             </Link>
-            <Link href="/my-posts" className="button button-ghost w-full" style={{ justifyContent: "flex-start" }}>
+            <Link
+              href="/my-posts"
+              className="button button-ghost w-full"
+              style={{ justifyContent: "flex-start" }}
+            >
               <span className="icon mr-2">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -195,7 +208,10 @@ export default function IPProviderMyPage() {
 
           <div className="separator"></div>
 
-          <button className="button button-ghost w-full button-danger" style={{ justifyContent: "flex-start" }}>
+          <button
+            className="button button-ghost w-full button-danger"
+            style={{ justifyContent: "flex-start" }}
+          >
             <span className="icon mr-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -233,7 +249,10 @@ export default function IPProviderMyPage() {
             <div className="tab-content active" id="profiles">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="font-semibold">내 캐릭터 프로필</h3>
-                <Link href="/create-character-profile" className="button button-ip-provider">
+                <Link
+                  href="/create-character-profile"
+                  className="button button-ip-provider"
+                >
                   <span className="icon mr-2">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -258,16 +277,23 @@ export default function IPProviderMyPage() {
                     <div className="card-content">
                       <div className="flex items-center gap-3 mb-3">
                         <div className="avatar">
-                          <img src={profile.image || "/placeholder.svg"} alt={profile.name} />
+                          <img
+                            src={profile.image || "/placeholder.svg"}
+                            alt={profile.name}
+                          />
                         </div>
                         <div>
                           <h4 className="font-medium">{profile.name}</h4>
                           <p className="text-sm text-muted">{profile.type}</p>
                         </div>
                         {profile.status === "active" ? (
-                          <span className="badge badge-ip-provider ml-auto">활성</span>
+                          <span className="badge badge-ip-provider ml-auto">
+                            활성
+                          </span>
                         ) : (
-                          <span className="badge badge-outline ml-auto">비활성</span>
+                          <span className="badge badge-outline ml-auto">
+                            비활성
+                          </span>
                         )}
                       </div>
 
@@ -326,7 +352,10 @@ export default function IPProviderMyPage() {
                 ))}
 
                 <div className="card character-card-add">
-                  <Link href="/create-character-profile" className="card-content flex-center">
+                  <Link
+                    href="/create-character-profile"
+                    className="card-content flex-center"
+                  >
                     <div className="text-center">
                       <div className="add-icon">
                         <svg
@@ -355,7 +384,10 @@ export default function IPProviderMyPage() {
                     <div key={i} className="item-card">
                       <div className="flex items-center gap-3 mb-2">
                         <div className="avatar">
-                          <img src={`/placeholder.svg?height=40&width=40&text=카페${i}`} alt={`스타일리시 카페 ${i}`} />
+                          <img
+                            src={`/placeholder.svg?height=40&width=40&text=카페${i}`}
+                            alt={`스타일리시 카페 ${i}`}
+                          />
                         </div>
                         <div>
                           <h4 className="font-medium">{`카페에서 캐릭터 IP 활용한 콜라보 메뉴 모집 ${i}`}</h4>
@@ -363,14 +395,17 @@ export default function IPProviderMyPage() {
                         </div>
                       </div>
                       <p className="text-sm mb-3">
-                        귀여운 캐릭터 IP를 활용한 시즌 한정 메뉴를 기획 중입니다. 독특하고 매력적인 캐릭터를 찾고
-                        있습니다.
+                        귀여운 캐릭터 IP를 활용한 시즌 한정 메뉴를 기획
+                        중입니다. 독특하고 매력적인 캐릭터를 찾고 있습니다.
                       </p>
                       <div className="flex justify-between text-sm text-muted mb-3">
                         <span>마감일: 2023-06-30</span>
                         <span>예산: 협의 가능</span>
                       </div>
-                      <Link href={`/post/${i}`} className="button button-ip-provider button-sm w-full">
+                      <Link
+                        href={`/post/${i}`}
+                        className="button button-ip-provider button-sm w-full"
+                      >
                         자세히 보기
                       </Link>
                     </div>
@@ -453,7 +488,9 @@ export default function IPProviderMyPage() {
                         <h4 className="font-medium">{activity.title}</h4>
                         <div className="flex justify-between mt-1">
                           <p className="text-sm text-muted">{activity.date}</p>
-                          {activity.target && <p className="text-sm">{activity.target}</p>}
+                          {activity.target && (
+                            <p className="text-sm">{activity.target}</p>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -489,7 +526,9 @@ export default function IPProviderMyPage() {
                     <div className="space-y-2">
                       <label className="label">회원 역할</label>
                       <p>
-                        <span className="badge badge-ip-provider">IP 제공자</span>
+                        <span className="badge badge-ip-provider">
+                          IP 제공자
+                        </span>
                       </p>
                     </div>
                   </div>
@@ -501,9 +540,13 @@ export default function IPProviderMyPage() {
                     <div className="flex justify-between items-center">
                       <div>
                         <p>비밀번호</p>
-                        <p className="text-sm text-muted">마지막 변경: 30일 전</p>
+                        <p className="text-sm text-muted">
+                          마지막 변경: 30일 전
+                        </p>
                       </div>
-                      <button className="button button-outline button-sm">변경</button>
+                      <button className="button button-outline button-sm">
+                        변경
+                      </button>
                     </div>
                   </div>
 
@@ -514,7 +557,9 @@ export default function IPProviderMyPage() {
                     <div className="flex justify-between items-center">
                       <div>
                         <p>이메일 알림</p>
-                        <p className="text-sm text-muted">새로운 제안, 메시지 등의 알림을 이메일로 받습니다.</p>
+                        <p className="text-sm text-muted">
+                          새로운 제안, 메시지 등의 알림을 이메일로 받습니다.
+                        </p>
                       </div>
                       <label className="switch">
                         <input type="checkbox" defaultChecked />
@@ -524,7 +569,10 @@ export default function IPProviderMyPage() {
                   </div>
                 </div>
                 <div className="card-footer">
-                  <Link href="/edit-account" className="button button-ip-provider">
+                  <Link
+                    href="/edit-account"
+                    className="button button-ip-provider"
+                  >
                     계정 정보 수정
                   </Link>
                 </div>
@@ -534,5 +582,5 @@ export default function IPProviderMyPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

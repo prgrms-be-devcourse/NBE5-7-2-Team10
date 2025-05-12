@@ -1,12 +1,16 @@
 package kr.co.programmers.collabond.api.profile.domain;
 
 import jakarta.persistence.*;
+import kr.co.programmers.collabond.api.image.domain.Image;
+import kr.co.programmers.collabond.api.profiletag.domain.ProfileTag;
 import kr.co.programmers.collabond.api.user.domain.User;
 import kr.co.programmers.collabond.api.address.domain.Address;
 import kr.co.programmers.collabond.shared.domain.UpdatedEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @Table(name = "profiles")
@@ -36,6 +40,12 @@ public class Profile extends UpdatedEntity {
 
     @Column(nullable = false)
     private Integer collaboCount;
+
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
+    List<Image> images;
+
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
+    List<ProfileTag> tags;
 
     /**
      * true - 활성 / false - 비활성

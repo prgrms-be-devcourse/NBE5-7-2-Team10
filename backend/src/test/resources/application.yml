@@ -1,0 +1,43 @@
+server:
+  port: ${PORT}
+
+spring:
+  application:
+    name: collabond
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_ID}
+    password: ${MAIL_PW}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          timeout: 5000
+          starttls:
+            enable: true
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/cafe
+    username: ${MYSQL_ID}
+    password: ${MYSQL_PW}
+
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+    hibernate:
+      ddl-auto: validate
+
+logging:
+  level:
+    org.springframework.security: TRACE
+
+custom:
+  file:
+    path: ${user.home}/collabond/images/  # ?? ?? ??
+  mail:
+    subject: ??

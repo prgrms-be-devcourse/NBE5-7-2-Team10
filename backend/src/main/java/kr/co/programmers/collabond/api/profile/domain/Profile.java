@@ -1,6 +1,7 @@
 package kr.co.programmers.collabond.api.profile.domain;
 
 import jakarta.persistence.*;
+import kr.co.programmers.collabond.api.apply.domain.ApplyPost;
 import kr.co.programmers.collabond.api.image.domain.Image;
 import kr.co.programmers.collabond.api.profiletag.domain.ProfileTag;
 import kr.co.programmers.collabond.api.user.domain.User;
@@ -46,6 +47,12 @@ public class Profile extends UpdatedEntity {
 
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
     private List<ProfileTag> tags;
+
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
+    private List<ApplyPost> applyPosts;
+
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
+    private List<ApplyPost> recruitPosts;
 
     /**
      * true - 활성 / false - 비활성

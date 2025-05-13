@@ -1,24 +1,26 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import "./App.css";
+import IPProviderMyPage from "./pages/my-page/ip-provider/page";
+import StoreOwnerMyPage from "./pages/my-page/store-owner/page";
+import SentProposals from "./pages/my-page/sent-apply/page";
+import ReceivedProposals from "./pages/my-page/received-apply/page";
+import MyPosts from "./pages/my-page/my-recruit/page";
+import CreateStoreProfile from "./pages/my-page/create-store-profile/page";
+import CreateCharacterProfile from "./pages/my-page/create-character-profile/page";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/ip" element={<IPProviderMyPage />} />
+        <Route path="/store" element={<StoreOwnerMyPage />} />
+        <Route path="/sent-apply" element={<SentProposals />} />
+        <Route path="/received-apply" element={<ReceivedProposals />} />
+        <Route path="/my-recruit" element={<MyPosts />} />
+        <Route path="/create-store" element={<CreateStoreProfile />} />
+        <Route path="/create-character" element={<CreateCharacterProfile />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

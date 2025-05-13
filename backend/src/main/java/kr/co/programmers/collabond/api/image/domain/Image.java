@@ -21,7 +21,7 @@ public class Image {
     @JoinColumn(name = "profile_id", nullable = false)
     private Profile profile;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "file_id", nullable = false)
     private File file;
 

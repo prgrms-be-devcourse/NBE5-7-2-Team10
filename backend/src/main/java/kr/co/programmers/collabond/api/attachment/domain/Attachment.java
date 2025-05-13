@@ -21,7 +21,7 @@ public class Attachment {
     @JoinColumn(name = "apply_post_id", nullable = false)
     private ApplyPost applyPost;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "file_id", nullable = false)
     private File file;
 

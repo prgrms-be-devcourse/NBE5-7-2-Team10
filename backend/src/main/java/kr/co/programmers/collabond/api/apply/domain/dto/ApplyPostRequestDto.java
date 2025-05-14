@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class ApplyPostRequest {
+public class ApplyPostRequestDto {
 
     private String content;
 }

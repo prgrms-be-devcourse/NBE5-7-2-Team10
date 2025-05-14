@@ -1,8 +1,8 @@
 package kr.co.programmers.collabond.api.apply.interfaces;
 
 import kr.co.programmers.collabond.api.apply.application.ApplyPostService;
-import kr.co.programmers.collabond.api.apply.domain.dto.ApplyPostRequest;
-import kr.co.programmers.collabond.api.apply.domain.dto.ApplyPostResponse;
+import kr.co.programmers.collabond.api.apply.domain.dto.ApplyPostRequestDto;
+import kr.co.programmers.collabond.api.apply.domain.dto.ApplyPostResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,13 +20,13 @@ public class ApplyPostController {
     private final ApplyPostService applyPostService;
 
     @PostMapping("/{recruitmentId}")
-    public ResponseEntity<ApplyPostResponse> applyPost(
+    public ResponseEntity<ApplyPostResponseDto> applyPost(
             @PathVariable Long recruitmentId
-            , ApplyPostRequest request
+            , ApplyPostRequestDto request
             , List<MultipartFile> files
     ) throws IOException {
         applyPostService.applyPost(recruitmentId, request, files);
 
-        return ResponseEntity.ok(new ApplyPostResponse());
+        return ResponseEntity.ok(new ApplyPostResponseDto());
     }
 }

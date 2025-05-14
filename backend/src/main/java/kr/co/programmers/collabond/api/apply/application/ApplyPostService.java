@@ -2,10 +2,9 @@ package kr.co.programmers.collabond.api.apply.application;
 
 import jakarta.transaction.Transactional;
 import kr.co.programmers.collabond.api.apply.domain.ApplyPost;
-import kr.co.programmers.collabond.api.apply.domain.dto.ApplyPostRequest;
+import kr.co.programmers.collabond.api.apply.domain.dto.ApplyPostRequestDto;
 import kr.co.programmers.collabond.api.apply.infrastructure.ApplyPostRepository;
 import kr.co.programmers.collabond.api.apply.interfaces.ApplyPostMapper;
-import kr.co.programmers.collabond.api.attachment.application.AttachmentService;
 import kr.co.programmers.collabond.api.attachment.domain.Attachment;
 import kr.co.programmers.collabond.api.file.application.FileService;
 import kr.co.programmers.collabond.api.file.domain.File;
@@ -27,7 +26,7 @@ public class ApplyPostService {
     private final FileService fileService;
 
     @Transactional
-    public void applyPost(Long recruitmentId, ApplyPostRequest request, List<MultipartFile> files) throws IOException {
+    public void applyPost(Long recruitmentId, ApplyPostRequestDto request, List<MultipartFile> files) throws IOException {
 
         // todo : recruitmentId로 RecruitPost 찾아오는 로직 필요
         List<File> savedFiles = fileService.saveFiles(files);

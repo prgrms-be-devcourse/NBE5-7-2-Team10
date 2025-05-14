@@ -1,6 +1,6 @@
 package kr.co.programmers.collabond.api.apply.application;
 
-import kr.co.programmers.collabond.api.apply.domain.dto.ApplyPostRequest;
+import kr.co.programmers.collabond.api.apply.domain.dto.ApplyPostRequestDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ class ApplyPostServiceTest {
 
         //todo : profile이 있어야 동작함
 
-        ApplyPostRequest applyPost = new ApplyPostRequest("내용");
+        ApplyPostRequestDto applyPost = new ApplyPostRequestDto("내용");
 
         MultipartFile multipartFile1 = new MockMultipartFile("test1", // 파일의 파라미터 이름
                 "spring1.png", // 실제 파일 이름

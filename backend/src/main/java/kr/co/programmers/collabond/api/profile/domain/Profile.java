@@ -32,6 +32,7 @@ public class Profile extends UpdatedEntity {
     @JoinColumn(name = "address_id")
     private Address address;
 
+    @Column(name = "detail_address", length = 255)
     private String detailAddress;
 
     @Column(nullable = false)
@@ -44,8 +45,14 @@ public class Profile extends UpdatedEntity {
     @Column(nullable = false)
     private String description;
 
+    @Column(name = "collabo_count",nullable = false)
+    private Integer collaboCount =0;
+
     @Column(nullable = false)
-    private Integer collaboCount;
+    private boolean status = true;
+
+    @Column(name = "created_at", nullable = false)
+    private int CreatedAt;
 
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
     private List<Image> images;

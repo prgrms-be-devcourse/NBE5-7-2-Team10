@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import kr.co.programmers.collabond.api.attachment.domain.Attachment;
 import kr.co.programmers.collabond.api.profile.domain.Profile;
 import kr.co.programmers.collabond.api.recruit.domain.RecruitPost;
-import kr.co.programmers.collabond.shared.domain.CreatedEntity;
+import kr.co.programmers.collabond.shared.domain.OnlyCreatedEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,14 +15,14 @@ import java.util.List;
 @Table(name = "apply_posts")
 @Getter
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
-public class ApplyPost extends CreatedEntity {
+public class ApplyPost extends OnlyCreatedEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recruit_post_id", nullable = false)
     private RecruitPost recruitPost;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "profile_id", nullable = false)
+    @JoinColumn(name = "profile_id")
     private Profile profile;
 
     @Column(nullable = false)

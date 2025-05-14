@@ -4,18 +4,23 @@ import jakarta.persistence.*;
 import kr.co.programmers.collabond.api.apply.domain.ApplyPost;
 import kr.co.programmers.collabond.api.image.domain.Image;
 import kr.co.programmers.collabond.api.profiletag.domain.ProfileTag;
+import kr.co.programmers.collabond.api.recruit.domain.RecruitPost;
 import kr.co.programmers.collabond.api.user.domain.User;
 import kr.co.programmers.collabond.api.address.domain.Address;
 import kr.co.programmers.collabond.shared.domain.UpdatedEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.List;
 
 @Entity
 @Table(name = "profiles")
 @Getter
+@SQLDelete(sql = "UPDATE profiles SET deleted_at = NOW() WHERE id = ?")
+@SQLRestriction("deleted_at IS NULL")
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class Profile extends UpdatedEntity {
 
@@ -48,11 +53,11 @@ public class Profile extends UpdatedEntity {
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
     private List<ProfileTag> tags;
 
-    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "profile")
     private List<ApplyPost> applyPosts;
 
-    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
-    private List<ApplyPost> recruitPosts;
+    @OneToMany(mappedBy = "profile")
+    private List<RecruitPost> recruitPosts;
 
     /**
      * true - 활성 / false - 비활성

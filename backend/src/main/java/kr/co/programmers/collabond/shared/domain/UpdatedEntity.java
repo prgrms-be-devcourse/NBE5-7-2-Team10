@@ -29,4 +29,13 @@ public abstract class UpdatedEntity {
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
+
+    public boolean isDeleted() {
+        return this.deletedAt != null;
+    }
+
+    protected void markAsDeleted() {
+        this.deletedAt = LocalDateTime.now();
+    }
+
 }

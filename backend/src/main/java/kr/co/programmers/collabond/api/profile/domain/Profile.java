@@ -24,6 +24,7 @@ import java.util.List;
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class Profile extends UpdatedEntity {
 
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -48,8 +49,6 @@ public class Profile extends UpdatedEntity {
     @Column(name = "collabo_count",nullable = false)
     private Integer collaboCount =0;
 
-    @Column(nullable = false)
-    private boolean status = true;
 
     @Column(name = "created_at", nullable = false)
     private int CreatedAt;
@@ -112,5 +111,8 @@ public class Profile extends UpdatedEntity {
         }
 
         return this;
+    }
+    public String getDisplayName() {
+        return isDeleted() ? "(이름없음)" : this.name;
     }
 }

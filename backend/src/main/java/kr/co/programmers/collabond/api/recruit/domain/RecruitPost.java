@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 public class RecruitPost extends UpdatedEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "profile_id", nullable = false)
+    @JoinColumn(name = "profile_id")
     private Profile profile;
 
     @Column(nullable = false)

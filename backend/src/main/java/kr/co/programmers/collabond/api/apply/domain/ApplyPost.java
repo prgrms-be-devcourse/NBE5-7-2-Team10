@@ -43,4 +43,12 @@ public class ApplyPost extends OnlyCreatedEntity {
         this.content = content;
         this.status = status;
     }
+
+    // 연관관계 편의 메서드
+    public void addAttachment(List<Attachment> attachments) {
+        this.attachments = attachments;
+        for (Attachment attachment : attachments) {
+            attachment.addApplyPost(this);
+        }
+    }
 }

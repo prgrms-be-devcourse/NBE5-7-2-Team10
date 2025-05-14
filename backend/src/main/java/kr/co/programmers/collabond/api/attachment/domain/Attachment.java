@@ -30,4 +30,8 @@ public class Attachment {
         this.applyPost = applyPost;
         this.file = file;
     }
+
+    public void addApplyPost(ApplyPost applyPost) {
+        this.applyPost = applyPost;
+    }
 }

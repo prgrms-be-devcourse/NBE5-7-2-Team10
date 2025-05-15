@@ -3,6 +3,9 @@ package kr.co.programmers.collabond.api.apply.application;
 import jakarta.transaction.Transactional;
 import kr.co.programmers.collabond.api.apply.domain.ApplyPost;
 import kr.co.programmers.collabond.api.apply.domain.dto.ApplyPostRequestDto;
+import kr.co.programmers.collabond.api.apply.domain.dto.ApplyPostResponseDto;
+import kr.co.programmers.collabond.api.apply.domain.dto.ReceivedApplyPostsRequestDto;
+import kr.co.programmers.collabond.api.apply.domain.dto.SentApplyPostsRequestDto;
 import kr.co.programmers.collabond.api.apply.infrastructure.ApplyPostRepository;
 import kr.co.programmers.collabond.api.apply.interfaces.ApplyPostMapper;
 import kr.co.programmers.collabond.api.attachment.domain.Attachment;
@@ -47,5 +50,32 @@ public class ApplyPostService {
         applyPost.addAttachment(attachments);
 
         applyPostRepository.save(applyPost);
+    }
+
+    // read만 하는 작업이긴한데 조회할 DB가 많아서 일단 Transactional 걸었습니다.
+    @Transactional
+    public List<ApplyPostResponseDto> findSentApplyPosts(SentApplyPostsRequestDto request) {
+//
+//        Long userId = 1L;
+//
+//        profileRepository.findByUserId(userId); // 프로필들을 찾아서 profileId로 작성글 조회
+//
+
+//        ApplyPostMapper.toDto(applyPost);
+
+        return null;
+    }
+
+    @Transactional
+    public List<ApplyPostResponseDto> findReceivedApplyPosts(ReceivedApplyPostsRequestDto request) {
+//
+//        Long userId = 1L;
+//
+//        profileRepository.findByUserId(userId); // 프로필들을 찾아서 profileId로 작성글 조회
+//
+
+//        ApplyPostMapper.toDto(applyPost);
+
+        return null;
     }
 }

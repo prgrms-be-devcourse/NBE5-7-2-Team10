@@ -34,7 +34,7 @@ public class FileService {
         return fileRepository.save(file);
     }
 
-    private String getFullPath(String fileName) {
+    public String getFullPath(String fileName) {
         return fileDir + fileName;
     }
 

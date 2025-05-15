@@ -23,6 +23,9 @@ public interface RecruitPostRepository extends JpaRepository<RecruitPost, Long> 
 
     // 특정 프로필이 작성한 모집글 중 하나 조회
     Optional<RecruitPost> findByProfile_Id(Long profileId);
+
+    // 삭제되지 않은 모집글만 조회
+    Page<RecruitPost> findByDeletedAtIsNull(Pageable pageable);
 }
 
 

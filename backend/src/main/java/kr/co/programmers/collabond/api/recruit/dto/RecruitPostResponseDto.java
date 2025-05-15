@@ -17,6 +17,7 @@ public class RecruitPostResponseDto {
     private Long profileId;
     private String profileName;
     private ProfileResponseDto profile;
+    private LocalDateTime deletedAt; // 소프트 삭제 시간
 
     // RecruitPost 엔티티를 DTO로 변환하는 메서드
     public static RecruitPostResponseDto from(RecruitPost post) {
@@ -30,6 +31,7 @@ public class RecruitPostResponseDto {
                 .profileId(post.getProfile().getId())
                 .profileName(post.getProfile().getName())
                 .profile(profileResponseDto)
+                .deletedAt(post.getDeletedAt()) // 소프트 삭제 시간 포함
                 .build();
     }
 }

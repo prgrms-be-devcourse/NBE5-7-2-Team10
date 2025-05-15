@@ -13,8 +13,6 @@ import kr.co.programmers.collabond.api.user.domain.User;
 import kr.co.programmers.collabond.api.user.infrastructure.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,11 +42,10 @@ public class ProfileService {
         Profile profile = Profile.builder()
                 .user(user)
                 .address(dto.getAddressId() != null ? addressRepository.findById(dto.getAddressId()).orElse(null) : null)
-                .type(dto.getType().name())
+                .type(ProfileType.valueOf(dto.getType().name()))
                 .name(dto.getName())
                 .description(dto.getDescription())
                 .detailAddress(dto.getDetailAddress())
-                .joinedYear(LocalDate.now().getYear())
                 .status(true)
                 .collaboCount(0)
                 .build();
@@ -73,9 +70,9 @@ public class ProfileService {
         imageRepository.findByProfileIdAndType(profileId, "PROFILE")
                 .forEach(image -> fileRepository.deleteById(image.getFile().getId()));
 
-        profile.softDelete();
-    }
 
+        profileRepository.delete(profile);
+    }
     public Optional<ProfileResponseDto> findById(Long id) {
         return profileRepository.findById(id)
                 .map(this::toDto);
@@ -92,13 +89,12 @@ public class ProfileService {
                 .id(profile.getId())
                 .userId(profile.getUser().getId())
                 .addressId(profile.getAddress() != null ? profile.getAddress().getId() : null)
-                .type(ProfileType.valueOf(profile.getType()))
+                .type(ProfileType.valueOf(String.valueOf(profile.getType())))
                 .name(profile.getDisplayName())
                 .description(profile.getDescription())
                 .detailAddress(profile.getDetailAddress())
                 .collaboCount(profile.getCollaboCount())
                 .status(profile.isStatus())
-                .joinedYear(profile.getJoinedYear())
                 .createdAt(profile.getCreatedAt())
                 .updatedAt(profile.getUpdatedAt())
                 .build();

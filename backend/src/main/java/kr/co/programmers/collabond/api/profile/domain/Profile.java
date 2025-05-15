@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -51,7 +52,7 @@ public class Profile extends UpdatedEntity {
 
 
     @Column(name = "created_at", nullable = false)
-    private int CreatedAt;
+    private LocalDateTime CreatedAt;
 
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
     private List<Image> images;
@@ -115,4 +116,23 @@ public class Profile extends UpdatedEntity {
     public String getDisplayName() {
         return isDeleted() ? "(이름없음)" : this.name;
     }
+
+
+    public boolean isStatus() {
+        return Boolean.TRUE.equals(this.status);
+    }
+
+    public void update(String name, String description, String detailAddress) {
+        if (name != null) {
+            this.name = name;
+        }
+
+        if (description != null) {
+            this.description = description;
+        }
+
+        this.detailAddress = detailAddress;
+    }
+
+
 }

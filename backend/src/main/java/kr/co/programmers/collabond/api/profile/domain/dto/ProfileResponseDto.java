@@ -6,7 +6,6 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -20,7 +19,6 @@ public class ProfileResponseDto {
     private String detailAddress;
     private int collaboCount;
     private boolean status;
-    private int joinedYear;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

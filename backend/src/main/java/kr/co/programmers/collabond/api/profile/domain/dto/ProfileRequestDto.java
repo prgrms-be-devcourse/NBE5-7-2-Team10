@@ -4,7 +4,6 @@ import kr.co.programmers.collabond.api.profile.domain.ProfileType;
 import lombok.*;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

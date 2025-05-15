@@ -19,10 +19,10 @@ public class ApplyPostResponseDto {
 
     private String status;
 
-    public List<AttachmentDto> attachmentFiles;
+    private List<AttachmentDto> attachmentFiles;
 
     @Builder
-    public ApplyPostResponseDto(String content, String status, List<AttachmentDto> attachmentFiles) {
+    private ApplyPostResponseDto(String content, String status, List<AttachmentDto> attachmentFiles) {
         this.content = content;
         this.status = status;
         this.attachmentFiles = attachmentFiles;

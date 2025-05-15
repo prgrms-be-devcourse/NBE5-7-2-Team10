@@ -5,6 +5,6 @@ import lombok.Getter;
 @Getter
 public class SentApplyPostsRequestDto {
 
-    public String status;
-    public String sort;
+    private String status;
+    private String sort;
 }

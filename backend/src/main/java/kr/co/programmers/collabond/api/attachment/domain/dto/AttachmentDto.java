@@ -11,7 +11,7 @@ public class AttachmentDto {
     private String originName;
 
     @Builder
-    public AttachmentDto(String savedName, String originName) {
+    private AttachmentDto(String savedName, String originName) {
         this.savedName = savedName;
         this.originName = originName;
     }

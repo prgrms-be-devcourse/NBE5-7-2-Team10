@@ -21,24 +21,24 @@ public class ProfileController {
         return ResponseEntity.ok(profileService.create(dto));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{profileId}")
     public ResponseEntity<ProfileResponseDto> get(@PathVariable Long id) {
         return profileService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/user/{userId}")
+    @GetMapping("/user/{profileId}")
     public ResponseEntity<List<ProfileResponseDto>> getByUser(@PathVariable Long userId) {
         return ResponseEntity.ok(profileService.findAllByUser(userId));
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/{profileId}")
     public ResponseEntity<ProfileResponseDto> update(@PathVariable Long id, @RequestBody ProfileRequestDto dto) {
         return ResponseEntity.ok(profileService.update(id, dto));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{profileId}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         profileService.delete(id);
         return ResponseEntity.noContent().build();

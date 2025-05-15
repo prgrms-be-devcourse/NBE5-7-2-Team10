@@ -28,5 +28,14 @@ public abstract class UpdatedEntity {
     private LocalDateTime updatedAt;
 
     @Column(name = "deleted_at")
-    private LocalDateTime deletedAt;
+    protected LocalDateTime deletedAt;
+
+    public boolean isDeleted() {
+        return this.deletedAt != null;
+    }
+
+    protected void markAsDeleted() {
+        this.deletedAt = LocalDateTime.now();
+    }
+
 }

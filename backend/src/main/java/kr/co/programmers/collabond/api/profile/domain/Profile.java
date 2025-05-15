@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -24,6 +25,7 @@ import java.util.List;
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class Profile extends UpdatedEntity {
 
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -32,6 +34,7 @@ public class Profile extends UpdatedEntity {
     @JoinColumn(name = "address_id")
     private Address address;
 
+    @Column(name = "detail_address", length = 255)
     private String detailAddress;
 
     @Column(nullable = false)
@@ -44,8 +47,12 @@ public class Profile extends UpdatedEntity {
     @Column(nullable = false)
     private String description;
 
-    @Column(nullable = false)
-    private Integer collaboCount;
+    @Column(name = "collabo_count",nullable = false)
+    private Integer collaboCount =0;
+
+
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime CreatedAt;
 
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
     private List<Image> images;
@@ -106,4 +113,26 @@ public class Profile extends UpdatedEntity {
 
         return this;
     }
+    public String getDisplayName() {
+        return isDeleted() ? "(이름없음)" : this.name;
+    }
+
+
+    public boolean isStatus() {
+        return Boolean.TRUE.equals(this.status);
+    }
+
+    public void update(String name, String description, String detailAddress) {
+        if (name != null) {
+            this.name = name;
+        }
+
+        if (description != null) {
+            this.description = description;
+        }
+
+        this.detailAddress = detailAddress;
+    }
+
+
 }

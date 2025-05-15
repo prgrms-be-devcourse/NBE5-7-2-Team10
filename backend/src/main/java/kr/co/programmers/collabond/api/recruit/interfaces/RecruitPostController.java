@@ -1,0 +1,75 @@
+package kr.co.programmers.collabond.api.recruit.interfaces;
+
+import kr.co.programmers.collabond.api.recruit.dto.RecruitPostRequestDto;
+import kr.co.programmers.collabond.api.recruit.dto.RecruitPostResponseDto;
+import kr.co.programmers.collabond.api.recruit.application.RecruitPostService;
+import kr.co.programmers.collabond.api.recruit.domain.RecruitPostStatus;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/recruitments")
+@RequiredArgsConstructor
+public class RecruitPostController {
+    private final RecruitPostService recruitPostService;
+
+    // 모집글 작성
+    @PostMapping
+    public ResponseEntity<RecruitPostResponseDto> createRecruitPost(
+            @RequestBody RecruitPostRequestDto request,
+            @RequestParam Long userId) {
+        // 요청으로 받은 DTO와 사용자 ID를 바탕으로 모집글 작성
+        return ResponseEntity.ok(recruitPostService.createRecruitPost(request, userId));
+    }
+
+    // 모집글 수정
+    @PatchMapping("/{recruitmentId}")
+    public ResponseEntity<RecruitPostResponseDto> updateRecruitPost(
+            @PathVariable Long recruitmentId,
+            @RequestBody RecruitPostRequestDto request,
+            @RequestParam Long userId) {
+        // 특정 모집글 ID를 찾아서 해당 모집글을 수정
+        return ResponseEntity.ok(recruitPostService.updateRecruitPost(recruitmentId, request, userId));
+    }
+
+    // 모집글 삭제
+    @DeleteMapping("/{recruitmentId}")
+    public ResponseEntity<Void> deleteRecruitPost(
+            @PathVariable Long recruitmentId,
+            @RequestParam Long userId) {
+        // 모집글을 삭제하며, 사용자 권한을 체크한 후 삭제
+        recruitPostService.deleteRecruitPost(recruitmentId, userId);
+        return ResponseEntity.ok().build();
+    }
+
+    // 모집글 목록 조회
+    @GetMapping
+    public ResponseEntity<Page<RecruitPostResponseDto>> getAllRecruitPosts(
+            @RequestParam(required = false) RecruitPostStatus status,
+            @RequestParam(required = false) String sort,
+            @PageableDefault(size = 10) Pageable pageable) {
+        // 모집글 목록을 필터링 (상태 및 정렬)하여 조회
+        return ResponseEntity.ok(recruitPostService.getAllRecruitPosts(status, sort, pageable));
+    }
+
+    // 회원이 작성한 모집글 조회
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<Page<RecruitPostResponseDto>> getRecruitPostsByUser(
+            @PathVariable Long userId,
+            @PageableDefault(size = 10) Pageable pageable) {
+        // 특정 회원이 작성한 모집글을 조회
+        return ResponseEntity.ok(recruitPostService.getRecruitPostsByUser(userId, pageable));
+    }
+
+    // 프로필이 작성한 모집글 조회
+    @GetMapping("/profiles/{profileId}")
+    public ResponseEntity<RecruitPostResponseDto> getRecruitPostByProfile(
+            @PathVariable Long profileId) {
+        // 특정 프로필이 작성한 모집글을 조회
+        return ResponseEntity.ok(recruitPostService.getRecruitPostByProfile(profileId));
+    }
+}

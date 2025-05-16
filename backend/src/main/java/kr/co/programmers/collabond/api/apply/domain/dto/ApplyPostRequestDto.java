@@ -7,5 +7,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public class ApplyPostRequestDto {
 
+    private Long profileId;
     private String content;
 }

@@ -39,7 +39,7 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
 
-        user.update(dto.getEmail(), dto.getNickname());
+        user.update(dto.getEmail(), dto.getNickname(), dto.getRole());
         return toDto(user);
     }
 
@@ -52,7 +52,6 @@ public class UserService {
         for (Profile profile : profiles) {
             imageRepository.findByProfileIdAndType(profile.getId(), "PROFILE")
                     .forEach(image -> fileRepository.deleteById(image.getFile().getId()));
-            profile.softDelete();
         }
 
         userRepository.deleteById(userId);

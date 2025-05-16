@@ -1,9 +1,8 @@
 package kr.co.programmers.collabond.api.apply.application;
 
-import jakarta.transaction.Transactional;
 import kr.co.programmers.collabond.api.apply.domain.ApplyPost;
 import kr.co.programmers.collabond.api.apply.domain.dto.ApplyPostRequestDto;
-import kr.co.programmers.collabond.api.apply.domain.dto.ApplyPostResponseDto;
+import kr.co.programmers.collabond.api.apply.domain.dto.ApplyPostDto;
 import kr.co.programmers.collabond.api.apply.domain.dto.ReceivedApplyPostsRequestDto;
 import kr.co.programmers.collabond.api.apply.domain.dto.SentApplyPostsRequestDto;
 import kr.co.programmers.collabond.api.apply.infrastructure.ApplyPostRepository;
@@ -11,9 +10,21 @@ import kr.co.programmers.collabond.api.apply.interfaces.ApplyPostMapper;
 import kr.co.programmers.collabond.api.attachment.domain.Attachment;
 import kr.co.programmers.collabond.api.file.application.FileService;
 import kr.co.programmers.collabond.api.file.domain.File;
+import kr.co.programmers.collabond.api.profile.domain.Profile;
+import kr.co.programmers.collabond.api.profile.infrastructure.ProfileRepository;
+import kr.co.programmers.collabond.api.recruit.domain.RecruitPost;
+import kr.co.programmers.collabond.api.recruit.infrastructure.RecruitPostRepository;
+import kr.co.programmers.collabond.api.user.domain.User;
+import kr.co.programmers.collabond.api.user.infrastructure.UserRepository;
+import kr.co.programmers.collabond.core.auth.oauth2.OAuth2UserInfo;
+import kr.co.programmers.collabond.shared.exception.ErrorCode;
+import kr.co.programmers.collabond.shared.exception.custom.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -27,13 +38,25 @@ public class ApplyPostService {
 
     private final ApplyPostRepository applyPostRepository;
     private final FileService fileService;
+    private final RecruitPostRepository recruitPostRepository;
+    private final ProfileRepository profileRepository;
+    private final UserRepository userRepository;
 
     @Transactional
-    public void applyPost(Long recruitmentId, ApplyPostRequestDto request, List<MultipartFile> files) throws IOException {
+    public ApplyPostDto applyPost(
+            Long recruitmentId
+            , ApplyPostRequestDto request
+            , List<MultipartFile> files
+    ) throws IOException {
 
-        // todo : recruitmentId로 RecruitPost 찾아오는 로직 필요
+        RecruitPost recruitPost = recruitPostRepository.findById(recruitmentId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.RECRUIT_NOT_FOUND));
+        Profile profile = profileRepository.findById(request.getProfileId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.PROFILE_NOT_FOUND));
         List<File> savedFiles = fileService.saveFiles(files);
-        ApplyPost applyPost = ApplyPostMapper.toEntity(request);
+
+        ApplyPost applyPost = ApplyPostMapper.toEntity(recruitPost, profile, request);
+
         ArrayList<Attachment> attachments = new ArrayList<>();
 
         for (File savedFile : savedFiles) {
@@ -47,35 +70,40 @@ public class ApplyPostService {
             log.debug("savedFile.getSavedName() = {}", savedFile.getSavedName());
         }
 
-        applyPost.addAttachment(attachments);
+        applyPost.updateAttachment(attachments);
 
-        applyPostRepository.save(applyPost);
+        ApplyPost save = applyPostRepository.save(applyPost);
+
+        return ApplyPostMapper.toDto(save);
     }
 
-    // read만 하는 작업이긴한데 조회할 DB가 많아서 일단 Transactional 걸었습니다.
-    @Transactional
-    public List<ApplyPostResponseDto> findSentApplyPosts(SentApplyPostsRequestDto request) {
-//
-//        Long userId = 1L;
-//
-//        profileRepository.findByUserId(userId); // 프로필들을 찾아서 profileId로 작성글 조회
-//
+    @Transactional(readOnly = true)
+    public Page<ApplyPostDto> findSentApplyPosts(
+            SentApplyPostsRequestDto request
+            , OAuth2UserInfo userInfo
+            , Pageable pageable
+    ) {
+        User user = userRepository.findByProviderId(userInfo.getUsername())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
 
-//        ApplyPostMapper.toDto(applyPost);
+        Page<ApplyPostDto> applyPosts = applyPostRepository
+                .findAllSentByUserId(user.getId(), request.getStatus(), pageable);
 
-        return null;
+        return applyPosts;
     }
 
-    @Transactional
-    public List<ApplyPostResponseDto> findReceivedApplyPosts(ReceivedApplyPostsRequestDto request) {
-//
-//        Long userId = 1L;
-//
-//        profileRepository.findByUserId(userId); // 프로필들을 찾아서 profileId로 작성글 조회
-//
+    @Transactional(readOnly = true)
+    public Page<ApplyPostDto> findReceivedApplyPosts(
+            ReceivedApplyPostsRequestDto request
+            , OAuth2UserInfo userInfo
+            , Pageable pageable
+    ) {
+        User user = userRepository.findByProviderId(userInfo.getUsername())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
 
-//        ApplyPostMapper.toDto(applyPost);
+        Page<ApplyPostDto> applyPosts = applyPostRepository
+                .findAllReceivedByUserId(user.getId(), request.getStatus(), pageable);
 
-        return null;
+        return applyPosts;
     }
 }

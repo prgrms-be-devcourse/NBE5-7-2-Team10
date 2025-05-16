@@ -11,6 +11,10 @@ public enum ErrorCode {
     INVALID_REQUEST(400, "요청 데이터가 올바르지 않습니다"),
     DUPLICATED_CHARACTER_NAME(400, "중복되는 캐릭터 이름입니다"),
     NOT_FOUND(404, "요청에 대한 데이터를 찾을 수 없습니다"),
+    RECRUIT_NOT_FOUND(404, "모집 공고글을 찾을 수 없습니다"),
+    PROFILE_NOT_FOUND(404, "프로필을 찾을 수 없습니다"),
+    USER_NOT_FOUND(404, "회원 정보를 찾을 수 없습니다"),
+    APPLY_NOT_FOUND(404, "제출한 지원글을 찾을 수 없습니다"),
     ;
 
     private final int status;

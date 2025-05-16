@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface TagRepository extends JpaRepository<Tag, Long> {
 
-    boolean existsByName(String name, TagType type);  // 중복된 태그 이름 체크
+    boolean existsByNameAndType(String name, TagType type);
 
     List<Tag> findAll();  // 모든 태그 조회
 }

@@ -29,23 +29,30 @@ public class User extends UpdatedEntity {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    private String providerId;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Profile> profiles;
 
     @Builder
-    public User(String email, String nickname, Role role) {
+    public User(String email, String nickname, Role role, String providerId) {
         this.email = email;
         this.nickname = nickname;
         this.role = role;
+        this.providerId = providerId;
     }
 
-    public User update(String email, String nickname) {
+    public User update(String email, String nickname, Role role) {
         if (email != null) {
             this.email = email;
         }
 
         if (nickname != null) {
             this.nickname = nickname;
+        }
+
+        if( role != null ) {
+            this.role = role;
         }
 
         return this;

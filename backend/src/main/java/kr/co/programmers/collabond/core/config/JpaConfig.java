@@ -14,19 +14,4 @@ import org.springframework.web.cors.CorsUtils;
 @EnableJpaAuditing
 public class JpaConfig {
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http
-                .httpBasic(httpB -> httpB.disable())
-                .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.disable())
-                .formLogin(form -> form.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
-                        .anyRequest().permitAll()                 // 나머지 모든 요청 허용
-                )
-                .oauth2Login(AbstractHttpConfigurer::disable)
-                .build();
-    }
 }

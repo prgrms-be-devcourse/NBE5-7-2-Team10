@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 
     INVALID_REQUEST(400, "요청 데이터가 올바르지 않습니다"),
+    DUPLICATED_CHARACTER_NAME(400, "중복되는 캐릭터 이름입니다"),
     NOT_FOUND(404, "요청에 대한 데이터를 찾을 수 없습니다"),
     ;
 

@@ -35,7 +35,7 @@ public class ProfileService {
             throw new IllegalStateException("유저의 권한과 프로필 타입이 일치하지 않습니다.");
         }
 
-        if (profileRepository.countByUserIdAndDeletedAtIsNull(user.getId()) >= 5) {
+        if (profileRepository.countByUserId(user.getId()) >= 5) {
             throw new IllegalStateException("프로필은 최대 5개까지 생성 가능합니다.");
         }
 
@@ -69,7 +69,6 @@ public class ProfileService {
 
         imageRepository.findByProfileIdAndType(profileId, "PROFILE")
                 .forEach(image -> fileRepository.deleteById(image.getFile().getId()));
-
 
         profileRepository.delete(profile);
     }

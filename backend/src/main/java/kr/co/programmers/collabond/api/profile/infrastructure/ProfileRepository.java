@@ -8,5 +8,5 @@ import java.util.List;
 public interface ProfileRepository extends JpaRepository<Profile, Long> {
     List<Profile> findAllByUserId(Long userId);
 
-    long countByUserIdAndDeletedAtIsNull(Long userId);
+    long countByUserId(Long userId);
 }

@@ -87,14 +87,14 @@ public class RecruitPostService {
     // 회원이 작성한 모집글 조회
     @Transactional(readOnly = true)
     public Page<RecruitPostResponseDto> getRecruitPostsByUser(Long userId, Pageable pageable) {
-        return recruitPostRepository.findByProfile_User_Id(userId, pageable)
+        return recruitPostRepository.findByUserId(userId, pageable)
                 .map(RecruitPostResponseDto::from);
     }
 
     // 프로필이 작성한 모집글 조회
     @Transactional(readOnly = true)
     public RecruitPostResponseDto getRecruitPostByProfile(Long profileId) {
-        RecruitPost post = recruitPostRepository.findByProfile_Id(profileId)
+        RecruitPost post = recruitPostRepository.findByProfileId(profileId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 프로필이 작성한 모집글을 찾을 수 없습니다."));
         return RecruitPostResponseDto.from(post);
     }

@@ -25,7 +25,6 @@ import java.util.List;
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class Profile extends UpdatedEntity {
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -49,10 +48,6 @@ public class Profile extends UpdatedEntity {
 
     @Column(name = "collabo_count",nullable = false)
     private Integer collaboCount =0;
-
-
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime CreatedAt;
 
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
     private List<Image> images;
@@ -133,6 +128,4 @@ public class Profile extends UpdatedEntity {
 
         this.detailAddress = detailAddress;
     }
-
-
 }

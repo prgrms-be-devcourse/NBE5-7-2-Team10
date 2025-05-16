@@ -23,16 +23,14 @@ public class TagController {
         return ResponseEntity.ok(tags);
     }
 
-    // 태그 추가 (관리자 권한 체크)
-    @PreAuthorize("hasRole('ROLE_ADMIN')")  // 관리자만 접근 가능
+    // 태그 추가
     @PostMapping("/admin/tags")
     public ResponseEntity<TagResponseDto> createTag(@RequestBody TagRequestDto dto) {
         TagResponseDto response = tagService.create(dto);
         return ResponseEntity.ok(response);
     }
 
-    // 태그 삭제 (관리자 권한 체크)
-    @PreAuthorize("hasRole('ROLE_ADMIN')")  // 관리자만 접근 가능
+    // 태그 삭제
     @DeleteMapping("/admin/tags/{tagId}")
     public ResponseEntity<Void> deleteTag(@PathVariable Long tagId) {
         tagService.delete(tagId);

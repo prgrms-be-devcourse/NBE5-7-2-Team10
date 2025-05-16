@@ -15,7 +15,7 @@ import org.hibernate.annotations.SQLRestriction;
 @SQLDelete(sql = "UPDATE tags SET deleted_at = NOW() WHERE id = ?")
 @SQLRestriction("deleted_at IS NULL")
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
-public class Tag extends UpdatedEntity {
+public class Tag extends CreatedEntity {
 
     @Column(nullable = false)
     private String name;

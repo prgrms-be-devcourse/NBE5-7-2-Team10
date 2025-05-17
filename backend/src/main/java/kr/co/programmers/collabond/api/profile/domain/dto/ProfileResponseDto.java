@@ -13,7 +13,7 @@ public class ProfileResponseDto {
     private Long id;
     private Long userId;
     private Long addressId;
-    private ProfileType type;
+    private String type;
     private String name;
     private String description;
     private String detailAddress;

@@ -75,7 +75,6 @@ logging:
   level:
     org.springframework.security: TRACE
 
-
 custom:
   file:
     path: ${user.home}/collabond/images/  # ?? ?? ??
@@ -89,4 +88,5 @@ custom:
     redirect-main: http://localhost:3000/oauth
     redirect-sign-up: http://localhost:3000/signup
   mail:
-    subject: ??
+    subject:
+      apply-received: [Collabond] 새로운 지원자가 있습니다!

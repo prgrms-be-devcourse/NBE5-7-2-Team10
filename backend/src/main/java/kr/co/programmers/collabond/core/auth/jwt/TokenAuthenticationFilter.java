@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import kr.co.programmers.collabond.core.auth.oauth2.OAuth2Mapper;
 import kr.co.programmers.collabond.core.auth.oauth2.OAuth2UserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,7 +28,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
         if (token != null && tokenService.validate(token)) {
             TokenBodyDto tokenBodyDto = tokenService.parseJwt(token);
-            OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfo.of(tokenBodyDto);
+            OAuth2UserInfo oAuth2UserInfo = OAuth2Mapper.toOAuth2UserInfo(tokenBodyDto);
 
             Authentication authentication = new UsernamePasswordAuthenticationToken(
                     oAuth2UserInfo, token, oAuth2UserInfo.getAuthorities()

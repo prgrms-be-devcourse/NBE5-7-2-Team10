@@ -4,6 +4,7 @@ import kr.co.programmers.collabond.api.profile.application.ProfileService;
 import kr.co.programmers.collabond.api.profile.domain.dto.ProfileRequestDto;
 import kr.co.programmers.collabond.api.profile.domain.dto.ProfileResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +19,7 @@ public class ProfileController {
 
     @PostMapping
     public ResponseEntity<ProfileResponseDto> create(@RequestBody ProfileRequestDto dto) {
-        return ResponseEntity.ok(profileService.create(dto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(profileService.create(dto));
     }
     //특정 프로필 id로 프로필 상세 조회
     @GetMapping("/{profileId}")

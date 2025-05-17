@@ -1,4 +1,5 @@
 package kr.co.programmers.collabond.api.profile.interfaces;
+
 import kr.co.programmers.collabond.api.profile.domain.ProfileType;
 import ch.qos.logback.classic.Level;
 import kr.co.programmers.collabond.api.address.domain.Address;
@@ -20,6 +21,7 @@ public class ProfileMapper {
                 .userId(entity.getUser().getId())
                 .build();
     }
+
     public static ProfileResponseDto toResponseDto(Profile entity) {
         return ProfileResponseDto.builder()
                 .id(entity.getId())
@@ -44,6 +46,8 @@ public class ProfileMapper {
                 .name(dto.getName())
                 .description(dto.getDescription())
                 .detailAddress(dto.getDetailAddress())
+                .collaboCount(0)
+                .status(true)
                 .build();
     }
 }

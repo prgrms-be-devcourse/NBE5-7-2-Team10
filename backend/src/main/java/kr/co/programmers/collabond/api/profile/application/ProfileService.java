@@ -6,7 +6,6 @@ import kr.co.programmers.collabond.api.address.infrastructure.AddressRepository;
 import kr.co.programmers.collabond.api.file.infrastructure.FileRepository;
 import kr.co.programmers.collabond.api.image.infrastructure.ImageRepository;
 import kr.co.programmers.collabond.api.profile.domain.Profile;
-import kr.co.programmers.collabond.api.profile.domain.ProfileType;
 import kr.co.programmers.collabond.api.profile.domain.dto.ProfileRequestDto;
 import kr.co.programmers.collabond.api.profile.domain.dto.ProfileResponseDto;
 import kr.co.programmers.collabond.api.profile.infrastructure.ProfileRepository;
@@ -15,6 +14,7 @@ import kr.co.programmers.collabond.api.user.infrastructure.UserRepository;
 import kr.co.programmers.collabond.api.profile.interfaces.ProfileMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -40,13 +40,13 @@ public class ProfileService {
         if (profileRepository.countByUserId(user.getId()) >= 5) {
             throw new IllegalStateException("프로필은 최대 5개까지 생성 가능합니다.");
         }
-        //profile의 adressId 가 있을 경우 주소 엔티티 조회, 있으면 주소 가져오고 없으면 null
+        // profile의 adressId 가 있을 경우 주소 엔티티 조회, 있으면 주소 가져오고 없으면 null
         Address address = dto.getAddressId() != null
                 ? addressRepository.findById(dto.getAddressId()).orElse(null)
                 : null;
         // Profile 엔티티 생성, db에 저장 후 ResponseDto 반환
         Profile profile = ProfileMapper.toEntity(dto, user, address);
-        Profile saveProfile= profileRepository.save(profile);
+        Profile saveProfile = profileRepository.save(profile);
 
         return ProfileMapper.toResponseDto(saveProfile);
     }
@@ -64,10 +64,10 @@ public class ProfileService {
     public void delete(Long profileId) {
         Profile profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new IllegalArgumentException("프로필이 존재하지 않습니다."));
-        //파일은 hard delete
+        // 파일은 hard delete
         imageRepository.findByProfileIdAndType(profileId, "PROFILE")
                 .forEach(image -> fileRepository.deleteById(image.getFile().getId()));
-        //profile은 엔티티  @SQLDelete로 인해 soft delete 됨
+        // profile은 엔티티  @SQLDelete로 인해 soft delete 됨
         profileRepository.delete(profile);
     }
 

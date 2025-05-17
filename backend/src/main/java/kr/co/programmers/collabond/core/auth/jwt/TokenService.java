@@ -12,6 +12,10 @@ import kr.co.programmers.collabond.api.user.domain.TokenStatus;
 import kr.co.programmers.collabond.api.user.domain.User;
 import kr.co.programmers.collabond.api.user.infrastructure.RefreshTokenRepository;
 import kr.co.programmers.collabond.api.user.infrastructure.UserRepository;
+import kr.co.programmers.collabond.shared.exception.ErrorCode;
+import kr.co.programmers.collabond.shared.exception.custom.ExpiredException;
+import kr.co.programmers.collabond.shared.exception.custom.InvalidException;
+import kr.co.programmers.collabond.shared.exception.custom.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,7 +23,6 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Slf4j
@@ -42,7 +45,7 @@ public class TokenService {
     public LoginTokenResponseDto issueTokens(String providerId, Role role) {
 
         User found = userRepository.findByProviderId(providerId)
-                .orElseThrow(() -> new NoSuchElementException("검색된 회원이 없습니다."));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
 
         String accessToken = createAccessToken(providerId, role);
 
@@ -90,18 +93,18 @@ public class TokenService {
     public AccessTokenResponseDto refreshAccessToken(String refreshToken) {
         log.info("refreshToken = {}", refreshToken);
         RefreshToken token = refreshTokenRepository.findByToken(refreshToken)
-                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 리프레시 토큰입니다"));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.TOKEN_NOT_FOUND));
 
         // 토큰 상태 검사
         if (token.getStatus() != TokenStatus.VALID) {
-            throw new IllegalArgumentException("유효하지 않은 리프레시 토큰입니다");
+            throw new InvalidException(ErrorCode.INVALID_TOKEN);
         }
 
         // 토큰 유효성 및 만료 검사
         if (!validate(refreshToken)) {
             token.updateStatus(TokenStatus.EXPIRED);
             refreshTokenRepository.save(token);
-            throw new IllegalArgumentException("만료된 리프레시 토큰입니다");
+            throw new ExpiredException(ErrorCode.EXPIRED_TOKEN);
         }
 
         // 토큰 페이로드 파싱
@@ -115,7 +118,7 @@ public class TokenService {
 
     public void logout(String refreshToken) {
         RefreshToken token = refreshTokenRepository.findByToken(refreshToken)
-                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 리프레시 토큰입니다"));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.TOKEN_NOT_FOUND));
 
         token.updateStatus(TokenStatus.LOGGED_OUT);
         refreshTokenRepository.save(token);
@@ -130,10 +133,8 @@ public class TokenService {
                     .parseSignedClaims(token);
 
             return true;
-        } catch (JwtException e) {
-            log.error("token = {}", token);
-        } catch (IllegalArgumentException e) {
-            log.error("token = {}", token);
+        } catch (JwtException | IllegalArgumentException e) {
+            log.debug("Invalid JWT token: {}", e.getMessage());
         }
 
         return false;
@@ -148,10 +149,7 @@ public class TokenService {
         String sub = parsed.getPayload().getSubject();
         String role = parsed.getPayload().get("role").toString();
 
-        return TokenBodyDto.builder()
-                .providerId(sub)
-                .role(Role.valueOf(role.toUpperCase()))
-                .build();
+        return TokenMapper.toTokenBodyDto(sub, role);
     }
 
     private SecretKey getSignKey() {

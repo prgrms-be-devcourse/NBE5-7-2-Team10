@@ -10,6 +10,9 @@ import kr.co.programmers.collabond.api.apply.interfaces.ApplyPostMapper;
 import kr.co.programmers.collabond.api.attachment.domain.Attachment;
 import kr.co.programmers.collabond.api.file.application.FileService;
 import kr.co.programmers.collabond.api.file.domain.File;
+import kr.co.programmers.collabond.api.mail.dto.ReceivedApplyMailSendRequestDto;
+import kr.co.programmers.collabond.api.mail.interfaces.MailMapper;
+import kr.co.programmers.collabond.api.mail.service.MailService;
 import kr.co.programmers.collabond.api.profile.domain.Profile;
 import kr.co.programmers.collabond.api.profile.infrastructure.ProfileRepository;
 import kr.co.programmers.collabond.api.recruit.domain.RecruitPost;
@@ -38,6 +41,7 @@ public class ApplyPostService {
 
     private final ApplyPostRepository applyPostRepository;
     private final FileService fileService;
+    private final MailService mailService;
     private final RecruitPostRepository recruitPostRepository;
     private final ProfileRepository profileRepository;
     private final UserRepository userRepository;
@@ -73,6 +77,11 @@ public class ApplyPostService {
         applyPost.updateAttachment(attachments);
 
         ApplyPost save = applyPostRepository.save(applyPost);
+
+        ReceivedApplyMailSendRequestDto mailSendRequestDto =
+                MailMapper.toDto(recruitPost, profile, save.getCreatedAt());
+
+        mailService.sendReceivedApplyMail(mailSendRequestDto);
 
         return ApplyPostMapper.toDto(save);
     }

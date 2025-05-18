@@ -30,11 +30,12 @@ public class Address {
     @Column(nullable = false)
     private String sigungu;
 
-    @Column(nullable = false)
+    @Column
     private String dong;
 
     @Builder
-    public Address(Long id, String sidoCode, String sigunguCode, String dongCode, String sido, String sigungu, String dong) {
+    public Address(Long id, String sidoCode, String sigunguCode, String dongCode,
+                   String sido, String sigungu, String dong) {
         this.id = id;
         this.sidoCode = sidoCode;
         this.sigunguCode = sigunguCode;

@@ -1,5 +1,6 @@
 package kr.co.programmers.collabond.api.profile.interfaces;
 
+import kr.co.programmers.collabond.api.address.interfaces.AddressMapper;
 import kr.co.programmers.collabond.api.profile.domain.ProfileType;
 import ch.qos.logback.classic.Level;
 import kr.co.programmers.collabond.api.address.domain.Address;
@@ -7,6 +8,7 @@ import kr.co.programmers.collabond.api.profile.domain.Profile;
 import kr.co.programmers.collabond.api.profile.domain.dto.ProfileDto;
 import kr.co.programmers.collabond.api.profile.domain.dto.ProfileRequestDto;
 import kr.co.programmers.collabond.api.profile.domain.dto.ProfileResponseDto;
+import kr.co.programmers.collabond.api.profile.domain.dto.ProfileSimpleResponseDto;
 import kr.co.programmers.collabond.api.user.domain.User;
 
 public class ProfileMapper {
@@ -35,6 +37,14 @@ public class ProfileMapper {
                 .status(entity.isStatus())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
+                .build();
+    }
+
+    public static ProfileSimpleResponseDto toSimpleDto(Profile entity) {
+        return ProfileSimpleResponseDto.builder()
+                .profileId(entity.getId())
+                .type(entity.getType().name())
+                .address(AddressMapper.toDto(entity.getAddress()))
                 .build();
     }
 

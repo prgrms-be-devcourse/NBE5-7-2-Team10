@@ -52,9 +52,7 @@ public class TagService {
         return tags.stream().map(tagMapper::toDto).toList(); // Tag -> TagResponseDto 변환 후 반환
     }
 
-    /**
-     * 프로필에 태그를 설정 (최대 5개, 타입 일치 검증)
-     */
+    //프로필에 태그를 설정 (최대 5개, 타입 일치 검증)
     @Transactional
     public void validateAndBindTags(Profile profile, List<Long> tagIds) {
         if (tagIds.size() > 5) {

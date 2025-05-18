@@ -6,6 +6,7 @@ import kr.co.programmers.collabond.api.profile.domain.dto.ProfileResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -16,9 +17,17 @@ public class ProfileController {
 
     private final ProfileService profileService;
 
-    @PostMapping
-    public ResponseEntity<ProfileResponseDto> create(@RequestBody ProfileRequestDto dto) {
-        return ResponseEntity.ok(profileService.create(dto));
+    // 프로필 생성
+    @PostMapping(consumes = "multipart/form-data")
+    public ResponseEntity<ProfileResponseDto> create(
+            @RequestPart("dto") ProfileRequestDto dto,
+            @RequestPart(name = "profileImage", required = false) MultipartFile profileImage,
+            @RequestPart(name = "thumbnailImage", required = false) MultipartFile thumbnailImage,
+            @RequestPart(name = "extraImages", required = false) List<MultipartFile> extraImages,
+            @RequestPart(name = "tagIds", required = false) List<Long> tagIds) {
+
+        ProfileResponseDto response = profileService.create(dto, profileImage, thumbnailImage, extraImages, tagIds);
+        return ResponseEntity.ok(response);
     }
     //특정 프로필 id로 프로필 상세 조회
     @GetMapping("/{profileId}")
@@ -33,9 +42,18 @@ public class ProfileController {
         return ResponseEntity.ok(profileService.findAllByUser(userId));
     }
 
-    @PatchMapping("/{profileId}")
-    public ResponseEntity<ProfileResponseDto> update(@PathVariable Long profileId, @RequestBody ProfileRequestDto dto) {
-        return ResponseEntity.ok(profileService.update(profileId, dto));
+    //프로필 수정
+    @PatchMapping(value = "/{profileId}", consumes = "multipart/form-data")
+    public ResponseEntity<ProfileResponseDto> update(
+            @PathVariable Long profileId,
+            @RequestPart("dto") ProfileRequestDto dto,
+            @RequestPart(name = "profileImage", required = false) MultipartFile profileImage,
+            @RequestPart(name = "thumbnailImage", required = false) MultipartFile thumbnailImage,
+            @RequestPart(name = "extraImages", required = false) List<MultipartFile> extraImages,
+            @RequestPart(name = "tagIds", required = false) List<Long> tagIds) {
+
+        ProfileResponseDto response = profileService.update(profileId, dto, profileImage, thumbnailImage, extraImages, tagIds);
+        return ResponseEntity.ok(response);
     }
 
     //프로필 삭제시 연결된 파일은 HARDDELETE 후 프로필은 SOFTDELETE됨

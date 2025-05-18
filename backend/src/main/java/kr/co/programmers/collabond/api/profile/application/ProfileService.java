@@ -102,17 +102,21 @@ public class ProfileService {
         deleteImagesByType(profileId, "PROFILE");
         deleteImagesByType(profileId, "THUMBNAIL");
         deleteImagesByType(profileId, "EXTRA");
-
-        // 새로운 이미지 등록
+        // 프로필 이미지 교체
         if (profileImage != null && !profileImage.isEmpty()) {
+            deleteImagesByType(profileId, "PROFILE");
             saveImage(profile, profileImage, "PROFILE", 1);
         }
 
+        // 썸네일 이미지 교체
         if (thumbnailImage != null && !thumbnailImage.isEmpty()) {
+            deleteImagesByType(profileId, "THUMBNAIL");
             saveImage(profile, thumbnailImage, "THUMBNAIL", 1);
         }
 
-        if (extraImages != null) {
+        // EXTRA 이미지 완전 교체 (다중 파일이므로 기존 것 전부 삭제 필요)
+        if (extraImages != null && !extraImages.isEmpty()) {
+            deleteImagesByType(profileId, "EXTRA");
             for (int i = 0; i < extraImages.size(); i++) {
                 MultipartFile file = extraImages.get(i);
                 if (!file.isEmpty()) {
@@ -122,8 +126,8 @@ public class ProfileService {
         }
 
         // 태그 재설정
-        tagService.clearTags(profile);
-        tagService.validateAndBindTags(profile, tagIds);
+        tagService.clearTags(profile); //기존 태그 모두 삭제 후
+        tagService.validateAndBindTags(profile, tagIds); //태그 최대 5개 등록 및 타입 검증
 
         return ProfileMapper.toResponseDto(profile);
     }
@@ -142,20 +146,20 @@ public class ProfileService {
         profileRepository.delete(profile);
     }
 
-    /** 프로필 단건 조회 */
+    // 프로필 단건 조회
     public Optional<ProfileResponseDto> findById(Long id) {
         return profileRepository.findById(id)
                 .map(ProfileMapper::toResponseDto);
     }
 
-    /** 유저의 전체 프로필 목록 조회 */
+    // 유저의 전체 프로필 목록 조회
     public List<ProfileResponseDto> findAllByUser(Long userId) {
         return profileRepository.findAllByUserId(userId).stream()
                 .map(ProfileMapper::toResponseDto)
                 .toList();
     }
 
-    /** 공통 이미지 저장 메서드 */
+    // 이미지 저장 메서드
     private void saveImage(Profile profile, MultipartFile imageFile, String type, Integer priority) {
         try {
             File file = fileService.saveFile(imageFile);
@@ -170,7 +174,7 @@ public class ProfileService {
         }
     }
 
-    /** 타입별 이미지 삭제 (파일 하드삭제 + 이미지 삭제) */
+    //타입별 이미지 삭제 (파일 하드삭제 ,이미지 삭제)
     private void deleteImagesByType(Long profileId, String type) {
         imageRepository.findByProfileIdAndType(profileId, type)
                 .forEach(image -> {

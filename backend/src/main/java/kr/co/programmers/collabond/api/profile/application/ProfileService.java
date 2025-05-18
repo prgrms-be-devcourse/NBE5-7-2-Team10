@@ -3,18 +3,25 @@ package kr.co.programmers.collabond.api.profile.application;
 import jakarta.transaction.Transactional;
 import kr.co.programmers.collabond.api.address.domain.Address;
 import kr.co.programmers.collabond.api.address.infrastructure.AddressRepository;
+import kr.co.programmers.collabond.api.file.application.FileService;
+import kr.co.programmers.collabond.api.file.domain.File;
 import kr.co.programmers.collabond.api.file.infrastructure.FileRepository;
+import kr.co.programmers.collabond.api.image.domain.Image;
 import kr.co.programmers.collabond.api.image.infrastructure.ImageRepository;
 import kr.co.programmers.collabond.api.profile.domain.Profile;
 import kr.co.programmers.collabond.api.profile.domain.ProfileType;
 import kr.co.programmers.collabond.api.profile.domain.dto.ProfileRequestDto;
 import kr.co.programmers.collabond.api.profile.domain.dto.ProfileResponseDto;
 import kr.co.programmers.collabond.api.profile.infrastructure.ProfileRepository;
+import kr.co.programmers.collabond.api.tag.application.TagService;
 import kr.co.programmers.collabond.api.user.domain.User;
 import kr.co.programmers.collabond.api.user.infrastructure.UserRepository;
 import kr.co.programmers.collabond.api.profile.interfaces.ProfileMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,10 +33,16 @@ public class ProfileService {
     private final UserRepository userRepository;
     private final AddressRepository addressRepository;
     private final ImageRepository imageRepository;
+    private final FileService fileService;
     private final FileRepository fileRepository;
+    private final TagService tagService;
 
     @Transactional
-    public ProfileResponseDto create(ProfileRequestDto dto) {
+    public ProfileResponseDto create(ProfileRequestDto dto,
+                                     MultipartFile profileImage,
+                                     MultipartFile thumbnailImage,
+                                     List<MultipartFile> extraImages,
+                                     List<Long> tagIds) {
         User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
 
@@ -46,17 +59,72 @@ public class ProfileService {
                 : null;
         // Profile 엔티티 생성, db에 저장 후 ResponseDto 반환
         Profile profile = ProfileMapper.toEntity(dto, user, address);
-        Profile saveProfile= profileRepository.save(profile);
+        Profile savedProfile= profileRepository.save(profile);
+        // 이미지 업로드
+        if (profileImage != null && !profileImage.isEmpty()) {
+            saveImage(savedProfile, profileImage, "PROFILE", 1);
+        }
 
-        return ProfileMapper.toResponseDto(saveProfile);
+        if (thumbnailImage != null && !thumbnailImage.isEmpty()) {
+            saveImage(savedProfile, thumbnailImage, "THUMBNAIL", 1);
+        }
+
+        if (extraImages != null) {
+            for (int i = 0; i < extraImages.size(); i++) {
+                MultipartFile file = extraImages.get(i);
+                if (!file.isEmpty()) {
+                    saveImage(savedProfile, file, "EXTRA", i + 1);
+                }
+            }
+        }
+
+        // 태그 등록
+        if (tagIds != null && !tagIds.isEmpty()) {
+            tagService.validateAndBindTags(savedProfile, tagIds);
+        }
+
+        return ProfileMapper.toResponseDto(savedProfile);
     }
 
     @Transactional
-    public ProfileResponseDto update(Long profileId, ProfileRequestDto dto) {
+    public ProfileResponseDto update(Long profileId,
+                                     ProfileRequestDto dto,
+                                     MultipartFile profileImage,
+                                     MultipartFile thumbnailImage,
+                                     List<MultipartFile> extraImages,
+                                     List<Long> tagIds) {
         Profile profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new IllegalArgumentException("프로필이 존재하지 않습니다."));
 
         profile.update(dto.getName(), dto.getDescription(), dto.getDetailAddress());
+
+        // 기존 이미지 삭제
+        deleteImagesByType(profileId, "PROFILE");
+        deleteImagesByType(profileId, "THUMBNAIL");
+        deleteImagesByType(profileId, "EXTRA");
+
+        // 새로운 이미지 등록
+        if (profileImage != null && !profileImage.isEmpty()) {
+            saveImage(profile, profileImage, "PROFILE", 1);
+        }
+
+        if (thumbnailImage != null && !thumbnailImage.isEmpty()) {
+            saveImage(profile, thumbnailImage, "THUMBNAIL", 1);
+        }
+
+        if (extraImages != null) {
+            for (int i = 0; i < extraImages.size(); i++) {
+                MultipartFile file = extraImages.get(i);
+                if (!file.isEmpty()) {
+                    saveImage(profile, file, "EXTRA", i + 1);
+                }
+            }
+        }
+
+        // 태그 재설정
+        tagService.clearTags(profile);
+        tagService.validateAndBindTags(profile, tagIds);
+
         return ProfileMapper.toResponseDto(profile);
     }
 
@@ -64,24 +132,50 @@ public class ProfileService {
     public void delete(Long profileId) {
         Profile profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new IllegalArgumentException("프로필이 존재하지 않습니다."));
-        //파일은 hard delete
+        // PROFILE 타입 이미지 파일만 하드 딜리트
         imageRepository.findByProfileIdAndType(profileId, "PROFILE")
                 .forEach(image -> fileRepository.deleteById(image.getFile().getId()));
-        //profile은 엔티티  @SQLDelete로 인해 soft delete 됨
+
+        // 연결된 태그 모두 제거 (profile_tags 레코드 삭제)
+        tagService.clearTags(profile);
+        // 프로필은 soft delete (@SQLDelete)
         profileRepository.delete(profile);
     }
 
-    // ID로 프로필 조회 후 존재할 경우 ResponseDto로 변환하여 반환
+    /** 프로필 단건 조회 */
     public Optional<ProfileResponseDto> findById(Long id) {
         return profileRepository.findById(id)
                 .map(ProfileMapper::toResponseDto);
     }
 
-    // 특정 User의 모든 프로필 조회, 각 프로필을 ResponseDto로 매필해 반환
+    /** 유저의 전체 프로필 목록 조회 */
     public List<ProfileResponseDto> findAllByUser(Long userId) {
         return profileRepository.findAllByUserId(userId).stream()
                 .map(ProfileMapper::toResponseDto)
                 .toList();
     }
 
+    /** 공통 이미지 저장 메서드 */
+    private void saveImage(Profile profile, MultipartFile imageFile, String type, Integer priority) {
+        try {
+            File file = fileService.saveFile(imageFile);
+            imageRepository.save(Image.builder()
+                    .profile(profile)
+                    .file(file)
+                    .type(type)
+                    .priority(priority)
+                    .build());
+        } catch (IOException e) {
+            throw new RuntimeException("이미지 저장 실패", e);
+        }
+    }
+
+    /** 타입별 이미지 삭제 (파일 하드삭제 + 이미지 삭제) */
+    private void deleteImagesByType(Long profileId, String type) {
+        imageRepository.findByProfileIdAndType(profileId, type)
+                .forEach(image -> {
+                    fileRepository.deleteById(image.getFile().getId());
+                    imageRepository.delete(image);
+                });
+    }
 }

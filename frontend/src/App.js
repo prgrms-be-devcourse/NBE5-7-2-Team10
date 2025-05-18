@@ -1,27 +1,82 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import "./App.css";
-import IPProviderMyPage from "./pages/my-page/ip-provider/page";
-import StoreOwnerMyPage from "./pages/my-page/store-owner/page";
-import SentProposals from "./pages/my-page/sent-apply/page";
-import ReceivedProposals from "./pages/my-page/received-apply/page";
-import MyPosts from "./pages/my-page/my-recruit/page";
-import CreateStoreProfile from "./pages/my-page/create-store-profile/page";
-import CreateCharacterProfile from "./pages/my-page/create-character-profile/page";
+"use client"
+import { useState, useEffect } from "react"
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
+import Header from "./components/Header"
+import MainPage from "./pages/MainPage"
+import MyPage from "./pages/MyPage"
+import RecruitmentListPage from "./pages/RecruitmentListPage"
+import RecruitmentCreatePage from "./pages/RecruitmentCreatePage"
+import RecruitmentEditPage from "./pages/RecruitmentEditPage"
+import UserTypeSelectionPage from "./pages/UserTypeSelectionPage"
+import AdminPage from "./pages/AdminPage"
+import LoginPage from "./pages/LoginPage"
+import { AuthProvider } from "./contexts/AuthContext"
+import ProtectedRoute from "./components/ProtectedRoute"
+import "./App.css"
 
 function App() {
+  // 클라이언트 사이드에서만 렌더링하기 위한 상태
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    // 즉시 마운트 상태를 true로 설정하여 컴포넌트가 바로 렌더링되도록 합니다
+    setIsMounted(true)
+  }, [])
+
+  // 서버 사이드 렌더링 시 빈 div 반환
+  if (!isMounted) {
+    return <div></div>
+  }
+
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/ip" element={<IPProviderMyPage />} />
-        <Route path="/store" element={<StoreOwnerMyPage />} />
-        <Route path="/sent-apply" element={<SentProposals />} />
-        <Route path="/received-apply" element={<ReceivedProposals />} />
-        <Route path="/my-recruit" element={<MyPosts />} />
-        <Route path="/create-store" element={<CreateStoreProfile />} />
-        <Route path="/create-character" element={<CreateCharacterProfile />} />
-      </Routes>
-    </BrowserRouter>
-  );
+    <AuthProvider>
+      <Router>
+        <div className="app">
+          <Header />
+          <main className="main-content">
+            <Routes>
+              <Route path="/" element={<MainPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/user-type-selection" element={<UserTypeSelectionPage />} />
+              <Route path="/recruitment" element={<RecruitmentListPage />} />
+              <Route
+                path="/recruitment/create"
+                element={
+                  <ProtectedRoute>
+                    <RecruitmentCreatePage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/recruitment/edit/:id"
+                element={
+                  <ProtectedRoute>
+                    <RecruitmentEditPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/mypage/*"
+                element={
+                  <ProtectedRoute>
+                    <MyPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/*"
+                element={
+                  <ProtectedRoute adminOnly={true}>
+                    <AdminPage />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </main>
+        </div>
+      </Router>
+    </AuthProvider>
+  )
 }
 
-export default App;
+export default App

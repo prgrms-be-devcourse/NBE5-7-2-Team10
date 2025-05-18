@@ -1,0 +1,53 @@
+.recruitment-create-page {
+  padding-bottom: 40px;
+}
+
+.page-header {
+  margin-bottom: 24px;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.recruitment-form-container {
+  background-color: var(--white-color);
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+}
+
+.recruitment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.no-profiles {
+  text-align: center;
+  padding: 40px;
+  background-color: var(--white-color);
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.no-profiles h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.no-profiles p {
+  margin: 0;
+  color: #666;
+}

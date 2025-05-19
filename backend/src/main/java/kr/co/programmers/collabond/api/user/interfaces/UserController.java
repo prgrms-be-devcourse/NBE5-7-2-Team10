@@ -3,8 +3,10 @@ package kr.co.programmers.collabond.api.user.interfaces;
 import kr.co.programmers.collabond.api.user.application.UserService;
 import kr.co.programmers.collabond.api.user.domain.dto.UserRequestDto;
 import kr.co.programmers.collabond.api.user.domain.dto.UserResponseDto;
+import kr.co.programmers.collabond.core.auth.oauth2.OAuth2UserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,10 +28,10 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PatchMapping("/{userId}")
-    public ResponseEntity<UserResponseDto> update(@PathVariable Long userId,
+    @PatchMapping
+    public ResponseEntity<UserResponseDto> update(@AuthenticationPrincipal OAuth2UserInfo userInfo,
                                                   @RequestBody UserRequestDto dto) {
-        return ResponseEntity.ok(userService.update(userId, dto));
+        return ResponseEntity.ok(userService.update(userInfo.getUsername(), dto));
     }
 
     @DeleteMapping("/{userId}")

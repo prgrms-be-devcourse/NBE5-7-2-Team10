@@ -34,11 +34,11 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponseDto update(Long userId, UserRequestDto dto) {
-        User user = userRepository.findById(userId)
+    public UserResponseDto update(String providerId, UserRequestDto dto) {
+        User user = userRepository.findByProviderId(providerId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
 
-        user.update(dto.getEmail(), dto.getNickname(), Role.valueOf(dto.getRole()));
+        user.update(null, dto.getNickname(), Role.valueOf(dto.getRole()));
         return UserMapper.toResponseDto(userRepository.save(user));
     }
 

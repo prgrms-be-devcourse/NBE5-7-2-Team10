@@ -18,20 +18,19 @@ public class ProfileController {
 
     private final ProfileService profileService;
 
-
     // 프로필 생성
-    @PostMapping(consumes = "multipart/form-data")
+    @PostMapping
     public ResponseEntity<ProfileResponseDto> create(
             @RequestPart("dto") ProfileRequestDto dto,
             @RequestPart(name = "profileImage", required = true) MultipartFile profileImage,
             @RequestPart(name = "thumbnailImage", required = true) MultipartFile thumbnailImage,
-            @RequestPart(name = "extraImages", required = false) List<MultipartFile> extraImages,
-            @RequestPart(name = "tagIds", required = false) List<Long> tagIds) {
+            @RequestPart(name = "extraImages", required = false) List<MultipartFile> extraImages
+    ) {
+        ProfileResponseDto response = profileService.create(dto, profileImage, thumbnailImage, extraImages, dto.getTagIds());
 
-        ProfileResponseDto response = profileService.create(dto, profileImage, thumbnailImage, extraImages, tagIds);
-        return ResponseEntity.ok(response);
-
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
     //특정 프로필 id로 프로필 상세 조회
     @GetMapping("/{profileId}")
     public ResponseEntity<ProfileResponseDto> get(@PathVariable Long profileId) {
@@ -39,6 +38,7 @@ public class ProfileController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
     //특정 유저가 가진 모든 프로필 목록 조회
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<ProfileResponseDto>> getByUser(@PathVariable Long userId) {
@@ -46,16 +46,17 @@ public class ProfileController {
     }
 
     //프로필 수정
-    @PatchMapping(value = "/{profileId}", consumes = "multipart/form-data")
+    @PatchMapping(value = "/{profileId}")
     public ResponseEntity<ProfileResponseDto> update(
             @PathVariable Long profileId,
             @RequestPart("dto") ProfileRequestDto dto,
             @RequestPart(name = "profileImage", required = false) MultipartFile profileImage,
             @RequestPart(name = "thumbnailImage", required = false) MultipartFile thumbnailImage,
-            @RequestPart(name = "extraImages", required = false) List<MultipartFile> extraImages,
-            @RequestPart(name = "tagIds", required = false) List<Long> tagIds) {
+            @RequestPart(name = "extraImages", required = false) List<MultipartFile> extraImages
+    ) {
+        ProfileResponseDto response = profileService
+                .update(profileId, dto, profileImage, thumbnailImage, extraImages, dto.getTagIds());
 
-        ProfileResponseDto response = profileService.update(profileId, dto, profileImage, thumbnailImage, extraImages, tagIds);
         return ResponseEntity.ok(response);
     }
 

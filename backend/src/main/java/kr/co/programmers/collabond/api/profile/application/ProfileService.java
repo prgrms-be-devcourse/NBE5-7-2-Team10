@@ -19,6 +19,7 @@ import kr.co.programmers.collabond.api.profile.interfaces.ProfileMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -57,15 +58,26 @@ public class ProfileService {
                 : null;
         // Profile 엔티티 생성, db에 저장 후 ResponseDto 반환
         Profile profile = ProfileMapper.toEntity(dto, user, address);
-        Profile savedProfile= profileRepository.save(profile);
+
+        if (profileImage != null && !profileImage.isEmpty()) {
+            saveImage(profile, profileImage, "PROFILE", 1);
+        }
+
+        if (thumbnailImage != null && !thumbnailImage.isEmpty()) {
+            saveImage(profile, thumbnailImage, "THUMBNAIL", 1);
+        }
+
+        if (extraImages != null && !extraImages.isEmpty()) {
+            for (int i = 0; i < extraImages.size(); i++) {
+                MultipartFile file = extraImages.get(i);
+                if (!file.isEmpty()) {
+                    saveImage(profile, file, "EXTRA", i + 1);
+                }
+            }
+        }
+
+        Profile savedProfile = profileRepository.save(profile);
         // 이미지 업로드
-
-        updateImage(savedProfile, profileImage, "PROFILE");
-        updateImage( savedProfile, thumbnailImage, "THUMBNAIL");
-        updateExtraImages(savedProfile, extraImages);
-
-
-
 
         // 태그 등록
         if (tagIds != null && !tagIds.isEmpty()) {
@@ -90,7 +102,7 @@ public class ProfileService {
 
 
         updateImage(profile, profileImage, "PROFILE");
-        updateImage( profile, thumbnailImage, "THUMBNAIL");
+        updateImage(profile, thumbnailImage, "THUMBNAIL");
         updateExtraImages(profile, extraImages);
 
 
@@ -148,6 +160,7 @@ public class ProfileService {
                     imageRepository.delete(image);
                 });
     }
+
     private void updateImage(Profile profile, MultipartFile imageFile, String type) {
         Long profileId = profile.getId();
         if (imageFile != null && !imageFile.isEmpty()) {

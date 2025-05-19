@@ -1,19 +1,52 @@
 package kr.co.programmers.collabond.api.recruit.interfaces;
 
+import kr.co.programmers.collabond.api.profile.domain.Profile;
+import kr.co.programmers.collabond.api.profile.interfaces.ProfileMapper;
 import kr.co.programmers.collabond.api.recruit.domain.RecruitPost;
+import kr.co.programmers.collabond.api.recruit.domain.RecruitPostStatus;
 import kr.co.programmers.collabond.api.recruit.dto.RecruitPostDto;
+import kr.co.programmers.collabond.api.recruit.dto.RecruitPostRequestDto;
+import kr.co.programmers.collabond.api.recruit.dto.RecruitPostResponseDto;
 
 public class RecruitPostMapper {
 
-    public static RecruitPostDto toDto(RecruitPost post) {
+    public static RecruitPostDto toDto(RecruitPost entity) {
         return RecruitPostDto.builder()
-                .id(post.getId())
-                .title(post.getTitle())
-                .description(post.getDescription())
-                .status(post.getStatus().toString())
-                .deadline(post.getDeadline())
-                .writerProfileId(post.getProfile().getId())
-                .writerProfileName(post.getProfile().getName())
+                .id(entity.getId())
+                .title(entity.getTitle())
+                .description(entity.getDescription())
+                .status(entity.getStatus().toString())
+                .deadline(entity.getDeadline())
+                .writerProfileId(entity.getProfile().getId())
+                .writerProfileName(entity.getProfile().getName())
+                .build();
+    }
+
+    public static RecruitPostResponseDto toResponseDto(RecruitPost entity) {
+        return RecruitPostResponseDto.builder()
+                .id(entity.getId())
+                .title(entity.getTitle())
+                .description(entity.getDescription())
+                .status(entity.getStatus())
+                .deadline(entity.getDeadline())
+                .profileId(entity.getProfile().getId())
+                .profileName(entity.getProfile().getName())
+                .profile(ProfileMapper.toSimpleDto(entity.getProfile()))
+                .deletedAt(entity.getDeletedAt()) // 소프트 삭제 시간 포함
+                .build();
+    }
+
+    public static RecruitPost toEntity(RecruitPostRequestDto dto, Profile profile) {
+        return RecruitPost.builder()
+                .title(dto.getTitle())
+                .description(dto.getDescription())
+                .deadline(dto.getDeadline())
+                .profile(profile)
+                .status(
+                        !dto.getStatus().isEmpty()
+                                ? RecruitPostStatus.valueOf(dto.getStatus())
+                                : RecruitPostStatus.RECRUITING
+                )
                 .build();
     }
 }

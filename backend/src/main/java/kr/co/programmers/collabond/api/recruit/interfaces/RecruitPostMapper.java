@@ -43,9 +43,9 @@ public class RecruitPostMapper {
                 .deadline(dto.getDeadline())
                 .profile(profile)
                 .status(
-                        !dto.getStatus().isEmpty()
-                                ? RecruitPostStatus.valueOf(dto.getStatus())
-                                : RecruitPostStatus.RECRUITING
+                        (dto.getStatus() == null || dto.getStatus().isEmpty())
+                                ? RecruitPostStatus.RECRUITING
+                                : RecruitPostStatus.valueOf(dto.getStatus())
                 )
                 .build();
     }

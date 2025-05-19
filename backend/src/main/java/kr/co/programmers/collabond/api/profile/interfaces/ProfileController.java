@@ -21,13 +21,13 @@ public class ProfileController {
     // 프로필 생성
     @PostMapping
     public ResponseEntity<ProfileResponseDto> create(
-            @RequestPart("dto") ProfileRequestDto dto,
+            @RequestPart("profileRequest") ProfileRequestDto request,
             @RequestPart(name = "profileImage", required = true) MultipartFile profileImage,
             @RequestPart(name = "thumbnailImage", required = true) MultipartFile thumbnailImage,
             @RequestPart(name = "extraImages", required = false) List<MultipartFile> extraImages
     ) {
         ProfileResponseDto response = profileService
-                .create(dto, profileImage, thumbnailImage, extraImages);
+                .create(request, profileImage, thumbnailImage, extraImages);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -50,13 +50,13 @@ public class ProfileController {
     @PatchMapping(value = "/{profileId}")
     public ResponseEntity<ProfileResponseDto> update(
             @PathVariable Long profileId,
-            @RequestPart("dto") ProfileRequestDto dto,
+            @RequestPart("profileRequest") ProfileRequestDto request,
             @RequestPart(name = "profileImage", required = false) MultipartFile profileImage,
             @RequestPart(name = "thumbnailImage", required = false) MultipartFile thumbnailImage,
             @RequestPart(name = "extraImages", required = false) List<MultipartFile> extraImages
     ) {
         ProfileResponseDto response = profileService
-                .update(profileId, dto, profileImage, thumbnailImage, extraImages);
+                .update(profileId, request, profileImage, thumbnailImage, extraImages);
 
         return ResponseEntity.ok(response);
     }

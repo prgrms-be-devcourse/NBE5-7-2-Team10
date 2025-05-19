@@ -31,8 +31,8 @@ public class ApplyPostController {
     @PostMapping("/{recruitmentId}")
     public ResponseEntity<ApplyPostDto> applyPost(
             @PathVariable Long recruitmentId,
-            @RequestPart("apply") ApplyPostRequestDto request,
-            @RequestPart("attachment") List<MultipartFile> files
+            @RequestPart("applyRequest") ApplyPostRequestDto request,
+            @RequestPart(name = "attachment", required = false) List<MultipartFile> files
     ) throws IOException {
         ApplyPostDto response = applyPostService.applyPost(recruitmentId, request, files);
 

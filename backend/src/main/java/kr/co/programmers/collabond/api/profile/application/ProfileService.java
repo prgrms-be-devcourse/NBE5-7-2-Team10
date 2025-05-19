@@ -59,9 +59,11 @@ public class ProfileService {
         Profile profile = ProfileMapper.toEntity(dto, user, address);
         Profile savedProfile= profileRepository.save(profile);
         // 이미지 업로드
+
         updateImage(savedProfile, profileImage, "PROFILE");
         updateImage( savedProfile, thumbnailImage, "THUMBNAIL");
         updateExtraImages(savedProfile, extraImages);
+
 
 
 
@@ -69,6 +71,7 @@ public class ProfileService {
         if (tagIds != null && !tagIds.isEmpty()) {
             tagService.validateAndBindTags(savedProfile, tagIds);
         }
+
 
         return ProfileMapper.toResponseDto(savedProfile);
     }
@@ -106,7 +109,7 @@ public class ProfileService {
         // file에서 하드 딜리트
         imageRepository.findByProfileId(profileId)
                 .forEach(image -> fileRepository.deleteById(image.getFile().getId()));
-        // profile은 엔티티  @SQLDelete로 인해 soft delete 됨
+
         profileRepository.delete(profile);
     }
 

@@ -26,7 +26,8 @@ public class ProfileController {
             @RequestPart(name = "thumbnailImage", required = true) MultipartFile thumbnailImage,
             @RequestPart(name = "extraImages", required = false) List<MultipartFile> extraImages
     ) {
-        ProfileResponseDto response = profileService.create(dto, profileImage, thumbnailImage, extraImages, dto.getTagIds());
+        ProfileResponseDto response = profileService
+                .create(dto, profileImage, thumbnailImage, extraImages);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -55,7 +56,7 @@ public class ProfileController {
             @RequestPart(name = "extraImages", required = false) List<MultipartFile> extraImages
     ) {
         ProfileResponseDto response = profileService
-                .update(profileId, dto, profileImage, thumbnailImage, extraImages, dto.getTagIds());
+                .update(profileId, dto, profileImage, thumbnailImage, extraImages);
 
         return ResponseEntity.ok(response);
     }

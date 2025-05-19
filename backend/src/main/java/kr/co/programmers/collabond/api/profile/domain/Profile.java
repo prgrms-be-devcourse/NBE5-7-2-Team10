@@ -49,7 +49,7 @@ public class Profile extends UpdatedEntity {
     @Column(name = "collabo_count", nullable = false)
     private Integer collaboCount = 0;
 
-    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images = new ArrayList<>();
 
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)

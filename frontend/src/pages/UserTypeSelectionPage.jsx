@@ -2,17 +2,15 @@
 
 import { useState, useContext } from "react"
 import { useNavigate } from "react-router-dom"
-import { AuthContext } from "../contexts/AuthContext"
 import { userAPI } from "../api"
+import { setNickname, setRole } from "../utils/storage"
 import "./UserTypeSelectionPage.css"
 
 const UserTypeSelectionPage = () => {
-  const { user, updateUser } = useContext(AuthContext)
   const navigate = useNavigate()
   const [formData, setFormData] = useState({
     role: "",
     nickname: "",
-    phoneNumber: "",
   })
   const [loading, setLoading] = useState(false)
 
@@ -42,15 +40,15 @@ const UserTypeSelectionPage = () => {
     try {
       setLoading(true)
 
-      const response = await userAPI.updateProfile(user.id, formData)
-
+      const response = await userAPI.updateProfile(formData)
+      setNickname(response.data.nickname);
+      setRole(response.data.role);
       // Update user context
-      updateUser(response.data)
-
+      
       navigate("/")
     } catch (error) {
-      console.error("Error updating user type:", error)
-      alert("사용자 유형 설정에 실패했습니다.")
+      console.error("Error updating user info:", error)
+      alert("회원가입에 실패했습니다.")
     } finally {
       setLoading(false)
     }
@@ -94,20 +92,6 @@ const UserTypeSelectionPage = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="user-form">
-            <div className="form-group">
-              <label htmlFor="phoneNumber">전화번호</label>
-              <input
-                type="tel"
-                id="phoneNumber"
-                name="phoneNumber"
-                value={formData.phoneNumber}
-                onChange={handleChange}
-                className="form-control"
-                placeholder="전화번호를 입력해주세요"
-                required
-              />
-            </div>
-
             <div className="form-group">
               <label htmlFor="nickname">닉네임</label>
               <input

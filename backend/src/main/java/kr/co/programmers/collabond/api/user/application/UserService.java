@@ -1,6 +1,5 @@
 package kr.co.programmers.collabond.api.user.application;
 
-import jakarta.transaction.Transactional;
 import kr.co.programmers.collabond.api.user.domain.Role;
 import kr.co.programmers.collabond.api.user.domain.User;
 import kr.co.programmers.collabond.api.user.domain.dto.UserRequestDto;
@@ -11,8 +10,11 @@ import kr.co.programmers.collabond.api.profile.infrastructure.ProfileRepository;
 import kr.co.programmers.collabond.api.file.infrastructure.FileRepository;
 import kr.co.programmers.collabond.api.image.infrastructure.ImageRepository;
 import kr.co.programmers.collabond.api.user.interfaces.UserMapper;
+import kr.co.programmers.collabond.shared.exception.ErrorCode;
+import kr.co.programmers.collabond.shared.exception.custom.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -66,5 +68,9 @@ public class UserService {
         return userRepository.findByEmail(email).map(UserMapper::toResponseDto);
     }
 
-
+    @Transactional
+    public User findByProviderId(String providerId) {
+        return userRepository.findByProviderId(providerId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+    }
 }

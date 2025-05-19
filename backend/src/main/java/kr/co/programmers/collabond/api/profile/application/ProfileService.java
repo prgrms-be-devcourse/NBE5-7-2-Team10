@@ -1,6 +1,5 @@
 package kr.co.programmers.collabond.api.profile.application;
 
-import jakarta.transaction.Transactional;
 import kr.co.programmers.collabond.api.address.domain.Address;
 import kr.co.programmers.collabond.api.address.infrastructure.AddressRepository;
 import kr.co.programmers.collabond.api.file.domain.File;
@@ -16,8 +15,11 @@ import kr.co.programmers.collabond.api.tag.application.TagService;
 import kr.co.programmers.collabond.api.user.domain.User;
 import kr.co.programmers.collabond.api.user.infrastructure.UserRepository;
 import kr.co.programmers.collabond.api.profile.interfaces.ProfileMapper;
+import kr.co.programmers.collabond.shared.exception.ErrorCode;
+import kr.co.programmers.collabond.shared.exception.custom.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -148,7 +150,7 @@ public class ProfileService {
                     .priority(priority)
                     .build();
             profile.addImage(image);
-        } catch (IOException e) {
+        } catch (RuntimeException e) {
             throw new RuntimeException("이미지 저장 실패", e);
         }
     }
@@ -183,5 +185,9 @@ public class ProfileService {
         }
     }
 
-
+    @Transactional
+    public Profile findByProfileId(Long profileId) {
+        return profileRepository.findById(profileId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.PROFILE_NOT_FOUND));
+    }
 }

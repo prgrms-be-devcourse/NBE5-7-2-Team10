@@ -19,7 +19,6 @@ import kr.co.programmers.collabond.api.profile.interfaces.ProfileMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -59,13 +58,8 @@ public class ProfileService {
         // Profile 엔티티 생성, db에 저장 후 ResponseDto 반환
         Profile profile = ProfileMapper.toEntity(dto, user, address);
 
-        if (profileImage != null && !profileImage.isEmpty()) {
-            saveImage(profile, profileImage, "PROFILE", 1);
-        }
-
-        if (thumbnailImage != null && !thumbnailImage.isEmpty()) {
-            saveImage(profile, thumbnailImage, "THUMBNAIL", 1);
-        }
+        saveImage(profile, profileImage, "PROFILE", 1);
+        saveImage(profile, thumbnailImage, "THUMBNAIL", 1);
 
         if (extraImages != null && !extraImages.isEmpty()) {
             for (int i = 0; i < extraImages.size(); i++) {

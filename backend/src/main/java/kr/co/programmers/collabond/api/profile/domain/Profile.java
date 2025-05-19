@@ -132,6 +132,6 @@ public class Profile extends UpdatedEntity {
 
     public void addImage(Image image) {
         images.add(image);
-        image.setProfile(this);
+        image.updateProfile(this);
     }
 }

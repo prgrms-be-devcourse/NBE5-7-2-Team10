@@ -40,6 +40,9 @@ public class Image {
         this.priority = priority;
     }
 
+    public void updateProfile(Profile profile) {
+        this.profile = profile;
+    }
 
 }
 

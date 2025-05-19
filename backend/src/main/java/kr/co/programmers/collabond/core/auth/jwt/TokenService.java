@@ -54,7 +54,8 @@ public class TokenService {
                 .findByUserAndStatus(found, TokenStatus.VALID);
 
         if(foundRefreshToken.isPresent()) {
-            return new LoginTokenResponseDto(accessToken, foundRefreshToken.get().getToken());
+            return TokenMapper.toLoginTokenResponseDto(accessToken,
+                    foundRefreshToken.get().getToken(), found);
         }
 
         String refreshToken = createRefreshToken(providerId, role);
@@ -66,7 +67,7 @@ public class TokenService {
                 .build();
         refreshTokenRepository.save(newRefreshToken);
 
-        return new LoginTokenResponseDto(accessToken, refreshToken);
+        return TokenMapper.toLoginTokenResponseDto(accessToken, refreshToken, found);
     }
 
     public String createAccessToken(String providerId, Role role) {
@@ -104,7 +105,7 @@ public class TokenService {
         if (!validate(refreshToken)) {
             token.updateStatus(TokenStatus.EXPIRED);
             refreshTokenRepository.save(token);
-            throw new ExpiredException(ErrorCode.EXPIRED_TOKEN);
+            throw new ExpiredException(ErrorCode.EXPIRED_REFRESH_TOKEN);
         }
 
         // 토큰 페이로드 파싱

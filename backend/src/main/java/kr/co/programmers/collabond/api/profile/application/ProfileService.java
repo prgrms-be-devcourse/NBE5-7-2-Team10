@@ -3,8 +3,8 @@ package kr.co.programmers.collabond.api.profile.application;
 import jakarta.transaction.Transactional;
 import kr.co.programmers.collabond.api.address.domain.Address;
 import kr.co.programmers.collabond.api.address.infrastructure.AddressRepository;
-import kr.co.programmers.collabond.api.file.application.FileService;
 import kr.co.programmers.collabond.api.file.domain.File;
+import kr.co.programmers.collabond.api.file.application.FileService;
 import kr.co.programmers.collabond.api.file.infrastructure.FileRepository;
 import kr.co.programmers.collabond.api.image.domain.Image;
 import kr.co.programmers.collabond.api.image.infrastructure.ImageRepository;
@@ -105,21 +105,20 @@ public class ProfileService {
     public void delete(Long profileId) {
         Profile profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new IllegalArgumentException("프로필이 존재하지 않습니다."));
-
-        // file에서 하드 딜리트
-        imageRepository.findByProfileId(profileId)
+        // 파일은 hard delete
+        imageRepository.findByProfileIdAndType(profileId, "PROFILE")
                 .forEach(image -> fileRepository.deleteById(image.getFile().getId()));
-
+        // profile은 엔티티  @SQLDelete로 인해 soft delete 됨
         profileRepository.delete(profile);
     }
 
-    // 프로필 단건 조회
+    // ID로 프로필 조회 후 존재할 경우 ResponseDto로 변환하여 반환
     public Optional<ProfileResponseDto> findById(Long id) {
         return profileRepository.findById(id)
                 .map(ProfileMapper::toResponseDto);
     }
 
-    // 유저의 전체 프로필 목록 조회
+    // 특정 User의 모든 프로필 조회, 각 프로필을 ResponseDto로 매필해 반환
     public List<ProfileResponseDto> findAllByUser(Long userId) {
         return profileRepository.findAllByUserId(userId).stream()
                 .map(ProfileMapper::toResponseDto)

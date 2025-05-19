@@ -6,6 +6,7 @@ import kr.co.programmers.collabond.api.profile.domain.Profile;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "images")
@@ -17,6 +18,7 @@ public class Image {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "profile_id", nullable = false)
     private Profile profile;
@@ -37,4 +39,7 @@ public class Image {
         this.type = type;
         this.priority = priority;
     }
+
+
 }
+

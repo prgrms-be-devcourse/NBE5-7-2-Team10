@@ -47,8 +47,8 @@ public class ProfileController {
     public ResponseEntity<ProfileResponseDto> update(
             @PathVariable Long profileId,
             @RequestPart("dto") ProfileRequestDto dto,
-            @RequestPart(name = "profileImage", required = false) MultipartFile profileImage,
-            @RequestPart(name = "thumbnailImage", required = false) MultipartFile thumbnailImage,
+            @RequestPart(name = "profileImage", required = true) MultipartFile profileImage,
+            @RequestPart(name = "thumbnailImage", required = true) MultipartFile thumbnailImage,
             @RequestPart(name = "extraImages", required = false) List<MultipartFile> extraImages,
             @RequestPart(name = "tagIds", required = false) List<Long> tagIds) {
 

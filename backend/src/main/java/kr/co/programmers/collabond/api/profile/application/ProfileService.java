@@ -61,22 +61,14 @@ public class ProfileService {
         Profile profile = ProfileMapper.toEntity(dto, user, address);
         Profile savedProfile= profileRepository.save(profile);
         // 이미지 업로드
-        if (profileImage != null && !profileImage.isEmpty()) {
-            saveImage(savedProfile, profileImage, "PROFILE", 1);
+        updateImage(savedProfile.getId(), savedProfile, profileImage, "PROFILE");
+        updateImage(savedProfile.getId(), savedProfile, thumbnailImage, "THUMBNAIL");
+        updateExtraImages(savedProfile.getId(), savedProfile, extraImages);
+
+        if (!hasRequiredImages(savedProfile.getId())) {
+            throw new IllegalStateException("PROFILE 이미지와 THUMBNAIL 이미지는 각각 1개 이상 필수입니다.");
         }
 
-        if (thumbnailImage != null && !thumbnailImage.isEmpty()) {
-            saveImage(savedProfile, thumbnailImage, "THUMBNAIL", 1);
-        }
-
-        if (extraImages != null) {
-            for (int i = 0; i < extraImages.size(); i++) {
-                MultipartFile file = extraImages.get(i);
-                if (!file.isEmpty()) {
-                    saveImage(savedProfile, file, "EXTRA", i + 1);
-                }
-            }
-        }
 
         // 태그 등록
         if (tagIds != null && !tagIds.isEmpty()) {
@@ -98,33 +90,14 @@ public class ProfileService {
 
         profile.update(dto.getName(), dto.getDescription(), dto.getDetailAddress());
 
-        // 기존 이미지 삭제
-        deleteImagesByType(profileId, "PROFILE");
-        deleteImagesByType(profileId, "THUMBNAIL");
-        deleteImagesByType(profileId, "EXTRA");
-        // 프로필 이미지 교체
-        if (profileImage != null && !profileImage.isEmpty()) {
-            deleteImagesByType(profileId, "PROFILE");
-            saveImage(profile, profileImage, "PROFILE", 1);
-        }
 
-        // 썸네일 이미지 교체
-        if (thumbnailImage != null && !thumbnailImage.isEmpty()) {
-            deleteImagesByType(profileId, "THUMBNAIL");
-            saveImage(profile, thumbnailImage, "THUMBNAIL", 1);
-        }
+        updateImage(profileId, profile, profileImage, "PROFILE");
+        updateImage(profileId, profile, thumbnailImage, "THUMBNAIL");
+        updateExtraImages(profileId, profile, extraImages);
 
-        // EXTRA 이미지 완전 교체 (다중 파일이므로 기존 것 전부 삭제 필요)
-        if (extraImages != null && !extraImages.isEmpty()) {
-            deleteImagesByType(profileId, "EXTRA");
-            for (int i = 0; i < extraImages.size(); i++) {
-                MultipartFile file = extraImages.get(i);
-                if (!file.isEmpty()) {
-                    saveImage(profile, file, "EXTRA", i + 1);
-                }
-            }
+        if (!hasRequiredImages(profileId)) {
+            throw new IllegalStateException("PROFILE 이미지와 THUMBNAIL 이미지는 각각 1개 이상 필수입니다.");
         }
-
         // 태그 재설정
         tagService.clearTags(profile); //기존 태그 모두 삭제 후
         tagService.validateAndBindTags(profile, tagIds); //태그 최대 5개 등록 및 타입 검증
@@ -136,12 +109,10 @@ public class ProfileService {
     public void delete(Long profileId) {
         Profile profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new IllegalArgumentException("프로필이 존재하지 않습니다."));
-        // PROFILE 타입 이미지 파일만 하드 딜리트
-        imageRepository.findByProfileIdAndType(profileId, "PROFILE")
+        // file에서 하드 딜리트
+        imageRepository.findByProfileId(profileId)
                 .forEach(image -> fileRepository.deleteById(image.getFile().getId()));
 
-        // 연결된 태그 모두 제거 (profile_tags 레코드 삭제)
-        tagService.clearTags(profile);
         // 프로필은 soft delete (@SQLDelete)
         profileRepository.delete(profile);
     }
@@ -163,12 +134,12 @@ public class ProfileService {
     private void saveImage(Profile profile, MultipartFile imageFile, String type, Integer priority) {
         try {
             File file = fileService.saveFile(imageFile);
-            imageRepository.save(Image.builder()
-                    .profile(profile)
+            Image image = Image.builder()
                     .file(file)
                     .type(type)
                     .priority(priority)
-                    .build());
+                    .build();
+            profile.addImage(image);
         } catch (IOException e) {
             throw new RuntimeException("이미지 저장 실패", e);
         }
@@ -181,5 +152,31 @@ public class ProfileService {
                     fileRepository.deleteById(image.getFile().getId());
                     imageRepository.delete(image);
                 });
+    }
+    private void updateImage(Long profileId, Profile profile, MultipartFile imageFile, String type) {
+        if (imageFile != null && !imageFile.isEmpty()) {
+            deleteImagesByType(profileId, type);
+            saveImage(profile, imageFile, type, 1);
+        }
+    }
+
+    private void updateExtraImages(Long profileId, Profile profile, List<MultipartFile> extraImages) {
+        if (extraImages != null && !extraImages.isEmpty()) {
+            deleteImagesByType(profileId, "EXTRA");
+            for (int i = 0; i < extraImages.size(); i++) {
+                MultipartFile file = extraImages.get(i);
+                if (!file.isEmpty()) {
+                    saveImage(profile, file, "EXTRA", i + 1);
+                }
+            }
+        }
+    }
+
+
+    // 프로필, 썸네일 1개이상인지 확인
+    private boolean hasRequiredImages(Long profileId) {
+        long profileCount = imageRepository.findByProfileIdAndType(profileId, "PROFILE").size();
+        long thumbnailCount = imageRepository.findByProfileIdAndType(profileId, "THUMBNAIL").size();
+        return profileCount >= 1 && thumbnailCount >= 1;
     }
 }

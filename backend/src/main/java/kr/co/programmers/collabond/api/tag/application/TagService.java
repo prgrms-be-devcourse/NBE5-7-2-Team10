@@ -26,7 +26,7 @@ public class TagService {
     @Transactional
     public TagResponseDto create(TagRequestDto dto) {
         // 중복된 태그 이름 체크
-        if (tagRepository.existsByNameAndType(dto.getName(), dto.getType())) {
+        if (tagRepository.existsByNameAndType(dto.getName(), TagType.valueOf(dto.getType()))) {
             throw new IllegalArgumentException("태그 이름과 타입이 같은 태그가 이미 존재합니다.");
         }
 

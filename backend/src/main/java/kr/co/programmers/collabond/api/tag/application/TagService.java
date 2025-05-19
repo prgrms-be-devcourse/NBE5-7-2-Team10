@@ -12,7 +12,6 @@ import kr.co.programmers.collabond.api.tag.interfaces.TagMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 
 @Service
@@ -65,28 +64,25 @@ public class TagService {
             throw new IllegalArgumentException("존재하지 않는 태그가 포함되어 있습니다.");
         }
 
-        // 프로필 타입과 태그 타입이 일치하는지 검증
-        TagType profileType = TagType.valueOf(String.valueOf(profile.getType()));
+        TagType profileType = TagType.valueOf(profile.getType().name());
         for (Tag tag : tags) {
             if (!tag.getType().equals(profileType)) {
                 throw new IllegalArgumentException("프로필 타입과 일치하지 않는 태그가 포함되어 있습니다.");
             }
         }
 
-        // 태그들을 ProfileTag로 저장
         for (Tag tag : tags) {
             ProfileTag profileTag = ProfileTag.builder()
-                    .profile(profile)
                     .tag(tag)
                     .build();
-            profileTagRepository.save(profileTag);
+            profile.addTag(profileTag); // Profile이 연관관계 관리
         }
     }
 
     //프로필에 연결된 태그 전부 제거
     @Transactional
     public void clearTags(Profile profile) {
-        profileTagRepository.deleteAllByProfile(profile);
+        profile.getTags().clear();// orphanRemoval로 자동 삭제
     }
 }
 

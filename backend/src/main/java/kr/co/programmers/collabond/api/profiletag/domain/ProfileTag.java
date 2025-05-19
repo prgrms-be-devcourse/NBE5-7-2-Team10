@@ -30,4 +30,8 @@ public class ProfileTag {
         this.profile = profile;
         this.tag = tag;
     }
+
+    public void updateProfile(Profile profile) {
+        this.profile = profile;
+    }
 }

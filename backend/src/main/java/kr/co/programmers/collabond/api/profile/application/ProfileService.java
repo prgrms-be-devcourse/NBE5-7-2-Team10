@@ -71,13 +71,10 @@ public class ProfileService {
         }
 
         Profile savedProfile = profileRepository.save(profile);
-        // 이미지 업로드
 
-        // 태그 등록
         if (tagIds != null && !tagIds.isEmpty()) {
             tagService.validateAndBindTags(savedProfile, tagIds);
         }
-
 
         return ProfileMapper.toResponseDto(savedProfile);
     }

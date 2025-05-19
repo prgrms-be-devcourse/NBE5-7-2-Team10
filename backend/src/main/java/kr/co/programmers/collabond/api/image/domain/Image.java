@@ -6,7 +6,7 @@ import kr.co.programmers.collabond.api.profile.domain.Profile;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+
 
 @Entity
 @Table(name = "images")

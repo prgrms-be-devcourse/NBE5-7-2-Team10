@@ -13,8 +13,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
-
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -52,7 +50,7 @@ public class Profile extends UpdatedEntity {
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
     private List<Image> images;
 
-    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProfileTag> tags;
 
     @OneToMany(mappedBy = "profile")
@@ -61,9 +59,7 @@ public class Profile extends UpdatedEntity {
     @OneToMany(mappedBy = "profile")
     private List<RecruitPost> recruitPosts;
 
-    /**
-     * true - 활성 / false - 비활성
-     */
+
     @Column(nullable = false)
     private Boolean status;
 
@@ -133,5 +129,10 @@ public class Profile extends UpdatedEntity {
     public void addImage(Image image) {
         images.add(image);
         image.updateProfile(this);
+    }
+
+    public void addTag(ProfileTag tag) {
+        this.tags.add(tag);
+        tag.updateProfile(this);
     }
 }

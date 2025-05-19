@@ -9,7 +9,6 @@ import kr.co.programmers.collabond.api.file.infrastructure.FileRepository;
 import kr.co.programmers.collabond.api.image.domain.Image;
 import kr.co.programmers.collabond.api.image.infrastructure.ImageRepository;
 import kr.co.programmers.collabond.api.profile.domain.Profile;
-import kr.co.programmers.collabond.api.profile.domain.ProfileType;
 import kr.co.programmers.collabond.api.profile.domain.dto.ProfileRequestDto;
 import kr.co.programmers.collabond.api.profile.domain.dto.ProfileResponseDto;
 import kr.co.programmers.collabond.api.profile.infrastructure.ProfileRepository;
@@ -20,7 +19,6 @@ import kr.co.programmers.collabond.api.profile.interfaces.ProfileMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -53,7 +51,7 @@ public class ProfileService {
         if (profileRepository.countByUserId(user.getId()) >= 5) {
             throw new IllegalStateException("프로필은 최대 5개까지 생성 가능합니다.");
         }
-        //profile의 adressId 가 있을 경우 주소 엔티티 조회, 있으면 주소 가져오고 없으면 null
+        // profile의 adressId 가 있을 경우 주소 엔티티 조회, 있으면 주소 가져오고 없으면 null
         Address address = dto.getAddressId() != null
                 ? addressRepository.findById(dto.getAddressId()).orElse(null)
                 : null;
@@ -74,6 +72,7 @@ public class ProfileService {
         if (tagIds != null && !tagIds.isEmpty()) {
             tagService.validateAndBindTags(savedProfile, tagIds);
         }
+
 
         return ProfileMapper.toResponseDto(savedProfile);
     }
@@ -109,6 +108,7 @@ public class ProfileService {
     public void delete(Long profileId) {
         Profile profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new IllegalArgumentException("프로필이 존재하지 않습니다."));
+
         // file에서 하드 딜리트
         imageRepository.findByProfileId(profileId)
                 .forEach(image -> fileRepository.deleteById(image.getFile().getId()));

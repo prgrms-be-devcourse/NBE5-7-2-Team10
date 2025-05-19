@@ -46,8 +46,8 @@ public class Profile extends UpdatedEntity {
     @Column(nullable = false)
     private String description;
 
-    @Column(name = "collabo_count",nullable = false)
-    private Integer collaboCount =0;
+    @Column(name = "collabo_count", nullable = false)
+    private Integer collaboCount = 0;
 
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
     private List<Image> images;
@@ -108,6 +108,7 @@ public class Profile extends UpdatedEntity {
 
         return this;
     }
+
     public String getDisplayName() {
         return isDeleted() ? "(이름없음)" : this.name;
     }

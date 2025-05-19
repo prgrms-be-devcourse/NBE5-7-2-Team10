@@ -1,6 +1,7 @@
 package kr.co.programmers.collabond.shared.exception;
 
 import kr.co.programmers.collabond.shared.exception.custom.DuplicatedException;
+import kr.co.programmers.collabond.shared.exception.custom.InvalidException;
 import kr.co.programmers.collabond.shared.exception.custom.NotFoundException;
 import kr.co.programmers.collabond.shared.util.ApiErrorResponse;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,13 @@ public class ApiExceptionHandler {
     @ExceptionHandler({NotFoundException.class})
     public <T> ResponseEntity<ApiErrorResponse<T>> handleNotFoundException(
             NotFoundException exception
+    ) {
+        return ApiErrorResponse.error(exception.getMessage(), exception.getErrorCode());
+    }
+
+    @ExceptionHandler({InvalidException.class})
+    public <T> ResponseEntity<ApiErrorResponse<T>> handleInvalidException(
+            InvalidException exception
     ) {
         return ApiErrorResponse.error(exception.getMessage(), exception.getErrorCode());
     }

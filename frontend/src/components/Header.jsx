@@ -3,11 +3,13 @@
 import { useState, useContext } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { AuthContext } from "../contexts/AuthContext"
+import { getUserInfo, isSignedIn } from '../utils/storage'
 import LoginModal from "./LoginModal"
 import "./Header.css"
 
 const Header = () => {
-  const { user, logout } = useContext(AuthContext)
+  const { logout } = useContext(AuthContext)
+  const user = getUserInfo();
   const navigate = useNavigate()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [showLoginModal, setShowLoginModal] = useState(false)
@@ -52,7 +54,7 @@ const Header = () => {
                 모집 게시판
               </Link>
             </li>
-            {user ? (
+            {isSignedIn() ? (
               <>
                 {user.role === "ROLE_ADMIN" && (
                   <li>

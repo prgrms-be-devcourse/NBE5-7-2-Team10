@@ -4,10 +4,11 @@ import { useState, useEffect, useContext } from "react"
 import { useNavigate } from "react-router-dom"
 import { AuthContext } from "../contexts/AuthContext"
 import { recruitmentAPI, profileAPI } from "../api"
+import { getUserInfo } from "../utils/storage"
 import "./RecruitmentCreatePage.css"
 
 const RecruitmentCreatePage = () => {
-  const { user } = useContext(AuthContext)
+  const [user, setUser] = useState(getUserInfo())
   const navigate = useNavigate()
   const [userProfiles, setUserProfiles] = useState([])
   const [loading, setLoading] = useState(true)

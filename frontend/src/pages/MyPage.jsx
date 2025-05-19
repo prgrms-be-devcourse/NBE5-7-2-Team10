@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useContext } from "react"
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom"
-import { AuthContext } from "../contexts/AuthContext"
+import { getUserInfo } from "../utils/storage"
 import UserInfo from "../components/mypage/UserInfo"
 import ProfileEdit from "../components/mypage/ProfileEdit"
 import ReceivedApplications from "../components/mypage/ReceivedApplications"
@@ -11,7 +11,7 @@ import MyRecruitments from "../components/mypage/MyRecruitments"
 import "./MyPage.css"
 
 const MyPage = () => {
-  const { user } = useContext(AuthContext)
+  const user = getUserInfo()
   const navigate = useNavigate()
   const location = useLocation()
   const [activeTab, setActiveTab] = useState("profile")

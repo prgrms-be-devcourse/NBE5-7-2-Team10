@@ -85,8 +85,7 @@ custom:
       access: 600 # 10분
       refresh: 604800 # 7일
     secret: 76a6057b59bd44c7a87bbaa0576dae0376a6057b59bd44c7a87bbaa0576dae0376a6057b59bd44c7a87bbaa0576dae03
-    redirect-main: http://localhost:3000/oauth
-    redirect-sign-up: http://localhost:3000/signup
+    redirect-login-success: ${custom.cors.allowed-origin}/auth/callback
   mail:
     subject:
       apply-received: '[Collabond] 새로운 지원자가 있습니다!'

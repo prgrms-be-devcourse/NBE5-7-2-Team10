@@ -10,6 +10,7 @@ public class ProfileSimpleResponseDto {
 
     private Long profileId;
     private String type;
+    private String imageUrl;
     private AddressNameDto address;
 }
 

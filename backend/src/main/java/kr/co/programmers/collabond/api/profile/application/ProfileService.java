@@ -11,6 +11,7 @@ import kr.co.programmers.collabond.api.profile.domain.Profile;
 import kr.co.programmers.collabond.api.profile.domain.dto.ProfileRequestDto;
 import kr.co.programmers.collabond.api.profile.domain.dto.ProfileResponseDto;
 import kr.co.programmers.collabond.api.profile.infrastructure.ProfileRepository;
+import kr.co.programmers.collabond.api.recruit.domain.RecruitPost;
 import kr.co.programmers.collabond.api.tag.application.TagService;
 import kr.co.programmers.collabond.api.user.application.UserService;
 import kr.co.programmers.collabond.api.user.domain.User;
@@ -29,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -87,7 +89,7 @@ public class ProfileService {
             tagService.validateAndBindTags(savedProfile, tagIds);
         }
 
-        return ProfileMapper.toResponseDto(savedProfile);
+        return ProfileMapper.toResponseDto(savedProfile, getProfileImgName(savedProfile));
     }
 
     @Transactional
@@ -110,7 +112,9 @@ public class ProfileService {
         tagService.clearTags(profile); //기존 태그 모두 삭제 후
         tagService.validateAndBindTags(profile, dto.getTagIds()); //태그 최대 5개 등록 및 타입 검증
 
-        return ProfileMapper.toResponseDto(profile);
+        String profileImg = getProfileImgName(profile);
+
+        return ProfileMapper.toResponseDto(profile, profileImg);
     }
 
     @Transactional
@@ -129,13 +133,15 @@ public class ProfileService {
     // ID로 프로필 조회 후 존재할 경우 ResponseDto로 변환하여 반환
     public Optional<ProfileResponseDto> findById(Long id) {
         return profileRepository.findById(id)
-                .map(ProfileMapper::toResponseDto);
+                .map(profile ->
+                        ProfileMapper.toResponseDto(profile, getProfileImgName(profile)));
     }
 
     // 특정 User의 모든 프로필 조회, 각 프로필을 ResponseDto로 매필해 반환
     public List<ProfileResponseDto> findAllByUser(Long userId) {
         return profileRepository.findAllByUserId(userId).stream()
-                .map(ProfileMapper::toResponseDto)
+                .map(profile ->
+                        ProfileMapper.toResponseDto(profile, getProfileImgName(profile)))
                 .toList();
     }
 
@@ -186,5 +192,13 @@ public class ProfileService {
     public Profile findByProfileId(Long profileId) {
         return profileRepository.findById(profileId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.PROFILE_NOT_FOUND));
+    }
+
+    private String getProfileImgName(Profile profile) {
+        Image profileImage = profile.getImages().stream()
+                .filter(i -> i.getType().equals("PROFILE"))
+                .findAny()
+                .orElse(null);
+        return profileImage.getFile().getSavedName();
     }
 }

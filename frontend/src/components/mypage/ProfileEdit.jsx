@@ -294,7 +294,11 @@ const ProfileEdit = () => {
               {profiles.map((profile) => (
                 <div key={profile.id} className="profile-card">
                   <div className="profile-image">
-                    <img src={profile.imageUrl || "/placeholder-profile.png"} alt={profile.name} />
+                    <img 
+                      src={`http://localhost:8080/api/files/images/${profile.imageUrl}`}
+                      // src={profile.imageUrl || "/placeholder-profile.png"} 
+                      alt={profile.name} 
+                    />
                     <div className={`status-badge ${profile.status ? "active" : "inactive"}`}>
                       {profile.status ? "활성" : "비활성"}
                     </div>

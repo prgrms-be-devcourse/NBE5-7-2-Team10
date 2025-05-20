@@ -37,13 +37,14 @@ public class ProfileMapper {
                 .build();
     }
 
-    public static ProfileResponseDto toResponseDto(Profile entity) {
+    public static ProfileResponseDto toResponseDto(Profile entity, String imageUrl) {
         return ProfileResponseDto.builder()
                 .id(entity.getId())
                 .userId(entity.getUser().getId())
                 .addressId(entity.getAddress() != null ? entity.getAddress().getId() : null)
                 .type(entity.getType().name())
                 .name(entity.getName())
+                .imageUrl(imageUrl)
                 .description(entity.getDescription())
                 .detailAddress(entity.getDetailAddress())
                 .collaboCount(entity.getCollaboCount())
@@ -58,9 +59,10 @@ public class ProfileMapper {
                 .build();
     }
 
-    public static ProfileSimpleResponseDto toSimpleDto(Profile entity) {
+    public static ProfileSimpleResponseDto toSimpleDto(Profile entity, String imageUrl) {
         return ProfileSimpleResponseDto.builder()
                 .profileId(entity.getId())
+                .imageUrl(imageUrl)
                 .type(entity.getType().name())
                 .address(AddressMapper.toDto(entity.getAddress()))
                 .build();

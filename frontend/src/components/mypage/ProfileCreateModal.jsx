@@ -206,11 +206,11 @@ const ProfileCreateModal = ({ onClose, onProfileCreated, tags, regions }) => {
               className="form-control"
             >
               <option value="">지역 선택</option>
-              {regions.map((region) => (
+              {/* {regions.map((region) => (
                 <option key={region.id} value={region.id}>
                   {region.name}
                 </option>
-              ))}
+              ))} */}
             </select>
           </div>
 

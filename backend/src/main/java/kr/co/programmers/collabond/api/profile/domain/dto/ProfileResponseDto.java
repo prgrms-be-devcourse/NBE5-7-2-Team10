@@ -16,6 +16,7 @@ public class ProfileResponseDto {
     private Long addressId;
     private String type;
     private String name;
+    private String imageUrl;
     private String description;
     private String detailAddress;
     private int collaboCount;

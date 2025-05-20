@@ -22,7 +22,7 @@ public class RecruitPostMapper {
                 .build();
     }
 
-    public static RecruitPostResponseDto toResponseDto(RecruitPost entity) {
+    public static RecruitPostResponseDto toResponseDto(RecruitPost entity, String fullPath) {
         return RecruitPostResponseDto.builder()
                 .id(entity.getId())
                 .title(entity.getTitle())
@@ -31,7 +31,7 @@ public class RecruitPostMapper {
                 .deadline(entity.getDeadline())
                 .profileId(entity.getProfile().getId())
                 .profileName(entity.getProfile().getName())
-                .profile(ProfileMapper.toSimpleDto(entity.getProfile()))
+                .profile(ProfileMapper.toSimpleDto(entity.getProfile(), fullPath))
                 .deletedAt(entity.getDeletedAt()) // 소프트 삭제 시간 포함
                 .build();
     }

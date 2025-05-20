@@ -68,18 +68,13 @@ if (isBrowser) {
   );
 }
 
-// Auth API
-export const authAPI = {
-  login: (code) => api.post("/api/auth/login", { code }),
-  signup: (userData) => api.post("/api/auth/signup", userData),
-};
-
 // User API
 export const userAPI = {
-  getProfile: (userId) => api.get(`/api/users/${userId}`),
-  updateProfile: (data) => api.patch(`/api/users`, data),
-  deleteAccount: (userId) => api.delete(`/api/users/${userId}`),
-  getUserProfiles: (userId) => api.get(`/api/users/${userId}/profiles`),
+  signup: (userData) => api.patch("/api/users/signup", userData),
+  getMyUserInfo: () => api.get("/api/users"),
+  getUserInfo: (userId) => api.get(`/api/users/${userId}`),
+  updateUserInfo: (data) => api.patch(`/api/users`, data),
+  deleteAccount: () => api.delete(`/api/users`),
 };
 
 // Profile API

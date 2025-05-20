@@ -49,5 +49,4 @@ public class ApiExceptionHandler {
 
         return ApiErrorResponse.error(exception.getMessage(), exception.getStatus());
     }
-
 }

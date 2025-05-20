@@ -1,5 +1,6 @@
 package kr.co.programmers.collabond.api.recruit.application;
 
+import kr.co.programmers.collabond.api.image.domain.Image;
 import kr.co.programmers.collabond.api.profile.application.ProfileService;
 import kr.co.programmers.collabond.api.profile.domain.Profile;
 import kr.co.programmers.collabond.api.recruit.domain.RecruitPost;
@@ -44,8 +45,9 @@ public class RecruitPostService {
         }
 
         RecruitPost post = RecruitPostMapper.toEntity(request, profile);
+        String imgPath = getProfileImgName(post);
 
-        return RecruitPostMapper.toResponseDto(recruitPostRepository.save(post));
+        return RecruitPostMapper.toResponseDto(recruitPostRepository.save(post), imgPath);
     }
 
     // 모집글 수정
@@ -73,7 +75,9 @@ public class RecruitPostService {
                 RecruitPostStatus.valueOf(request.getStatus()),
                 request.getDeadline());
 
-        return RecruitPostMapper.toResponseDto(post);
+        String imgPath = getProfileImgName(post);
+
+        return RecruitPostMapper.toResponseDto(post, imgPath);
     }
 
     // 모집글 삭제 (소프트 삭제)
@@ -102,26 +106,43 @@ public class RecruitPostService {
                 ? recruitPostRepository.findByStatus(status, pageable)
                 : recruitPostRepository.findAll(pageable);
 
-        return posts.map(RecruitPostMapper::toResponseDto);
+        return posts.map(recruitPost -> {
+            String imgPath = getProfileImgName(recruitPost);
+            return RecruitPostMapper.toResponseDto(recruitPost, imgPath);
+        });
     }
 
     // 회원이 작성한 모집글 조회
     @Transactional(readOnly = true)
     public Page<RecruitPostResponseDto> getRecruitPostsByUser(Long userId, Pageable pageable) {
         return recruitPostRepository.findByUserId(userId, pageable)
-                .map(RecruitPostMapper::toResponseDto);
+                .map(recruitPost -> {
+                    String imgPath = getProfileImgName(recruitPost);
+                    return RecruitPostMapper.toResponseDto(recruitPost, imgPath);
+                });
     }
 
     // 프로필이 작성한 모집글 조회
     @Transactional(readOnly = true)
     public Page<RecruitPostResponseDto> getRecruitPostByProfile(Long profileId, Pageable pageable) {
         return recruitPostRepository.findByProfileId(profileId, pageable)
-                .map(RecruitPostMapper::toResponseDto);
+                .map(recruitPost -> {
+                    String imgPath = getProfileImgName(recruitPost);
+                    return RecruitPostMapper.toResponseDto(recruitPost, imgPath);
+                });
     }
 
     @Transactional
     public RecruitPost findByRecruitmentId(Long recruitmentId) {
         return recruitPostRepository.findById(recruitmentId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.RECRUIT_NOT_FOUND));
+    }
+
+    private String getProfileImgName(RecruitPost recruitPost) {
+        Image profileImage = recruitPost.getProfile().getImages().stream()
+                .filter(i -> i.getType().equals("PROFILE"))
+                .findAny()
+                .orElse(null);
+        return profileImage.getFile().getSavedName();
     }
 }

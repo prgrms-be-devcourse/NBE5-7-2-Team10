@@ -1,12 +1,14 @@
+"use client"
+
 import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { AuthContext } from '../../contexts/AuthContext';
+import { getUserInfo } from '@/src/utils/storage';
 import { recruitmentAPI } from '../../api';
 import RecruitmentDetailModal from '../RecruitmentDetailModal';
 import './MyRecruitments.css';
 
 const MyRecruitments = () => {
-  const { user } = useContext(AuthContext);
+  const user = getUserInfo();
   const [recruitments, setRecruitments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedRecruitment, setSelectedRecruitment] = useState(null);
@@ -21,10 +23,11 @@ const MyRecruitments = () => {
   const fetchRecruitments = async () => {
     try {
       setLoading(true);
-      const response = await recruitmentAPI.getUserRecruitments(user.id);
+      const response = await recruitmentAPI.getUserRecruitments(user.userId);
 
+    
       // 필터링 및 정렬 적용
-      let filteredData = [...response.data];
+      let filteredData = [...response.data?.content];
 
       // 상태 필터링
       if (filter !== 'all') {
@@ -32,16 +35,16 @@ const MyRecruitments = () => {
       }
 
       // 정렬
-      filteredData.sort((a, b) => {
-        if (sort === 'newest') {
-          return new Date(b.createdAt) - new Date(a.createdAt);
-        } else if (sort === 'oldest') {
-          return new Date(a.createdAt) - new Date(b.createdAt);
-        } else if (sort === 'deadline') {
-          return new Date(a.deadline) - new Date(b.deadline);
-        }
-        return 0;
-      });
+      // filteredData.sort((a, b) => {
+      //   if (sort === 'newest') {
+      //     return new Date(b.createdAt) - new Date(a.createdAt);
+      //   } else if (sort === 'oldest') {
+      //     return new Date(a.createdAt) - new Date(b.createdAt);
+      //   } else if (sort === 'deadline') {
+      //     return new Date(a.deadline) - new Date(b.deadline);
+      //   }
+      //   return 1;
+      // });
 
       setRecruitments(filteredData);
     } catch (error) {
@@ -148,7 +151,8 @@ const MyRecruitments = () => {
                 <div className="recruitment-header">
                   <div className="profile-info">
                     <img
-                      src={recruitment.profile.imageUrl || '/placeholder-profile.png'}
+                      src={`http://localhost:8080/api/files/images/${recruitment.profile.imageUrl}`}
+                      // src={recruitment.profile.imageUrl || '/placeholder-profile.png'}
                       alt={recruitment.profile.name}
                     />
                     <div>

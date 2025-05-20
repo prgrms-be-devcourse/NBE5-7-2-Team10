@@ -35,7 +35,6 @@ const RecruitmentCreatePage = () => {
         setLoading(false)
       }
     }
-  
     if (user?.userId) {
       fetchUserProfiles()
     }

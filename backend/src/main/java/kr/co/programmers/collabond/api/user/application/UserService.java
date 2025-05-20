@@ -73,4 +73,10 @@ public class UserService {
         return userRepository.findByProviderId(providerId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
     }
+
+    public UserResponseDto findByUsername(String username) {
+        User user =  userRepository.findByUsername(username)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+        return UserMapper.toResponseDto(user); // ✅ 올바른 매핑 함수
+    }
 }

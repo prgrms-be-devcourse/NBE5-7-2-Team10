@@ -16,6 +16,8 @@ public class UserController {
 
     private final UserService userService;
 
+
+
     @PostMapping
     public ResponseEntity<UserResponseDto> create(@RequestBody UserRequestDto dto) {
         return ResponseEntity.ok(userService.create(dto));
@@ -39,4 +41,9 @@ public class UserController {
         userService.delete(userId);
         return ResponseEntity.noContent().build();
     }
+    @GetMapping("/me")
+    public ResponseEntity<UserResponseDto> getMyUserInfo(@AuthenticationPrincipal OAuth2UserInfo userInfo) {
+        return ResponseEntity.ok(userService.findByUsername(userInfo.getUsername()));
+    }
+
 }

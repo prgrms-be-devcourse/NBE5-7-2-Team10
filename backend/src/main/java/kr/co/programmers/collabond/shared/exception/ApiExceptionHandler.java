@@ -49,9 +49,7 @@ public class ApiExceptionHandler {
         return ApiErrorResponse.error(exception.getMessage(), exception.getStatus());
     }
 
-<<<<<<< HEAD
 
-=======
     @ExceptionHandler({ForbiddenException.class})
     public <T> ResponseEntity<ApiErrorResponse<T>> handleForbiddenException(
             ForbiddenException exception) {
@@ -69,5 +67,5 @@ public class ApiExceptionHandler {
 
         return ApiErrorResponse.error(exception.getMessage(), exception.getStatus());
     }
->>>>>>> origin/dev
+
 }

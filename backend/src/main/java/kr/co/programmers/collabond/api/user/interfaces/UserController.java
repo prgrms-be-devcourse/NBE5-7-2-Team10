@@ -46,9 +46,5 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/{userId}/profiles")
-    public ResponseEntity<?> getUserProfiles(@PathVariable Long userId) {
-        return ResponseEntity.ok(userService.getProfilesByUserId(userId));
-    }
 
 }

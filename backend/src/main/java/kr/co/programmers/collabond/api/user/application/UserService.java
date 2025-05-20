@@ -1,5 +1,7 @@
 package kr.co.programmers.collabond.api.user.application;
 
+import kr.co.programmers.collabond.api.profile.domain.Profile;
+import kr.co.programmers.collabond.api.profile.infrastructure.ProfileRepository;
 import kr.co.programmers.collabond.api.user.domain.Role;
 import kr.co.programmers.collabond.api.user.domain.User;
 import kr.co.programmers.collabond.api.user.domain.dto.UserResponseDto;
@@ -14,11 +16,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+
 
     @Transactional
     public UserResponseDto signup(String providerId, UserSignUpRequestDto dto) {
@@ -80,10 +85,6 @@ public class UserService {
         return UserMapper.toResponseDto(user);
     }
 
-    @Transactional(readOnly = true)
-    public List<Profile> getProfilesByUserId(Long userId) {
-        return profileRepository.findAllByUserId(userId);
-    }
 
 
 }

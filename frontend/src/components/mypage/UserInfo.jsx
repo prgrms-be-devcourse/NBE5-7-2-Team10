@@ -1,36 +1,30 @@
 "use client"
-
-import { useState, useContext, useEffect } from "react"
+import { useState } from "react"
+import {
+  getUserId,
+  getRole,
+  getNickname,
+  setNickname
+} from "../../utils/storage"
 import { userAPI } from "../../api"
-import { setNickname } from "../../utils/storage"
 import "./UserInfo.css"
 
 const UserInfo = () => {
-  const [user, setUser] = useState(null)
+  const userId = getUserId()
+  const role = getRole()
+  const nickname = getNickname()
+
   const [isEditing, setIsEditing] = useState(false)
   const [formData, setFormData] = useState({
-    nickname: "",
+    nickname: nickname || "",
   })
 
-  useEffect( () => {
-    async function fetchData() {
-      const response = await userAPI.getMyUserInfo()
-      
-      if(response) {
-        setUser(response.data);
-      }
-    }
+  // 사용자 정보가 없으면 로딩 상태 출력
+  if (!userId || !role) {
+    return <p>회원 정보를 불러오는 중입니다...</p>
+  }
 
-    fetchData();
-  }, [])
-
-  useEffect(() => {
-    if (user) {
-      setFormData({
-        nickname: user.nickname || "",
-      })
-    }
-  }, [user])
+  const isIP = role === "ROLE_IP"
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -45,11 +39,8 @@ const UserInfo = () => {
 
     try {
       const response = await userAPI.updateUserInfo(formData)
-
-      setUser(response.data)
-      setNickname(response.data.nickname)
+      setNickname(response.data.nickname) // localStorage 갱신
       window.location.href = "/mypage"
-
       setIsEditing(false)
     } catch (error) {
       console.error("Error updating user info:", error)
@@ -85,13 +76,13 @@ const UserInfo = () => {
 
           <div className="form-group">
             <label>이메일</label>
-            <p className="form-static">{user?.email}</p>
+            <p className="form-static">-</p> {/* 이메일은 localStorage에 없으므로 비워둠 */}
             <small>이메일은 변경할 수 없습니다.</small>
           </div>
 
           <div className="form-group">
             <label>회원 유형</label>
-            <p className="form-static">{user?.role === "ROLE_IP" ? "IP 제공자" : "점주"}</p>
+            <p className="form-static">{isIP ? "IP 제공자" : "점주"}</p>
             <small>회원 유형은 변경할 수 없습니다.</small>
           </div>
 
@@ -108,17 +99,17 @@ const UserInfo = () => {
         <div className="user-info-display">
           <div className="info-group">
             <label>닉네임</label>
-            <p>{user?.nickname}</p>
+            <p>{nickname}</p>
           </div>
 
           <div className="info-group">
             <label>이메일</label>
-            <p>{user?.email}</p>
+            <p className="form-static">-</p> {/* 이메일 없음 표시 */}
           </div>
 
           <div className="info-group">
             <label>회원 유형</label>
-            <p>{user?.role === "ROLE_IP" ? "IP 제공자" : "점주"}</p>
+            <p>{isIP ? "IP 제공자" : "점주"}</p>
           </div>
         </div>
       )}

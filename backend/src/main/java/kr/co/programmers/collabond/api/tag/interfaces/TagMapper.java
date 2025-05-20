@@ -10,8 +10,8 @@ public class TagMapper {
     // TagRequestDto -> Tag 엔티티 변환
     public static Tag toEntity(TagRequestDto dto) {
         return Tag.builder()
-                .name(dto.getName())
-                .type(TagType.valueOf(dto.getType()))  // TagType 사용
+                .name(dto.name())
+                .type(TagType.valueOf(dto.type()))  // TagType 사용
                 .build();
     }
 

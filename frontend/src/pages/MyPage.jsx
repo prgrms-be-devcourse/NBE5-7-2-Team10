@@ -3,6 +3,7 @@
 import { useState, useEffect, useContext } from "react"
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom"
 import { getUserInfo } from "../utils/storage"
+import { AuthContext } from "../contexts/AuthContext"
 import UserInfo from "../components/mypage/UserInfo"
 import ProfileEdit from "../components/mypage/ProfileEdit"
 import ReceivedApplications from "../components/mypage/ReceivedApplications"
@@ -11,6 +12,7 @@ import MyRecruitments from "../components/mypage/MyRecruitments"
 import "./MyPage.css"
 
 const MyPage = () => {
+  const { logout } = useContext(AuthContext)
   const user = getUserInfo()
   const navigate = useNavigate()
   const location = useLocation()
@@ -43,9 +45,6 @@ const MyPage = () => {
       <div className="mypage-container">
         <aside className="mypage-sidebar">
           <div className="user-brief">
-            <div className="user-avatar">
-              <img src={user?.imageUrl || "/placeholder-avatar.png"} alt={user?.nickname} />
-            </div>
             <h3>{user?.nickname}</h3>
             <p>{user?.role === "ROLE_IP" ? "IP 제공자" : user?.role === "ROLE_ADMIN" ? "관리자" : "점주"}</p>
           </div>
@@ -77,8 +76,7 @@ const MyPage = () => {
                 <button
                   onClick={() => {
                     if (window.confirm("로그아웃 하시겠습니까?")) {
-                      // Handle logout
-                      navigate("/")
+                      logout()
                     }
                   }}
                 >

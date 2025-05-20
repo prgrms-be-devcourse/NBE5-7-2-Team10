@@ -25,9 +25,6 @@ public interface RecruitPostRepository extends JpaRepository<RecruitPost, Long> 
     // 상태별 모집글 조회 (필터링)
     Page<RecruitPost> findByStatus(RecruitPostStatus status, Pageable pageable);
 
-    // 특정 프로필이 작성한 모집글 중 하나 조회
-    List<RecruitPost> findByProfileId(Long profileId);
-
     // 삭제되지 않은 모집글만 조회
     Page<RecruitPost> findByDeletedAtIsNull(Pageable pageable);
 }

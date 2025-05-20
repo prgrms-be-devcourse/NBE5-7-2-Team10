@@ -3,9 +3,11 @@ package kr.co.programmers.collabond.api.profile.interfaces;
 import kr.co.programmers.collabond.api.profile.application.ProfileService;
 import kr.co.programmers.collabond.api.profile.domain.dto.ProfileRequestDto;
 import kr.co.programmers.collabond.api.profile.domain.dto.ProfileResponseDto;
+import kr.co.programmers.collabond.core.auth.oauth2.OAuth2UserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,10 +26,11 @@ public class ProfileController {
             @RequestPart("profileRequest") ProfileRequestDto request,
             @RequestPart(name = "profileImage", required = true) MultipartFile profileImage,
             @RequestPart(name = "thumbnailImage", required = true) MultipartFile thumbnailImage,
-            @RequestPart(name = "extraImages", required = false) List<MultipartFile> extraImages
+            @RequestPart(name = "extraImages", required = false) List<MultipartFile> extraImages,
+            @AuthenticationPrincipal OAuth2UserInfo userInfo
     ) {
         ProfileResponseDto response = profileService
-                .create(request, profileImage, thumbnailImage, extraImages);
+                .create(request, profileImage, thumbnailImage, extraImages, userInfo);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

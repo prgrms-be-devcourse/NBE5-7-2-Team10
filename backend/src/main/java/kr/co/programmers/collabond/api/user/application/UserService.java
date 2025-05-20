@@ -2,70 +2,70 @@ package kr.co.programmers.collabond.api.user.application;
 
 import kr.co.programmers.collabond.api.user.domain.Role;
 import kr.co.programmers.collabond.api.user.domain.User;
-import kr.co.programmers.collabond.api.user.domain.dto.UserRequestDto;
 import kr.co.programmers.collabond.api.user.domain.dto.UserResponseDto;
+import kr.co.programmers.collabond.api.user.domain.dto.UserSignUpRequestDto;
+import kr.co.programmers.collabond.api.user.domain.dto.UserUpdateRequestDto;
 import kr.co.programmers.collabond.api.user.infrastructure.UserRepository;
-import kr.co.programmers.collabond.api.profile.domain.Profile;
-import kr.co.programmers.collabond.api.profile.infrastructure.ProfileRepository;
-import kr.co.programmers.collabond.api.file.infrastructure.FileRepository;
-import kr.co.programmers.collabond.api.image.infrastructure.ImageRepository;
 import kr.co.programmers.collabond.api.user.interfaces.UserMapper;
 import kr.co.programmers.collabond.shared.exception.ErrorCode;
+import kr.co.programmers.collabond.shared.exception.custom.InvalidException;
 import kr.co.programmers.collabond.shared.exception.custom.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
-    private final ProfileRepository profileRepository;
-    private final ImageRepository imageRepository;
-    private final FileRepository fileRepository;
 
     @Transactional
-    public UserResponseDto create(UserRequestDto dto) {
-        User user = UserMapper.toEntity(dto);
-        User savedUser = userRepository.save(user);
-        return UserMapper.toResponseDto(savedUser);
-    }
-
-    @Transactional
-    public UserResponseDto update(String providerId, UserRequestDto dto) {
+    public UserResponseDto signup(String providerId, UserSignUpRequestDto dto) {
         User user = userRepository.findByProviderId(providerId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
 
-        user.update(null, dto.getNickname(), Role.valueOf(dto.getRole()));
-        return UserMapper.toResponseDto(userRepository.save(user));
+        if(user.getRole() != Role.ROLE_TMP) {
+            throw new InvalidException(ErrorCode.INVALID_SIGNUP_REQUEST);
+        }
+
+        user.update(null, dto.nickname(), Role.valueOf(dto.role()));
+        return UserMapper.toResponseDto(user);
     }
 
     @Transactional
-    public void delete(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
+    public UserResponseDto update(String providerId, UserUpdateRequestDto dto) {
+        User user = userRepository.findByProviderId(providerId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
 
-        List<Profile> profiles = profileRepository.findAllByUserId(userId);
-        //파일은 hard delete
-        for (Profile profile : profiles) {
-            imageRepository.findByProfileIdAndType(profile.getId(), "PROFILE")
-                    .forEach(image -> fileRepository.deleteById(image.getFile().getId()));
-        }
-        //user는 soft delete
+        user.update(null, dto.nickname(), null);
+        return UserMapper.toResponseDto(user);
+    }
+
+    @Transactional
+    public void delete(String providerId) {
+        User user = userRepository.findByProviderId(providerId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+
         userRepository.delete(user);
     }
 
-    public Optional<UserResponseDto> findById(Long userId) {
-
-        return userRepository.findById(userId).map(UserMapper::toResponseDto);
+    @Transactional(readOnly = true)
+    public UserResponseDto findById(Long userId) {
+        return userRepository.findById(userId).map(UserMapper::toResponseDto)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
     }
 
-    public Optional<UserResponseDto> findByEmail(String email) {
-        return userRepository.findByEmail(email).map(UserMapper::toResponseDto);
+    @Transactional(readOnly = true)
+    public UserResponseDto findByEmail(String email) {
+        return userRepository.findByEmail(email).map(UserMapper::toResponseDto)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    @Transactional(readOnly = true)
+    public UserResponseDto findByProviderIdToDto(String providerId) {
+        return userRepository.findByProviderId(providerId).map(UserMapper::toResponseDto)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
     }
 
     @Transactional

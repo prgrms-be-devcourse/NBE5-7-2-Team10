@@ -4,9 +4,9 @@ import kr.co.programmers.collabond.api.profile.domain.Profile;
 import kr.co.programmers.collabond.api.profile.interfaces.ProfileMapper;
 import kr.co.programmers.collabond.api.recruit.domain.RecruitPost;
 import kr.co.programmers.collabond.api.recruit.domain.RecruitPostStatus;
-import kr.co.programmers.collabond.api.recruit.dto.RecruitPostDto;
-import kr.co.programmers.collabond.api.recruit.dto.RecruitPostRequestDto;
-import kr.co.programmers.collabond.api.recruit.dto.RecruitPostResponseDto;
+import kr.co.programmers.collabond.api.recruit.domain.dto.RecruitPostDto;
+import kr.co.programmers.collabond.api.recruit.domain.dto.RecruitPostRequestDto;
+import kr.co.programmers.collabond.api.recruit.domain.dto.RecruitPostResponseDto;
 
 public class RecruitPostMapper {
 

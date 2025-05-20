@@ -17,7 +17,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -32,8 +31,8 @@ public class ApplyPostController {
     public ResponseEntity<ApplyPostDto> applyPost(
             @PathVariable Long recruitmentId,
             @RequestPart("applyRequest") ApplyPostRequestDto request,
-            @RequestPart(name = "attachment", required = false) List<MultipartFile> files
-    ) throws IOException {
+            @RequestPart(name = "attachment", required = false) List<MultipartFile> files) {
+
         ApplyPostDto response = applyPostService.applyPost(recruitmentId, request, files);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -44,8 +43,8 @@ public class ApplyPostController {
     public ResponseEntity<Page<ApplyPostDto>> sentApplyPosts(
             SentApplyPostsRequestDto request,
             @AuthenticationPrincipal OAuth2UserInfo userInfo,
-            @PageableDefault Pageable pageable
-    ) {
+            @PageableDefault Pageable pageable) {
+
         Page<ApplyPostDto> applyPosts = applyPostService
                 .findSentApplyPosts(request, userInfo, pageable);
 
@@ -57,8 +56,8 @@ public class ApplyPostController {
     public ResponseEntity<Page<ApplyPostDto>> receivedApplyPosts(
             ReceivedApplyPostsRequestDto request,
             @AuthenticationPrincipal OAuth2UserInfo userInfo,
-            @PageableDefault Pageable pageable
-    ) {
+            @PageableDefault Pageable pageable) {
+
         Page<ApplyPostDto> applyPosts = applyPostService
                 .findReceivedApplyPosts(request, userInfo, pageable);
 

@@ -14,11 +14,10 @@ import java.util.stream.Collectors;
 
 public class ApplyPostMapper {
 
-    public static ApplyPost toEntity(
-            RecruitPost recruitPost
-            , Profile profile
-            , ApplyPostRequestDto request
-    ) {
+    public static ApplyPost toEntity(RecruitPost recruitPost,
+                                     Profile profile,
+                                     ApplyPostRequestDto request) {
+
         return ApplyPost.builder()
                 .recruitPost(recruitPost)
                 .profile(profile)

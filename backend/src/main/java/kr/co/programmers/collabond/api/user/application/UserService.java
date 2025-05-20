@@ -16,8 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -78,13 +76,4 @@ public class UserService {
         return userRepository.findByProviderId(providerId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
     }
-    @Transactional
-    public UserResponseDto findDtoByProviderId(String providerId) {
-        User user = userRepository.findByProviderId(providerId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
-        return UserMapper.toResponseDto(user);
-    }
-
-
-
 }

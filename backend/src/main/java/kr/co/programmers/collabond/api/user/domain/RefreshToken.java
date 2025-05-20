@@ -28,7 +28,7 @@ public class RefreshToken extends OnlyUpdatedEntity {
     private TokenStatus status = TokenStatus.VALID;
 
     @Builder
-    public RefreshToken(User user, String token) {
+    private RefreshToken(User user, String token) {
         this.user = user;
         this.token = token;
     }

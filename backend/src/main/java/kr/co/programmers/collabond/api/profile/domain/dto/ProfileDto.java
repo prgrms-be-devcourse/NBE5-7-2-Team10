@@ -1,7 +1,5 @@
 package kr.co.programmers.collabond.api.profile.domain.dto;
 
-import com.fasterxml.jackson.core.JsonToken;
-import kr.co.programmers.collabond.api.profile.domain.ProfileType;
 import lombok.*;
 
 @Getter
@@ -15,5 +13,4 @@ public class ProfileDto {
     private String type;
     private int collaboCount;
     private Long userId;
-
 }

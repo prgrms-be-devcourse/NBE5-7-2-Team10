@@ -5,7 +5,6 @@ import kr.co.programmers.collabond.api.address.domain.Address;
 import kr.co.programmers.collabond.api.address.domain.dto.AddressNameDto;
 import kr.co.programmers.collabond.api.address.domain.dto.RegionCodeDto;
 import kr.co.programmers.collabond.api.address.infrastructure.AddressRepository;
-import kr.co.programmers.collabond.api.address.interfaces.AddressMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

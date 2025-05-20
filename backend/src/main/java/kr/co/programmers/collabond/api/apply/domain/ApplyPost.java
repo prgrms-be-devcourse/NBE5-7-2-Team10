@@ -36,8 +36,11 @@ public class ApplyPost extends OnlyCreatedEntity {
     private List<Attachment> attachments;
 
     @Builder
-    public ApplyPost(RecruitPost recruitPost, Profile profile, String content
-            , ApplyPostStatus status) {
+    private ApplyPost(RecruitPost recruitPost,
+                      Profile profile,
+                      String content,
+                      ApplyPostStatus status) {
+
         this.recruitPost = recruitPost;
         this.profile = profile;
         this.content = content;

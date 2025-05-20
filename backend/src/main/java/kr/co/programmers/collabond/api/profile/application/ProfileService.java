@@ -1,28 +1,31 @@
 package kr.co.programmers.collabond.api.profile.application;
 
+import kr.co.programmers.collabond.api.address.application.AddressService;
 import kr.co.programmers.collabond.api.address.domain.Address;
-import kr.co.programmers.collabond.api.address.infrastructure.AddressRepository;
 import kr.co.programmers.collabond.api.file.domain.File;
 import kr.co.programmers.collabond.api.file.application.FileService;
-import kr.co.programmers.collabond.api.file.infrastructure.FileRepository;
+import kr.co.programmers.collabond.api.image.application.ImageService;
 import kr.co.programmers.collabond.api.image.domain.Image;
-import kr.co.programmers.collabond.api.image.infrastructure.ImageRepository;
+import kr.co.programmers.collabond.api.image.infrastructure.ImageMapper;
 import kr.co.programmers.collabond.api.profile.domain.Profile;
 import kr.co.programmers.collabond.api.profile.domain.dto.ProfileRequestDto;
 import kr.co.programmers.collabond.api.profile.domain.dto.ProfileResponseDto;
 import kr.co.programmers.collabond.api.profile.infrastructure.ProfileRepository;
 import kr.co.programmers.collabond.api.tag.application.TagService;
+import kr.co.programmers.collabond.api.user.application.UserService;
 import kr.co.programmers.collabond.api.user.domain.User;
-import kr.co.programmers.collabond.api.user.infrastructure.UserRepository;
 import kr.co.programmers.collabond.api.profile.interfaces.ProfileMapper;
+import kr.co.programmers.collabond.core.auth.oauth2.OAuth2UserInfo;
 import kr.co.programmers.collabond.shared.exception.ErrorCode;
+import kr.co.programmers.collabond.shared.exception.custom.ForbiddenException;
+import kr.co.programmers.collabond.shared.exception.custom.InternalException;
+import kr.co.programmers.collabond.shared.exception.custom.InvalidException;
 import kr.co.programmers.collabond.shared.exception.custom.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,35 +33,33 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ProfileService {
 
-    private final ProfileRepository profileRepository;
-    private final UserRepository userRepository;
-    private final AddressRepository addressRepository;
-    private final ImageRepository imageRepository;
+    private final AddressService addressService;
+    private final ImageService imageService;
     private final FileService fileService;
-    private final FileRepository fileRepository;
+    private final UserService userService;
     private final TagService tagService;
+
+    private final ProfileRepository profileRepository;
 
     @Transactional
     public ProfileResponseDto create(ProfileRequestDto dto,
                                      MultipartFile profileImage,
                                      MultipartFile thumbnailImage,
-                                     List<MultipartFile> extraImages) {
+                                     List<MultipartFile> extraImages,
+                                     OAuth2UserInfo userInfo) {
 
-        User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
+        User user = userService.findByProviderId(userInfo.getUsername());
 
         if (!user.getRole().name().contains(dto.getType())) {
-            throw new IllegalStateException("유저의 권한과 프로필 타입이 일치하지 않습니다.");
+            throw new ForbiddenException();
         }
 
         if (profileRepository.countByUserId(user.getId()) >= 5) {
-            throw new IllegalStateException("프로필은 최대 5개까지 생성 가능합니다.");
+            throw new InvalidException(ErrorCode.CREATE_NO_MORE);
         }
 
         // profile의 adressId 가 있을 경우 주소 엔티티 조회, 있으면 주소 가져오고 없으면 null
-        Address address = dto.getAddressId() != null
-                ? addressRepository.findById(dto.getAddressId()).orElse(null)
-                : null;
+        Address address = addressService.findByAddressId(dto.getAddressId());
 
         // Profile 엔티티 생성, db에 저장 후 ResponseDto 반환
         Profile profile = ProfileMapper.toEntity(dto, user, address);
@@ -93,15 +94,13 @@ public class ProfileService {
                                      List<MultipartFile> extraImages) {
 
         Profile profile = profileRepository.findById(profileId)
-                .orElseThrow(() -> new IllegalArgumentException("프로필이 존재하지 않습니다."));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
         profile.update(dto.getName(), dto.getDescription(), dto.getDetailAddress());
-
 
         updateImage(profile, profileImage, "PROFILE");
         updateImage(profile, thumbnailImage, "THUMBNAIL");
         updateExtraImages(profile, extraImages);
-
 
         // 태그 재설정
         tagService.clearTags(profile); //기존 태그 모두 삭제 후
@@ -114,7 +113,7 @@ public class ProfileService {
     public void delete(Long profileId) {
 
         Profile profile = profileRepository.findById(profileId)
-                .orElseThrow(() -> new IllegalArgumentException("프로필이 존재하지 않습니다."));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
         // 파일은 hard delete
         profile.getImages().clear();
@@ -144,38 +143,29 @@ public class ProfileService {
 
         try {
             File file = fileService.saveFile(imageFile);
-            Image image = Image.builder()
-                    .file(file)
-                    .type(type)
-                    .priority(priority)
-                    .build();
+            Image image = ImageMapper.toEntity(file, type, priority);
             profile.addImage(image);
         } catch (RuntimeException e) {
-            throw new RuntimeException("이미지 저장 실패", e);
+            throw new InternalException(ErrorCode.SAVE_IMAGE_ERROR);
         }
     }
 
     //타입별 이미지 삭제 (파일 하드삭제 ,이미지 삭제)
-    private void deleteImagesByType(Long profileId, String type) {
-        imageRepository.findByProfileIdAndType(profileId, type)
-                .forEach(image -> {
-                    fileRepository.deleteById(image.getFile().getId());
-                    imageRepository.delete(image);
-                });
+    private void deleteImagesByType(Profile profile, String type) {
+        imageService.findByProfileIdAndType(profile.getId(), type)
+                .forEach(i -> profile.getImages().remove(i));
     }
 
     private void updateImage(Profile profile, MultipartFile imageFile, String type) {
-        Long profileId = profile.getId();
         if (imageFile != null && !imageFile.isEmpty()) {
-            deleteImagesByType(profileId, type);
+            deleteImagesByType(profile, type);
             saveImage(profile, imageFile, type, 1);
         }
     }
 
     private void updateExtraImages(Profile profile, List<MultipartFile> extraImages) {
-        Long profileId = profile.getId();
         if (extraImages != null && !extraImages.isEmpty()) {
-            deleteImagesByType(profileId, "EXTRA");
+            deleteImagesByType(profile, "EXTRA");
             for (int i = 0; i < extraImages.size(); i++) {
                 MultipartFile file = extraImages.get(i);
                 if (!file.isEmpty()) {

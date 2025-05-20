@@ -9,7 +9,6 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class UserRequestDto {
-    private String email;
     private String nickname;
     private String role;
 }

@@ -1,31 +1,10 @@
 "use client"
-import { useContext } from "react"
-import { AuthContext } from "../contexts/AuthContext"
 import "./LoginModal.css"
 
 const LoginModal = ({ onClose }) => {
-  const { login } = useContext(AuthContext)
 
-  const handleSocialLogin = async (provider) => {
-    try {
-      // 실제 구현에서는 OAuth 인증 과정을 거쳐야 합니다
-      // 여기서는 간단히 모의 코드로 구현합니다
-      const mockOAuthCode = `mock_${provider}_oauth_code_${Date.now()}`
-      const result = await login(mockOAuthCode)
-
-      if (result.isNewUser) {
-        // 새 사용자인 경우 유형 선택 페이지로 이동
-        window.location.href = "/user-type-selection"
-      } else {
-        // 기존 사용자인 경우 홈으로 이동
-        window.location.href = "/"
-      }
-
-      onClose()
-    } catch (error) {
-      console.error(`${provider} 로그인 오류:`, error)
-      alert(`${provider} 로그인에 실패했습니다.`)
-    }
+  const handleSocialLogin = (provider) => {
+    window.location.href = `http://localhost:8080/oauth2/authorization/${provider}`
   }
 
   return (

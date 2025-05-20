@@ -17,7 +17,7 @@ public class TagController {
     private final TagService tagService;
 
     // 전체 태그 목록 조회
-    @GetMapping("/tags")
+    @GetMapping("api/tags")
     public ResponseEntity<List<TagResponseDto>> getAllTags() {
         List<TagResponseDto> tags = tagService.findAll();
         return ResponseEntity.ok(tags);

@@ -1,16 +1,22 @@
 "use client"
 
-import { useState, useEffect, useContext } from "react"
-import { AuthContext } from "../../contexts/AuthContext"
+import { useState, useEffect } from "react"
+import { getUserId, getRole } from "../../utils/storage"
 import { profileAPI, tagAPI, regionAPI, userAPI } from "../../api"
 import ProfileCreateModal from "./ProfileCreateModal"
 import "./ProfileEdit.css"
 
 const ProfileEdit = () => {
-  const { user } = useContext(AuthContext)
+  const userId = parseInt(getUserId(), 10)
+  const role = getRole()
+
+  if (!userId || !role) return null
+
+  const isIP = role === "ROLE_IP"
+
   const [profiles, setProfiles] = useState([])
   const [tags, setTags] = useState([])
-  const [regions, setRegions] = useState([])
+  //const [regions, setRegions] = useState([])
   const [editingProfile, setEditingProfile] = useState(null)
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [formData, setFormData] = useState({
@@ -24,18 +30,21 @@ const ProfileEdit = () => {
   })
   const [loading, setLoading] = useState(true)
 
+  
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [profilesResponse, tagsResponse, regionsResponse] = await Promise.all([
-          userAPI.getProfile(user.id),
+          profileAPI.getUserProfiles(userId),
           tagAPI.getAllTags(),
-          regionAPI.getAllRegions(),
+          //regionAPI.getAllRegions(),
         ])
+        console.log("userId sent to getUserProfiles:", userId)
 
-        setProfiles(profilesResponse.data.profiles || [])
+        setProfiles(profilesResponse.data || [])
         setTags(tagsResponse.data)
-        setRegions(regionsResponse.data)
+       // setRegions(regionsResponse.data)
       } catch (error) {
         console.error("Error fetching data:", error)
       } finally {
@@ -44,7 +53,7 @@ const ProfileEdit = () => {
     }
 
     fetchData()
-  }, [user.id])
+  }, [userId])
 
   const resetForm = () => {
     setFormData({
@@ -64,7 +73,7 @@ const ProfileEdit = () => {
     setFormData({
       name: profile.name,
       description: profile.description,
-      region: profile.region.id,
+      //region: profile.region.id,
       tags: profile.tags.map((tag) => tag.id),
       imageFile: null,
       imagePreview: profile.imageUrl,
@@ -120,7 +129,7 @@ const ProfileEdit = () => {
       const formDataToSend = new FormData()
       formDataToSend.append("name", formData.name)
       formDataToSend.append("description", formData.description)
-      formDataToSend.append("regionId", formData.region)
+      //formDataToSend.append("regionId", formData.region)
       formData.tags.forEach((tagId) => {
         formDataToSend.append("tagIds", tagId)
       })
@@ -133,7 +142,7 @@ const ProfileEdit = () => {
       await profileAPI.updateProfile(editingProfile.id, formDataToSend)
 
       // Refresh profiles
-      const profilesResponse = await userAPI.getProfile(user.id)
+      const profilesResponse = await profileAPI.getUserProfiles(userId)
       setProfiles(profilesResponse.data.profiles || [])
 
       setEditingProfile(null)
@@ -152,9 +161,10 @@ const ProfileEdit = () => {
   }
 
   const handleProfileCreated = async (newProfile) => {
-    // Refresh profiles after creation
-    const profilesResponse = await userAPI.getProfile(user.id)
-    setProfiles(profilesResponse.data.profiles || [])
+    // Refresh profiles after creation // 
+    //const profilesResponse = await userAPI.getProfile(userId)
+    const profilesResponse = await profileAPI.getUserProfiles(userId)
+    setProfiles(profilesResponse.data || [])
   }
 
   // 프로필 삭제 핸들러 추가
@@ -168,7 +178,7 @@ const ProfileEdit = () => {
       await profileAPI.deleteProfile(profileId)
 
       // 프로필 목록 새로고침
-      const profilesResponse = await userAPI.getProfile(user.id)
+      const profilesResponse = await profileAPI.getUserProfiles(userId)
       setProfiles(profilesResponse.data.profiles || [])
 
       alert("프로필이 삭제되었습니다.")
@@ -180,7 +190,7 @@ const ProfileEdit = () => {
     }
   }
 
-  const isIP = user.role === "ROLE_IP"
+  
 
   return (
     <div className="profile-edit">
@@ -231,24 +241,7 @@ const ProfileEdit = () => {
             ></textarea>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="region">지역</label>
-            <select
-              id="region"
-              name="region"
-              value={formData.region}
-              onChange={handleChange}
-              className="form-control"
-              required
-            >
-              <option value="">지역 선택</option>
-              {regions.map((region) => (
-                <option key={region.id} value={region.id}>
-                  {region.name}
-                </option>
-              ))}
-            </select>
-          </div>
+        
 
           <div className="form-group">
             <label htmlFor="tags">태그 (여러 개 선택 가능)</label>
@@ -309,7 +302,7 @@ const ProfileEdit = () => {
 
                   <div className="profile-info">
                     <h3>{profile.name}</h3>
-                    <p className="profile-location">{profile.region.name}</p>
+                  
                     <p className="profile-description">{profile.description}</p>
 
                     <div className="profile-meta">
@@ -349,7 +342,7 @@ const ProfileEdit = () => {
           onClose={() => setShowCreateModal(false)}
           onProfileCreated={handleProfileCreated}
           tags={tags}
-          regions={regions}
+     
         />
       )}
     </div>

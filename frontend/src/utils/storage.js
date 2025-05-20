@@ -71,6 +71,7 @@ export const setRole = (role) => {
   localStorage.setItem(TOKEN_KEY.ROLE, role);
 };
 
+
 export const clearTokens = () => {
   localStorage.removeItem(TOKEN_KEY.ACCESS);
   localStorage.removeItem(TOKEN_KEY.REFRESH);

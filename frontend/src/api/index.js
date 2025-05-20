@@ -1,5 +1,6 @@
 "use client";
 
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
   getAccessToken,
@@ -7,9 +8,14 @@ import {
   setTokens,
   setAccessToken,
   clearTokens,
+  setGovAccessToken,
+  getGovAccessToken,
 } from "../utils/storage";
 
-const BASE_URL = "http://localhost:8080";
+const BASE_URL = "http://localhost:8081";
+
+const consumerKey = "963958cd0e98427cbe84";
+const consumerSecret = "ddbd3f5bf9d0492583cf";
 
 // 브라우저 환경인지 확인
 const isBrowser = typeof window !== "undefined";
@@ -67,6 +73,27 @@ if (isBrowser) {
     }
   );
 }
+
+export const apiClient = axios.create({
+  baseURL: "https://sgisapi.kostat.go.kr/OpenAPI3",
+});
+
+apiClient.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const { config, response } = error;
+    if (response?.data?.errCd === -401) {
+      const authRes = await apiClient.get("/auth/authentication.json", {
+        params: { consumer_key: consumerKey, consumer_secret: consumerSecret },
+      });
+      const newToken = authRes.data.result.accessToken;
+      setGovAccessToken(newToken);
+      config.params.accessToken = newToken;
+      return apiClient.request(config);
+    }
+    return Promise.reject(error);
+  }
+);
 
 // User API
 export const userAPI = {
@@ -129,10 +156,11 @@ export const tagAPI = {
 
 // Region API
 export const regionAPI = {
-  getAllRegions: () => api.get("/api/regions"),
-  getProvinces: () => api.get("/api/regions/provinces"),
-  getDistricts: (provinceId) =>
-    api.get(`/api/regions/districts?provinceId=${provinceId}`),
-  getNeighborhoods: (districtId) =>
-    api.get(`/api/regions/neighborhoods?districtId=${districtId}`),
+  getAddress: async (cd) => {
+    const token = await getGovAccessToken();
+    const res = await apiClient.get(
+      `/addr/stage.json?accessToken=${token}${cd ? `&cd=${cd}` : ""}`
+    );
+    return res;
+  },
 };

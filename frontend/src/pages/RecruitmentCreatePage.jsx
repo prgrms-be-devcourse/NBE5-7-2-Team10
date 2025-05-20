@@ -35,11 +35,10 @@ const RecruitmentCreatePage = () => {
         setLoading(false)
       }
     }
-
     if (user?.userId) {
       fetchUserProfiles()
     }
-  }, [user?.userId])
+  }, [user?.userId]) // ✅ 이렇게 변경
 
   const handleChange = (e) => {
     const { name, value } = e.target

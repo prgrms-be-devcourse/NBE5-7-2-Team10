@@ -5,7 +5,7 @@ import { getUserId, getRole } from "../../utils/storage"
 import { profileAPI } from "../../api"
 import "./ProfileCreateModal.css"
 
-const ProfileCreateModal = ({ onClose, onProfileCreated, tags, regions }) => {
+const ProfileCreateModal = ({ onClose, onProfileCreated, tags = [], regions = [] }) => {
   const userId = getUserId()
   const role = getRole()
 
@@ -90,7 +90,7 @@ const ProfileCreateModal = ({ onClose, onProfileCreated, tags, regions }) => {
         addressId: formData.region || null,
         tagIds: formData.tags,
         status: formData.status === "true",
-        type: isIP ? "IP" : "STORE", // ✅ 반드시 포함해야 하는 값
+        type: isIP ? "IP" : "STORE",
       }
 
       data.append(
@@ -122,6 +122,9 @@ const ProfileCreateModal = ({ onClose, onProfileCreated, tags, regions }) => {
       setLoading(false)
     }
   }
+
+  const safeRegions = Array.isArray(regions) ? regions : []
+  const safeTags = Array.isArray(tags) ? tags : []
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -206,7 +209,7 @@ const ProfileCreateModal = ({ onClose, onProfileCreated, tags, regions }) => {
               className="form-control"
             >
               <option value="">지역 선택</option>
-              {/* {regions.map((region) => (
+              {safeRegions.map((region) => (
                 <option key={region.id} value={region.id}>
                   {region.name}
                 </option>
@@ -225,7 +228,7 @@ const ProfileCreateModal = ({ onClose, onProfileCreated, tags, regions }) => {
               onChange={handleTagChange}
               className="form-control"
             >
-              {tags.map((tag) => (
+              {safeTags.map((tag) => (
                 <option key={tag.id} value={tag.id}>
                   {tag.name}
                 </option>

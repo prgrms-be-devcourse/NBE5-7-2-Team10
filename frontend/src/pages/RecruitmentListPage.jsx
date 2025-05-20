@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom"
-import { recruitmentAPI, profileAPI } from "../api"
+import { recruitmentAPI } from "../api"
+import axios from "axios"
 import { getAccessToken } from "../utils/storage"
 import RecruitmentDetailModal from "../components/RecruitmentDetailModal"
 import ProfileDetailModal from "../components/ProfileDetailModal"
@@ -75,8 +76,9 @@ const RecruitmentListPage = () => {
 
   const handleProfileClick = async (profileId, e) => {
     e.stopPropagation()
+    console.log("요청할 profileId:", profileId)
     try {
-      const response = await profileAPI.getProfile(profileId)
+      const response = await axios.get(`http://localhost:8080/api/profiles/${profileId}`)
       setSelectedProfile(response.data)
       setShowProfileModal(true)
     } catch (error) {
@@ -174,7 +176,7 @@ const RecruitmentListPage = () => {
                       <div className="profile-name">{recruitment.profile.name}</div>
                     </div>
                   </div>
-                  <button className="detail-button" onClick={(e) => handleProfileClick(recruitment.profile.id, e)}>
+                  <button className="detail-button" onClick={(e) => handleProfileClick(recruitment.profile.profileId, e)}>
                     상세보기
                   </button>
                 </div>

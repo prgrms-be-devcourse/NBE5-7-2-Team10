@@ -2,8 +2,12 @@ server:
   port: ${PORT}
 
 spring:
+  servlet:
+    multipart:
+
   application:
     name: collabond
+
 
   mail:
     host: smtp.gmail.com
@@ -41,3 +45,4 @@ custom:
     path: ${user.home}/collabond/images/  # ?? ?? ??
   mail:
     subject: ??
+

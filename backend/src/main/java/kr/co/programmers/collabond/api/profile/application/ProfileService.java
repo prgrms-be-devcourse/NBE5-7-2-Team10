@@ -22,13 +22,14 @@ import kr.co.programmers.collabond.shared.exception.custom.InternalException;
 import kr.co.programmers.collabond.shared.exception.custom.InvalidException;
 import kr.co.programmers.collabond.shared.exception.custom.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProfileService {
@@ -59,7 +60,10 @@ public class ProfileService {
         }
 
         // profile의 adressId 가 있을 경우 주소 엔티티 조회, 있으면 주소 가져오고 없으면 null
-        Address address = addressService.findByAddressId(dto.getAddressId());
+        Address address = null;
+        if (dto.getAddressId() != null) {
+            address = addressService.findByAddressId(dto.getAddressId());
+        }
 
         // Profile 엔티티 생성, db에 저장 후 ResponseDto 반환
         Profile profile = ProfileMapper.toEntity(dto, user, address);
@@ -142,6 +146,9 @@ public class ProfileService {
                            Integer priority) {
 
         try {
+            log.info("Saving image file: {}", imageFile.getOriginalFilename());
+            log.info("File size: {}", imageFile.getSize());
+            log.info("File isEmpty: {}", imageFile.isEmpty());
             File file = fileService.saveFile(imageFile);
             Image image = ImageMapper.toEntity(file, type, priority);
             profile.addImage(image);

@@ -1,20 +1,30 @@
 "use client"
 
-import { useState, useContext } from "react"
-import { AuthContext } from "../../contexts/AuthContext"
+import { useState } from "react"
+import { getUserId, getRole } from "../../utils/storage"
 import { profileAPI } from "../../api"
 import "./ProfileCreateModal.css"
 
 const ProfileCreateModal = ({ onClose, onProfileCreated, tags, regions }) => {
-  const { user } = useContext(AuthContext)
+  const userId = getUserId()
+  const role = getRole()
+
+  if (!userId || !role) return <p>회원 정보를 불러오는 중입니다...</p>
+
+  const isIP = role === "ROLE_IP"
+
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     region: "",
     tags: [],
-    imageFile: null,
+    profileImage: null,
+    thumbnailImage: null,
+    extraImages: [],
     imagePreview: null,
+    thumbnailPreview: null,
+    extraPreviews: [],
     status: "true",
   })
 
@@ -27,30 +37,43 @@ const ProfileCreateModal = ({ onClose, onProfileCreated, tags, regions }) => {
   }
 
   const handleTagChange = (e) => {
-    const options = e.target.options
-    const selectedTags = []
-
-    for (let i = 0; i < options.length; i++) {
-      if (options[i].selected) {
-        selectedTags.push(options[i].value)
-      }
-    }
-
+    const selected = Array.from(e.target.selectedOptions).map((opt) => opt.value)
     setFormData((prev) => ({
       ...prev,
-      tags: selectedTags,
+      tags: selected,
     }))
   }
 
-  const handleImageChange = (e) => {
+  const handleProfileImageChange = (e) => {
     const file = e.target.files[0]
     if (file) {
       setFormData((prev) => ({
         ...prev,
-        imageFile: file,
+        profileImage: file,
         imagePreview: URL.createObjectURL(file),
       }))
     }
+  }
+
+  const handleThumbnailImageChange = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      setFormData((prev) => ({
+        ...prev,
+        thumbnailImage: file,
+        thumbnailPreview: URL.createObjectURL(file),
+      }))
+    }
+  }
+
+  const handleExtraImagesChange = (e) => {
+    const files = Array.from(e.target.files)
+    const previews = files.map((file) => URL.createObjectURL(file))
+    setFormData((prev) => ({
+      ...prev,
+      extraImages: files,
+      extraPreviews: previews,
+    }))
   }
 
   const handleSubmit = async (e) => {
@@ -59,33 +82,46 @@ const ProfileCreateModal = ({ onClose, onProfileCreated, tags, regions }) => {
     try {
       setLoading(true)
 
-      const formDataToSend = new FormData()
-      formDataToSend.append("name", formData.name)
-      formDataToSend.append("description", formData.description)
-      formDataToSend.append("regionId", formData.region)
-      formData.tags.forEach((tagId) => {
-        formDataToSend.append("tagIds", tagId)
-      })
-      formDataToSend.append("status", formData.status)
+      const data = new FormData()
 
-      if (formData.imageFile) {
-        formDataToSend.append("image", formData.imageFile)
+      const profileRequest = {
+        name: formData.name,
+        description: formData.description,
+        addressId: formData.region || null,
+        tagIds: formData.tags,
+        status: formData.status === "true",
+        type: isIP ? "IP" : "STORE", // ✅ 반드시 포함해야 하는 값
       }
 
-      const response = await profileAPI.createProfile(formDataToSend)
+      data.append(
+        "profileRequest",
+        new Blob([JSON.stringify(profileRequest)], { type: "application/json" })
+      )
+
+      if (formData.profileImage) {
+        data.append("profileImage", formData.profileImage)
+      }
+
+      if (formData.thumbnailImage) {
+        data.append("thumbnailImage", formData.thumbnailImage)
+      }
+
+      formData.extraImages.forEach((file) => {
+        data.append("extraImages", file)
+      })
+
+      const response = await profileAPI.createProfile(data)
 
       alert("프로필이 성공적으로 생성되었습니다.")
       onProfileCreated(response.data)
       onClose()
-    } catch (error) {
-      console.error("Error creating profile:", error)
+    } catch (err) {
+      console.error("프로필 생성 실패:", err)
       alert("프로필 생성에 실패했습니다.")
     } finally {
       setLoading(false)
     }
   }
-
-  const isIP = user.role === "ROLE_IP"
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -98,16 +134,40 @@ const ProfileCreateModal = ({ onClose, onProfileCreated, tags, regions }) => {
         </div>
 
         <form onSubmit={handleSubmit} className="profile-create-form">
+          {/* 프로필 이미지 */}
           <div className="form-group">
             <label>프로필 이미지</label>
             <div className="image-upload">
               <div className="image-preview">
                 <img src={formData.imagePreview || "/placeholder-profile.png"} alt="프로필 이미지" />
               </div>
-              <input type="file" accept="image/*" onChange={handleImageChange} />
+              <input type="file" accept="image/*" onChange={handleProfileImageChange} required />
             </div>
           </div>
 
+          {/* 썸네일 이미지 */}
+          <div className="form-group">
+            <label>썸네일 이미지</label>
+            <div className="image-upload">
+              <div className="image-preview">
+                <img src={formData.thumbnailPreview || "/placeholder-thumbnail.png"} alt="썸네일 이미지" />
+              </div>
+              <input type="file" accept="image/*" onChange={handleThumbnailImageChange} required />
+            </div>
+          </div>
+
+          {/* 추가 이미지 */}
+          <div className="form-group">
+            <label>추가 이미지 (선택)</label>
+            <div className="image-upload">
+              {formData.extraPreviews.map((src, idx) => (
+                <img key={idx} src={src} alt={`extra-${idx}`} style={{ width: "60px", marginRight: "5px" }} />
+              ))}
+              <input type="file" accept="image/*" multiple onChange={handleExtraImagesChange} />
+            </div>
+          </div>
+
+          {/* 이름 */}
           <div className="form-group">
             <label htmlFor="name">이름</label>
             <input
@@ -121,6 +181,7 @@ const ProfileCreateModal = ({ onClose, onProfileCreated, tags, regions }) => {
             />
           </div>
 
+          {/* 소개 */}
           <div className="form-group">
             <label htmlFor="description">소개</label>
             <textarea
@@ -131,9 +192,10 @@ const ProfileCreateModal = ({ onClose, onProfileCreated, tags, regions }) => {
               className="form-control"
               rows="4"
               required
-            ></textarea>
+            />
           </div>
 
+          {/* 지역 */}
           <div className="form-group">
             <label htmlFor="region">지역</label>
             <select
@@ -142,7 +204,6 @@ const ProfileCreateModal = ({ onClose, onProfileCreated, tags, regions }) => {
               value={formData.region}
               onChange={handleChange}
               className="form-control"
-              required
             >
               <option value="">지역 선택</option>
               {regions.map((region) => (
@@ -153,6 +214,7 @@ const ProfileCreateModal = ({ onClose, onProfileCreated, tags, regions }) => {
             </select>
           </div>
 
+          {/* 태그 */}
           <div className="form-group">
             <label htmlFor="tags">태그 (여러 개 선택 가능)</label>
             <select
@@ -162,7 +224,6 @@ const ProfileCreateModal = ({ onClose, onProfileCreated, tags, regions }) => {
               value={formData.tags}
               onChange={handleTagChange}
               className="form-control"
-              required
             >
               {tags.map((tag) => (
                 <option key={tag.id} value={tag.id}>
@@ -170,14 +231,14 @@ const ProfileCreateModal = ({ onClose, onProfileCreated, tags, regions }) => {
                 </option>
               ))}
             </select>
-            <small>Ctrl 키를 누른 상태에서 여러 개 선택 가능합니다.</small>
+            <small>Ctrl 키 또는 Command 키를 누른 상태로 여러 개 선택할 수 있습니다.</small>
           </div>
 
           <div className="form-info">
-            <p>이메일: {user.email}</p>
             <p>프로필 유형: {isIP ? "IP 제공자" : "점주"}</p>
           </div>
 
+          {/* 버튼 */}
           <div className="form-actions">
             <button type="submit" className="btn btn-primary" disabled={loading}>
               {loading ? "생성 중..." : "프로필 생성"}

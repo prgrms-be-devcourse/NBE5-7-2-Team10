@@ -16,7 +16,6 @@ const Header = () => {
 
   const handleLogout = () => {
     logout()
-    navigate("/")
   }
 
   const toggleMobileMenu = () => {
@@ -65,7 +64,7 @@ const Header = () => {
                 )}
                 <li className="profile-menu-item">
                   <div className="profile-avatar" onClick={handleProfileClick}>
-                    <img src={user.imageUrl || "/placeholder-avatar.png"} alt={user.nickname} />
+                    <img src={"https://www.gstatic.com/images/branding/product/1x/avatar_circle_grey_512dp.png"} alt={user.nickname} />
                   </div>
                   <div className="profile-dropdown">
                     <div className="dropdown-item" onClick={handleProfileClick}>

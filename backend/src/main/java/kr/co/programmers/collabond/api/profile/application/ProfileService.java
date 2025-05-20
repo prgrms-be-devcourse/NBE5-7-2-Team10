@@ -1,6 +1,5 @@
 package kr.co.programmers.collabond.api.profile.application;
 
-import jakarta.transaction.Transactional;
 import kr.co.programmers.collabond.api.address.domain.Address;
 import kr.co.programmers.collabond.api.address.infrastructure.AddressRepository;
 import kr.co.programmers.collabond.api.file.domain.File;
@@ -16,9 +15,13 @@ import kr.co.programmers.collabond.api.tag.application.TagService;
 import kr.co.programmers.collabond.api.user.domain.User;
 import kr.co.programmers.collabond.api.user.infrastructure.UserRepository;
 import kr.co.programmers.collabond.api.profile.interfaces.ProfileMapper;
+import kr.co.programmers.collabond.shared.exception.ErrorCode;
+import kr.co.programmers.collabond.shared.exception.custom.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -39,8 +42,8 @@ public class ProfileService {
     public ProfileResponseDto create(ProfileRequestDto dto,
                                      MultipartFile profileImage,
                                      MultipartFile thumbnailImage,
-                                     List<MultipartFile> extraImages,
-                                     List<Long> tagIds) {
+                                     List<MultipartFile> extraImages) {
+
         User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
 
@@ -51,10 +54,12 @@ public class ProfileService {
         if (profileRepository.countByUserId(user.getId()) >= 5) {
             throw new IllegalStateException("프로필은 최대 5개까지 생성 가능합니다.");
         }
+
         // profile의 adressId 가 있을 경우 주소 엔티티 조회, 있으면 주소 가져오고 없으면 null
         Address address = dto.getAddressId() != null
                 ? addressRepository.findById(dto.getAddressId()).orElse(null)
                 : null;
+
         // Profile 엔티티 생성, db에 저장 후 ResponseDto 반환
         Profile profile = ProfileMapper.toEntity(dto, user, address);
 
@@ -71,6 +76,7 @@ public class ProfileService {
         }
 
         Profile savedProfile = profileRepository.save(profile);
+        List<Long> tagIds = dto.getTagIds();
 
         if (tagIds != null && !tagIds.isEmpty()) {
             tagService.validateAndBindTags(savedProfile, tagIds);
@@ -84,8 +90,8 @@ public class ProfileService {
                                      ProfileRequestDto dto,
                                      MultipartFile profileImage,
                                      MultipartFile thumbnailImage,
-                                     List<MultipartFile> extraImages,
-                                     List<Long> tagIds) {
+                                     List<MultipartFile> extraImages) {
+
         Profile profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new IllegalArgumentException("프로필이 존재하지 않습니다."));
 
@@ -99,18 +105,20 @@ public class ProfileService {
 
         // 태그 재설정
         tagService.clearTags(profile); //기존 태그 모두 삭제 후
-        tagService.validateAndBindTags(profile, tagIds); //태그 최대 5개 등록 및 타입 검증
+        tagService.validateAndBindTags(profile, dto.getTagIds()); //태그 최대 5개 등록 및 타입 검증
 
         return ProfileMapper.toResponseDto(profile);
     }
 
     @Transactional
     public void delete(Long profileId) {
+
         Profile profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new IllegalArgumentException("프로필이 존재하지 않습니다."));
+
         // 파일은 hard delete
-        imageRepository.findByProfileIdAndType(profileId, "PROFILE")
-                .forEach(image -> fileRepository.deleteById(image.getFile().getId()));
+        profile.getImages().clear();
+
         // profile은 엔티티  @SQLDelete로 인해 soft delete 됨
         profileRepository.delete(profile);
     }
@@ -129,7 +137,11 @@ public class ProfileService {
     }
 
     // 이미지 저장 메서드
-    private void saveImage(Profile profile, MultipartFile imageFile, String type, Integer priority) {
+    private void saveImage(Profile profile,
+                           MultipartFile imageFile,
+                           String type,
+                           Integer priority) {
+
         try {
             File file = fileService.saveFile(imageFile);
             Image image = Image.builder()
@@ -138,7 +150,7 @@ public class ProfileService {
                     .priority(priority)
                     .build();
             profile.addImage(image);
-        } catch (IOException e) {
+        } catch (RuntimeException e) {
             throw new RuntimeException("이미지 저장 실패", e);
         }
     }
@@ -173,5 +185,9 @@ public class ProfileService {
         }
     }
 
-
+    @Transactional
+    public Profile findByProfileId(Long profileId) {
+        return profileRepository.findById(profileId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.PROFILE_NOT_FOUND));
+    }
 }

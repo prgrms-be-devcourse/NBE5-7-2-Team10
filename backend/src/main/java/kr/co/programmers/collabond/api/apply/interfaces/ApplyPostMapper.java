@@ -34,7 +34,9 @@ public class ApplyPostMapper {
                 .content(entity.getContent())
                 .status(entity.getStatus().toString())
                 .attachmentFiles(
-                        entity.getAttachments().stream()
+                        entity.getAttachments() == null
+                                ? null
+                                : entity.getAttachments().stream()
                                 .map(AttachmentMapper::toDto)
                                 .collect(Collectors.toList())
                 )

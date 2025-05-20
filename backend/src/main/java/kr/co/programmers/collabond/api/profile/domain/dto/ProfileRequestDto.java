@@ -1,7 +1,8 @@
 package kr.co.programmers.collabond.api.profile.domain.dto;
 
-import kr.co.programmers.collabond.api.profile.domain.ProfileType;
 import lombok.*;
+
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -14,4 +15,5 @@ public class ProfileRequestDto {
     private String name;
     private String description;
     private String detailAddress;
+    private List<Long> tagIds;
 }

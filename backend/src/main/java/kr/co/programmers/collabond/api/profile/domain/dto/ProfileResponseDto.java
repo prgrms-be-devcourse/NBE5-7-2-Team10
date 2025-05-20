@@ -1,9 +1,10 @@
 package kr.co.programmers.collabond.api.profile.domain.dto;
 
-import kr.co.programmers.collabond.api.profile.domain.ProfileType;
+import kr.co.programmers.collabond.api.tag.domain.dto.TagResponseDto;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -19,6 +20,7 @@ public class ProfileResponseDto {
     private String detailAddress;
     private int collaboCount;
     private boolean status;
+    private List<TagResponseDto> tags;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

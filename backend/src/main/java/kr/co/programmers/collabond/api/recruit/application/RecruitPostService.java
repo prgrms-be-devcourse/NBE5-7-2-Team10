@@ -103,4 +103,10 @@ public class RecruitPostService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.PROFILE_NOT_FOUND));
         return RecruitPostMapper.toResponseDto(post);
     }
+
+    @Transactional
+    public RecruitPost findByRecruitmentId(Long recruitmentId) {
+        return recruitPostRepository.findById(recruitmentId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.RECRUIT_NOT_FOUND));
+    }
 }

@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ErrorCode {
 
-    INVALID_REQUEST(400, "요청 데이터가 올바르지 않습니다"),
+    INVALID_REQUEST(400, "요청이 올바르지 않습니다"),
     INVALID_TOKEN(400, "유효하지 않은 토큰입니다"),
     INVALID_PROVIDER(400, "유효하지 않은 OAuth2.0 제공자입니다"),
     DUPLICATED_DATA(400, "중복된 데이터입니다"),

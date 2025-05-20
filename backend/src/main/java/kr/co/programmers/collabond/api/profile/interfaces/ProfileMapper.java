@@ -2,16 +2,29 @@ package kr.co.programmers.collabond.api.profile.interfaces;
 
 import kr.co.programmers.collabond.api.address.interfaces.AddressMapper;
 import kr.co.programmers.collabond.api.profile.domain.ProfileType;
-import ch.qos.logback.classic.Level;
 import kr.co.programmers.collabond.api.address.domain.Address;
 import kr.co.programmers.collabond.api.profile.domain.Profile;
 import kr.co.programmers.collabond.api.profile.domain.dto.ProfileDto;
 import kr.co.programmers.collabond.api.profile.domain.dto.ProfileRequestDto;
 import kr.co.programmers.collabond.api.profile.domain.dto.ProfileResponseDto;
 import kr.co.programmers.collabond.api.profile.domain.dto.ProfileSimpleResponseDto;
+import kr.co.programmers.collabond.api.tag.interfaces.TagMapper;
 import kr.co.programmers.collabond.api.user.domain.User;
 
 public class ProfileMapper {
+
+    public static Profile toEntity(ProfileRequestDto dto, User user, Address address) {
+        return Profile.builder()
+                .user(user)
+                .address(address)
+                .type(ProfileType.valueOf(dto.getType()))// .type(dto.getType().name())
+                .name(dto.getName())
+                .description(dto.getDescription())
+                .detailAddress(dto.getDetailAddress())
+                .collaboCount(0)
+                .status(true)
+                .build();
+    }
 
     public static ProfileDto toDto(Profile entity) {
         return ProfileDto.builder()
@@ -35,6 +48,11 @@ public class ProfileMapper {
                 .detailAddress(entity.getDetailAddress())
                 .collaboCount(entity.getCollaboCount())
                 .status(entity.isStatus())
+                .tags(
+                        entity.getTags().stream()
+                                .map(t -> TagMapper.toDto(t.getTag()))
+                                .toList()
+                )
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
                 .build();
@@ -45,19 +63,6 @@ public class ProfileMapper {
                 .profileId(entity.getId())
                 .type(entity.getType().name())
                 .address(AddressMapper.toDto(entity.getAddress()))
-                .build();
-    }
-
-    public static Profile toEntity(ProfileRequestDto dto, User user, Address address) {
-        return Profile.builder()
-                .user(user)
-                .address(address)
-                .type(ProfileType.valueOf(dto.getType()))// .type(dto.getType().name())
-                .name(dto.getName())
-                .description(dto.getDescription())
-                .detailAddress(dto.getDetailAddress())
-                .collaboCount(0)
-                .status(true)
                 .build();
     }
 }

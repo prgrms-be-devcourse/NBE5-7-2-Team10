@@ -13,6 +13,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -47,25 +49,25 @@ public class Profile extends UpdatedEntity {
     @Column(name = "collabo_count", nullable = false)
     private Integer collaboCount = 0;
 
-    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
-    private List<Image> images;
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Image> images = new ArrayList<>();
 
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProfileTag> tags;
+    private List<ProfileTag> tags = new ArrayList<>();
 
     @OneToMany(mappedBy = "profile")
-    private List<ApplyPost> applyPosts;
+    private List<ApplyPost> applyPosts = new ArrayList<>();
 
     @OneToMany(mappedBy = "profile")
-    private List<RecruitPost> recruitPosts;
+    private List<RecruitPost> recruitPosts = new ArrayList<>();
 
 
     @Column(nullable = false)
     private Boolean status;
 
     @Builder
-    public Profile(User user, Address address, ProfileType type, String name, String description
-            , String detailAddress, Integer collaboCount, Boolean status) {
+    public Profile(User user, Address address, ProfileType type, String name, String description,
+                   String detailAddress, Integer collaboCount, Boolean status) {
         this.user = user;
         this.address = address;
         this.type = type;
@@ -76,8 +78,8 @@ public class Profile extends UpdatedEntity {
         this.status = status;
     }
 
-    public Profile update(String name, String description, Address address, String detailAddress
-            , Integer collaboCount, Boolean status) {
+    public Profile update(String name, String description, Address address,
+                          String detailAddress, Integer collaboCount, Boolean status) {
         if (name != null) {
             this.name = name;
         }

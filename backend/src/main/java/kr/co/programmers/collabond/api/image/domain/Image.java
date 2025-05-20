@@ -23,7 +23,7 @@ public class Image {
     @JoinColumn(name = "profile_id", nullable = false)
     private Profile profile;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "file_id", nullable = false)
     private File file;
 

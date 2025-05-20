@@ -2,28 +2,31 @@
   background-color: var(--white-color);
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
   position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .profile-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
 }
 
 .ip-profile {
-  border-top: 4px solid var(--ip-color);
+  border-top: 5px solid var(--ip-color);
 }
 
 .store-profile {
-  border-top: 4px solid var(--recruitment-color);
+  border-top: 5px solid var(--recruitment-color);
 }
 
 .profile-image {
   width: 100%;
-  height: 180px;
+  height: 250px; /* 이미지 높이 ���가 */
   overflow: hidden;
   position: relative;
 }
@@ -34,8 +37,8 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 50px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.3), transparent);
+  height: 70px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.4), transparent);
 }
 
 .profile-image img {
@@ -46,15 +49,18 @@
 }
 
 .profile-card:hover .profile-image img {
-  transform: scale(1.05);
+  transform: scale(1.08);
 }
 
 .profile-info {
-  padding: 16px;
+  padding: 20px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .profile-info h3 {
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   font-size: 18px;
   font-weight: 700;
   color: var(--text-color);
@@ -62,7 +68,7 @@
 
 .profile-location {
   color: #666;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   font-size: 14px;
   display: flex;
   align-items: center;
@@ -74,7 +80,7 @@
 }
 
 .profile-description {
-  margin-bottom: 12px;
+  margin-bottom: 15px;
   font-size: 14px;
   color: #333;
   display: -webkit-box;
@@ -83,6 +89,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   line-height: 1.5;
+  flex-grow: 1;
 }
 
 .profile-tags {
@@ -107,13 +114,14 @@
 
 .profile-type-badge {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  padding: 5px 10px;
+  top: 15px;
+  right: 15px;
+  padding: 6px 12px;
   border-radius: 20px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   z-index: 1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .ip-profile .profile-type-badge {

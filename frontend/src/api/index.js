@@ -117,7 +117,7 @@ export const adminAPI = {
   createTag: (data) => api.post("/admin/tags", data),
   deleteTag: (tagId) => api.delete(`/admin/tags/${tagId}`),
   getAllUsers: () => api.get("/admin/users"),
-  deleteUser: (providerId) => api.delete(`/admin/users/${providerId}`),
+  deleteUser: (userId) => api.delete(`/admin/users/${userId}`),
 };
 
 // Tag API

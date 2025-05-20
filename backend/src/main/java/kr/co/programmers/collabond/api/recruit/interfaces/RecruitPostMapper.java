@@ -32,6 +32,7 @@ public class RecruitPostMapper {
                 .profileId(entity.getProfile().getId())
                 .profileName(entity.getProfile().getName())
                 .profile(ProfileMapper.toSimpleDto(entity.getProfile()))
+                .createdAt(entity.getCreatedAt())
                 .deletedAt(entity.getDeletedAt()) // 소프트 삭제 시간 포함
                 .build();
     }

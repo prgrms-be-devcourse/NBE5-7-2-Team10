@@ -1,28 +1,33 @@
 "use client"
 
-import { useState, useEffect, useContext } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import { AuthContext } from "../contexts/AuthContext"
 import { recruitmentAPI, profileAPI } from "../api"
 import { getUserInfo } from "../utils/storage"
 import "./RecruitmentCreatePage.css"
 
 const RecruitmentCreatePage = () => {
-  const [user, setUser] = useState(getUserInfo())
   const navigate = useNavigate()
+  const user = getUserInfo()
+
   const [userProfiles, setUserProfiles] = useState([])
   const [loading, setLoading] = useState(true)
+
+  const today = new Date()
+  today.setDate(today.getDate() + 7)
+  const defaultDeadline = today.toISOString().split("T")[0]
+
   const [formData, setFormData] = useState({
     profileId: "",
     title: "",
     description: "",
-    deadline: "",
+    deadline: defaultDeadline,
   })
 
   useEffect(() => {
     const fetchUserProfiles = async () => {
       try {
-        const response = await profileAPI.getUserProfiles(user.id)
+        const response = await profileAPI.getUserProfiles(user?.userId)
         setUserProfiles(response.data)
       } catch (error) {
         console.error("Error fetching user profiles:", error)
@@ -30,18 +35,11 @@ const RecruitmentCreatePage = () => {
         setLoading(false)
       }
     }
-
-    fetchUserProfiles()
-
-    // Set default deadline to 7 days from now
-    const defaultDeadline = new Date()
-    defaultDeadline.setDate(defaultDeadline.getDate() + 7)
-
-    setFormData((prev) => ({
-      ...prev,
-      deadline: defaultDeadline.toISOString().split("T")[0],
-    }))
-  }, [user.id])
+  
+    if (user?.userId) {
+      fetchUserProfiles()
+    }
+  }, [user?.userId]) // ✅ 이렇게 변경
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -57,7 +55,11 @@ const RecruitmentCreatePage = () => {
     try {
       setLoading(true)
 
-      await recruitmentAPI.createRecruitment(formData)
+      await recruitmentAPI.createRecruitment({
+        ...formData,
+        deadline: `${formData.deadline}T00:00:00`,
+        status: "RECRUITING",
+      })
 
       alert("모집글이 등록되었습니다.")
       navigate("/recruitment")
@@ -75,11 +77,15 @@ const RecruitmentCreatePage = () => {
     }
   }
 
-  if (loading && userProfiles.length === 0) {
+  if (!user) {
+    return <div className="loading">로그인 정보를 불러오는 중입니다...</div>
+  }
+
+  if (loading) {
     return <div className="loading">로딩 중...</div>
   }
 
-  if (userProfiles.length === 0) {
+  if (!userProfiles.length) {
     return (
       <div className="recruitment-create-page">
         <div className="no-profiles">

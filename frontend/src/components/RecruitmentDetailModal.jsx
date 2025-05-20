@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { applicationAPI, profileAPI } from "../api"
-import { getAccessToken } from "../utils/storage"
+import { getUserInfo } from "../utils/storage"
+import { useNavigate } from "react-router-dom"
 import "./RecruitmentDetailModal.css"
 
 const RecruitmentDetailModal = ({ recruitment, onClose, isOwner = false, onDelete }) => {
@@ -16,15 +17,10 @@ const RecruitmentDetailModal = ({ recruitment, onClose, isOwner = false, onDelet
   const [loading, setLoading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [selectedProfile, setSelectedProfile] = useState(null)
-  const [userId, setUserId] = useState(null)
 
-  useEffect(() => {
-    const token = getAccessToken()
-    if (!token) return
-    // JWT에서 userId 파싱 (백엔드가 토큰에 유저 ID를 넣는다는 전제)
-    const payload = JSON.parse(atob(token.split(".")[1]))
-    setUserId(payload.sub || payload.id || null)
-  }, [])
+  const navigate = useNavigate()
+  const user = getUserInfo()
+  const userId = user?.userId
 
   useEffect(() => {
     if (showApplyForm && userId) {
@@ -35,8 +31,7 @@ const RecruitmentDetailModal = ({ recruitment, onClose, isOwner = false, onDelet
   const fetchUserProfiles = async () => {
     try {
       setLoading(true)
-      const token = getAccessToken()
-      const response = await profileAPI.getUserProfiles(userId, token)
+      const response = await profileAPI.getUserProfiles(userId)
 
       const isIPRecruitment = recruitment.profile.type === "IP"
       const filtered = response.data.filter((p) => isIPRecruitment ? p.type === "STORE" : p.type === "IP")
@@ -55,6 +50,10 @@ const RecruitmentDetailModal = ({ recruitment, onClose, isOwner = false, onDelet
   }
 
   const handleApplyClick = () => setShowApplyForm(true)
+
+  const handleEditClick = () => {
+    navigate(`/recruitment/edit/${recruitment.id}`)
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -75,10 +74,14 @@ const RecruitmentDetailModal = ({ recruitment, onClose, isOwner = false, onDelet
 
     try {
       setSubmitting(true)
+      const applyRequest = new Blob(
+        [JSON.stringify({ profileId: formData.profileId, content: formData.content })],
+        { type: "application/json" }
+      )
+
       const formDataToSend = new FormData()
-      formDataToSend.append("profileId", formData.profileId)
-      formDataToSend.append("content", formData.content)
-      formData.files.forEach((file) => formDataToSend.append("files", file))
+      formDataToSend.append("applyRequest", applyRequest)
+      formData.files.forEach((file) => formDataToSend.append("attachment", file))
 
       await applicationAPI.applyToRecruitment(recruitment.id, formDataToSend)
       alert("지원이 완료되었습니다.")
@@ -107,28 +110,71 @@ const RecruitmentDetailModal = ({ recruitment, onClose, isOwner = false, onDelet
             {loading ? (
               <p>프로필 불러오는 중...</p>
             ) : userProfiles.length === 0 ? (
-              <div>
+              <div className="no-profiles-message">
                 <p>지원 가능한 프로필이 없습니다. 마이페이지에서 등록해주세요.</p>
                 <button className="btn" onClick={() => { onClose(); window.location.href = "/mypage/profile-edit" }}>프로필 등록하기</button>
               </div>
             ) : (
-              <form onSubmit={handleSubmit}>
+              <form className="apply-form" onSubmit={handleSubmit}>
                 <label>프로필 선택</label>
                 <select name="profileId" value={formData.profileId} onChange={handleChange} required>
                   {userProfiles.map((p) => (
                     <option key={p.id} value={p.id}>{p.name} ({p.type})</option>
                   ))}
                 </select>
+
                 {selectedProfile && (
-                  <div>
-                    <p>{selectedProfile.name}</p>
-                    <p>{selectedProfile.region?.sido} {selectedProfile.region?.sigungu}</p>
+                  <div className="selected-profile-preview">
+                    <div className="preview-header">선택한 프로필</div>
+                    <div className="preview-content">
+                      <div className="preview-image">
+                        <img src={selectedProfile.imageUrl || "/placeholder-profile.png"} alt="프로필 이미지" />
+                      </div>
+                      <div className="preview-details">
+                        <h4>{selectedProfile.name}</h4>
+                        <p className="preview-type">{selectedProfile.type === "IP" ? "IP 캐릭터" : "매장"}</p>
+                        <p className="preview-region">{selectedProfile.region?.sido} {selectedProfile.region?.sigungu}</p>
+                        <div className="preview-tags">
+                          {selectedProfile.tags?.map((tag) => (
+                            <span key={tag.id} className="preview-tag">{tag.name}</span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 )}
+
                 <label>지원 내용</label>
-                <textarea name="content" value={formData.content} onChange={handleChange} required />
-                <input type="file" multiple onChange={handleFileChange} />
-                <button type="submit" disabled={submitting}>{submitting ? "제출 중..." : "지원하기"}</button>
+                <textarea
+                  name="content"
+                  value={formData.content}
+                  onChange={handleChange}
+                  className="apply-textarea"
+                  placeholder="지원 동기, 협업 의지 등 자세히 작성해 주세요."
+                  rows="8"
+                  required
+                />
+
+                <div className="file-upload-container">
+                  <input type="file" multiple onChange={handleFileChange} />
+                  <div className="file-upload-info">
+                    <p>첨부할 파일을 선택하세요 (선택사항)</p>
+                  </div>
+                  {formData.files.length > 0 && (
+                    <div className="selected-files">
+                      <p>선택된 파일 목록:</p>
+                      <ul>
+                        {formData.files.map((file, index) => (
+                          <li key={index}>{file.name}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+
+                <button type="submit" disabled={submitting} className="btn btn-primary apply-button">
+                  {submitting ? "제출 중..." : "지원하기"}
+                </button>
               </form>
             )}
           </div>
@@ -158,7 +204,7 @@ const RecruitmentDetailModal = ({ recruitment, onClose, isOwner = false, onDelet
             <div className="modal-footer">
               {isOwner ? (
                 <>
-                  <button className="btn" onClick={() => window.location.href = `/recruitment/edit/${recruitment.id}`}>수정</button>
+                  <button className="btn" onClick={handleEditClick}>수정</button>
                   <button className="btn btn-delete" onClick={(e) => onDelete && onDelete(recruitment.id, e)}>삭제</button>
                 </>
               ) : (

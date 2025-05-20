@@ -41,4 +41,8 @@ public class OAuth2UserInfo implements OAuth2User {
     public String getName() {
         return name;
     }
+
+    public String getProviderId() {
+        return username;
+    }
 }

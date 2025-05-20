@@ -21,6 +21,8 @@ import kr.co.programmers.collabond.api.recruit.domain.RecruitPost;
 import kr.co.programmers.collabond.api.user.application.UserService;
 import kr.co.programmers.collabond.api.user.domain.User;
 import kr.co.programmers.collabond.core.auth.oauth2.OAuth2UserInfo;
+import kr.co.programmers.collabond.shared.exception.ErrorCode;
+import kr.co.programmers.collabond.shared.exception.custom.InvalidException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -52,6 +54,10 @@ public class ApplyPostService {
 
         RecruitPost recruitPost = recruitPostService.findByRecruitmentId(recruitmentId);
         Profile profile = profileService.findByProfileId(request.getProfileId());
+
+        if (recruitPost.getProfile().getType().equals(profile.getType())) {
+            throw new InvalidException(ErrorCode.REQUEST_TO_SAME_ROLE);
+        }
 
         ApplyPost applyPost = ApplyPostMapper.toEntity(recruitPost, profile, request);
 

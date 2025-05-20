@@ -22,9 +22,7 @@ const isBrowser = typeof window !== "undefined";
 
 export const api = axios.create({
   baseURL: BASE_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
+
 });
 
 // 브라우저 환경에서만 토큰 처리
@@ -98,7 +96,6 @@ apiClient.interceptors.response.use(
 // User API
 export const userAPI = {
   signup: (userData) => api.patch("/api/users/signup", userData),
-  getMyUserInfo: () => api.get("/api/users"),
   getUserInfo: (userId) => api.get(`/api/users/${userId}`),
   updateUserInfo: (data) => api.patch(`/api/users`, data),
   deleteAccount: () => api.delete(`/api/users`),
@@ -106,6 +103,7 @@ export const userAPI = {
 
 // Profile API
 export const profileAPI = {
+  getUserProfiles: (userId) => api.get(`/api/profiles/user/${userId}`),
   createProfile: (data) => api.post("/api/profiles", data),
   getProfile: (profileId) => api.get(`/api/profiles/${profileId}`),
   updateProfile: (profileId, data) =>
@@ -113,6 +111,7 @@ export const profileAPI = {
   deleteProfile: (profileId) => api.delete(`/api/profiles/${profileId}`),
   getIPProfiles: (params) => api.get("/api/profiles/ip", { params }),
   getStoreProfiles: (params) => api.get("/api/profiles/store", { params }),
+  getUserProfiles: (userId) => api.get(`/api/profiles/user/${userId}`),
 };
 
 // Recruitment API
@@ -141,10 +140,10 @@ export const applicationAPI = {
 
 // Admin API
 export const adminAPI = {
-  createTag: (data) => api.post("/api/admin/tags", data),
-  deleteTag: (tagId) => api.delete(`/api/admin/tags/${tagId}`),
-  getAllUsers: () => api.get("/api/admin/users"),
-  deleteUser: (userId) => api.delete(`/api/admin/users/${userId}`),
+  createTag: (data) => api.post("/admin/tags", data),
+  deleteTag: (tagId) => api.delete(`/admin/tags/${tagId}`),
+  getAllUsers: () => api.get("/admin/users"),
+  deleteUser: (userId) => api.delete(`/admin/users/${userId}`),
 };
 
 // Tag API

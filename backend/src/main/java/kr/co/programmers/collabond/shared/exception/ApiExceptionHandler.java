@@ -58,20 +58,20 @@ public class ApiExceptionHandler {
         return ApiErrorResponse.error(exception.getMessage(), exception.getStatus());
     }
 
-    @ExceptionHandler({InvalidException.class})
-    public <T> ResponseEntity<ApiErrorResponse<T>> handleInvalidException(
-            InvalidException exception) {
-
-        log.debug("InvalidException: {}", exception.getMessage());
-
-        return ApiErrorResponse.error(exception.getMessage(), exception.getStatus());
-    }
-
     @ExceptionHandler({NotFoundException.class})
     public <T> ResponseEntity<ApiErrorResponse<T>> handleNotFoundException(
             NotFoundException exception) {
 
         log.debug("NotFoundException: {}", exception.getMessage());
+
+        return ApiErrorResponse.error(exception.getMessage(), exception.getStatus());
+    }
+
+    @ExceptionHandler({InvalidException.class})
+    public <T> ResponseEntity<ApiErrorResponse<T>> handleInvalidException(
+            InvalidException exception) {
+
+        log.debug("InvalidException: {}", exception.getMessage());
 
         return ApiErrorResponse.error(exception.getMessage(), exception.getStatus());
     }

@@ -11,5 +11,4 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
 
     long countByUserId(Long userId);
 
-    Optional<List<Profile>> findByUserId(Long userId);
 }

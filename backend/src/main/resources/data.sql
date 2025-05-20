@@ -5079,16 +5079,16 @@ INSERT INTO addresses(id, sido_code, sigungu_code, dong_code, sido, sigungu, don
 INSERT INTO addresses(id, sido_code, sigungu_code, dong_code, sido, sigungu, dong) VALUES (5066, '52', '800', '420', '전북특별자치도', '부안군', '위도면');
 
 
-INSERT INTO users (id, email, nickname, role, created_at, updated_at) VALUES (1, 'user1@test.com', 'nickname1', 'ROLE_STORE', NOW(), NOW());
-INSERT INTO users (id, email, nickname, role, created_at, updated_at) VALUES (2, 'user2@test.com', 'nickname2', 'ROLE_STORE', NOW(), NOW());
-INSERT INTO users (id, email, nickname, role, created_at, updated_at) VALUES (3, 'user3@test.com', 'nickname3', 'ROLE_STORE', NOW(), NOW());
-INSERT INTO users (id, email, nickname, role, created_at, updated_at) VALUES (4, 'user4@test.com', 'nickname4', 'ROLE_STORE', NOW(), NOW());
-INSERT INTO users (id, email, nickname, role, created_at, updated_at) VALUES (5, 'user5@test.com', 'nickname5', 'ROLE_IP', NOW(), NOW());
-INSERT INTO users (id, email, nickname, role, created_at, updated_at) VALUES (6, 'user6@test.com', 'nickname6', 'ROLE_IP', NOW(), NOW());
-INSERT INTO users (id, email, nickname, role, created_at, updated_at) VALUES (7, 'user7@test.com', 'nickname7', 'ROLE_IP', NOW(), NOW());
-INSERT INTO users (id, email, nickname, role, created_at, updated_at) VALUES (8, 'user8@test.com', 'nickname8', 'ROLE_IP', NOW(), NOW());
-INSERT INTO users (id, email, nickname, role, created_at, updated_at) VALUES (9, 'user9@test.com', 'nickname9', 'ROLE_IP', NOW(), NOW());
-INSERT INTO users (id, email, nickname, role, created_at, updated_at) VALUES (10, 'user10@test.com', 'nickname10', 'ROLE_IP', NOW(), NOW());
+INSERT INTO users (id, email, nickname, provider_id, role, created_at, updated_at) VALUES (1, 'user1@test.com', 'nickname1', 'google_109384272837465918374', 'ROLE_STORE', NOW(), NOW());
+INSERT INTO users (id, email, nickname, provider_id, role, created_at, updated_at) VALUES (2, 'user2@test.com', 'nickname2', 'google_109384928374262918379','ROLE_STORE', NOW(), NOW());
+INSERT INTO users (id, email, nickname, provider_id, role, created_at, updated_at) VALUES (3, 'user3@test.com', 'nickname3', 'google_109384928374652918373','ROLE_STORE', NOW(), NOW());
+INSERT INTO users (id, email, nickname, provider_id, role, created_at, updated_at) VALUES (4, 'user4@test.com', 'nickname4', 'google_109384928374627918374','ROLE_STORE', NOW(), NOW());
+INSERT INTO users (id, email, nickname, provider_id, role, created_at, updated_at) VALUES (5, 'user5@test.com', 'nickname5', 'google_109384928374673918368','ROLE_IP', NOW(), NOW());
+INSERT INTO users (id, email, nickname, provider_id, role, created_at, updated_at) VALUES (6, 'user6@test.com', 'nickname6', 'google_109384928374652918377','ROLE_IP', NOW(), NOW());
+INSERT INTO users (id, email, nickname, provider_id, role, created_at, updated_at) VALUES (7, 'user7@test.com', 'nickname7', 'google_109354928374652918337','ROLE_IP', NOW(), NOW());
+INSERT INTO users (id, email, nickname, provider_id, role, created_at, updated_at) VALUES (8, 'user8@test.com', 'nickname8', 'google_129382828374652918315','ROLE_IP', NOW(), NOW());
+INSERT INTO users (id, email, nickname, provider_id, role, created_at, updated_at) VALUES (9, 'user9@test.com', 'nickname9', 'google_109384910374652918586','ROLE_IP', NOW(), NOW());
+INSERT INTO users (id, email, nickname, provider_id, role, created_at, updated_at) VALUES (10, 'user10@test.com', 'nickname10', 'google_109384928484652918300','ROLE_IP', NOW(), NOW());
 INSERT INTO tags (id, name, type, created_at) VALUES (1, '따뜻함', 'STORE', NOW());
 INSERT INTO tags (id, name, type, created_at) VALUES (2, '상쾌한', 'STORE', NOW());
 INSERT INTO tags (id, name, type, created_at) VALUES (3, '모던한', 'STORE', NOW());

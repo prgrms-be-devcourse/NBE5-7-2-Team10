@@ -18,5 +18,6 @@ public class RecruitPostResponseDto {
     private Long profileId;
     private String profileName;
     private ProfileSimpleResponseDto profile;
+    private LocalDateTime createdAt;
     private LocalDateTime deletedAt; // 소프트 삭제 시간
 }

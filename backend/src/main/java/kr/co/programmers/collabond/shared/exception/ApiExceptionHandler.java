@@ -49,11 +49,4 @@ public class ApiExceptionHandler {
 
         return ApiErrorResponse.error(exception.getMessage(), exception.getStatus());
     }
-
-    @ExceptionHandler({InvalidException.class})
-    public <T> ResponseEntity<ApiErrorResponse<T>> handleInvalidException(
-            InvalidException exception
-    ) {
-        return ApiErrorResponse.error(exception.getMessage(), exception.getErrorCode());
-    }
 }

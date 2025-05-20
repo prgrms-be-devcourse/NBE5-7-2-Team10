@@ -73,10 +73,17 @@ public class UserService {
         return userRepository.findByProviderId(providerId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
     }
-
-    public UserResponseDto findByUsername(String username) {
-        User user =  userRepository.findByUsername(username)
+    @Transactional
+    public UserResponseDto findDtoByProviderId(String providerId) {
+        User user = userRepository.findByProviderId(providerId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
-        return UserMapper.toResponseDto(user); // ✅ 올바른 매핑 함수
+        return UserMapper.toResponseDto(user);
     }
+
+    @Transactional(readOnly = true)
+    public List<Profile> getProfilesByUserId(Long userId) {
+        return profileRepository.findAllByUserId(userId);
+    }
+
+
 }

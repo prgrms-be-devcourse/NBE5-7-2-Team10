@@ -43,7 +43,12 @@ public class UserController {
     }
     @GetMapping("/me")
     public ResponseEntity<UserResponseDto> getMyUserInfo(@AuthenticationPrincipal OAuth2UserInfo userInfo) {
-        return ResponseEntity.ok(userService.findByUsername(userInfo.getUsername()));
+        return ResponseEntity.ok(userService.findDtoByProviderId(userInfo.getProviderId()));
+
+    }
+    @GetMapping("/{userId}/profiles")
+    public ResponseEntity<?> getUserProfiles(@PathVariable Long userId) {
+        return ResponseEntity.ok(userService.getProfilesByUserId(userId));
     }
 
 }

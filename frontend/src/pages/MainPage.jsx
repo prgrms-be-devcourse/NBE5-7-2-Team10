@@ -1,11 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { profileAPI, tagAPI } from "../api"
+import { profileAPI, tagAPI, regionAPI } from "../api"
 import ProfileCard from "../components/ProfileCard"
 import ProfileDetailModal from "../components/ProfileDetailModal"
-import RegionSelector from "../components/RegionSelector"
-import TagSelector from "../components/TagSelector"
 import "./MainPage.css"
 
 const MainPage = () => {
@@ -13,19 +11,29 @@ const MainPage = () => {
   const [filteredProfiles, setFilteredProfiles] = useState([])
   const [selectedProfile, setSelectedProfile] = useState(null)
   const [showModal, setShowModal] = useState(false)
-  const [profileType, setProfileType] = useState("all")
+  const [profileType, setProfileType] = useState("store")
   const [tags, setTags] = useState([])
   const [ipTags, setIpTags] = useState([])
   const [storeTags, setStoreTags] = useState([])
-  const [selectedRegions, setSelectedRegions] = useState([])
   const [selectedTags, setSelectedTags] = useState([])
-  const [showRegionSelector, setShowRegionSelector] = useState(false)
-  const [showTagSelector, setShowTagSelector] = useState(false)
   const [filters, setFilters] = useState({
     tags: [],
     regions: [],
   })
   const [isSearched, setIsSearched] = useState(false)
+
+  // 태그 검색 관련 상태
+  const [searchTerm, setSearchTerm] = useState("")
+  const [filteredTags, setFilteredTags] = useState([])
+
+  // 지역 선택 관련 상태
+  const [provinces, setProvinces] = useState([]) // 시도
+  const [districts, setDistricts] = useState([]) // 시군구
+  const [neighborhoods, setNeighborhoods] = useState([]) // 동읍면
+  const [selectedProvince, setSelectedProvince] = useState(null)
+  const [selectedDistrict, setSelectedDistrict] = useState(null)
+  const [selectedNeighborhood, setSelectedNeighborhood] = useState(null)
+  const [selectedRegions, setSelectedRegions] = useState([])
 
   // 테스트용 더미 데이터
   const dummyProfiles = [
@@ -79,55 +87,101 @@ const MainPage = () => {
     },
   ]
 
+  // 태그 필터링
+  useEffect(() => {
+    const currentTags = getCurrentTags()
+    if (searchTerm.trim() === "") {
+      setFilteredTags(currentTags)
+    } else {
+      const filtered = currentTags.filter((tag) => tag.name.toLowerCase().includes(searchTerm.toLowerCase()))
+      setFilteredTags(filtered)
+    }
+  }, [searchTerm, profileType, tags, ipTags, storeTags])
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         // 태그 데이터 가져오기 (전체, IP, 매장별로 구분)
         const tagsResponse = await tagAPI.getAllTags()
         const allTags = tagsResponse.data || []
-
         setTags(allTags)
         setIpTags(allTags.filter((tag) => tag.type === "IP"))
         setStoreTags(allTags.filter((tag) => tag.type === "STORE"))
 
-        // 초기 데이터 로드 - 항상 전체 프로필 조회
+        // 초기 태그 필터링 설정
+        setFilteredTags(allTags.filter((tag) => tag.type === "STORE"))
+
+        // 지역 데이터 가져오기 (시도)
+        try {
+          const provincesResponse = await regionAPI.getAddress()
+          console.log(provincesResponse.data.result)
+          setProvinces(provincesResponse.data.result)
+        } catch (error) {
+          console.error("Error fetching provinces:", error)
+        }
+
+        // 초기 데이터 로드 - 기본 타입(store)에 맞는 프로필 조회
         // 실제 API 호출 대신 더미 데이터 사용
         setProfiles(dummyProfiles)
-        setFilteredProfiles(dummyProfiles)
-
-        /* 실제 API 호출 코드 (필요시 주석 해제)
-        try {
-          // 전체 프로필 조회 API 호출
-          const [ipResponse, storeResponse] = await Promise.all([
-            profileAPI.getIPProfiles({}),
-            profileAPI.getStoreProfiles({}),
-          ]);
-          
-          const allProfiles = [...ipResponse.data, ...storeResponse.data];
-          setProfiles(allProfiles);
-          setFilteredProfiles(allProfiles);
-        } catch (apiError) {
-          console.error("API Error:", apiError);
-          // API 오류 시 더미 데이터 사용
-          setProfiles(dummyProfiles);
-          setFilteredProfiles(dummyProfiles);
-        }
-        */
+        setFilteredProfiles(dummyProfiles.filter((profile) => profile.type === "STORE"))
       } catch (error) {
         console.error("Error fetching data:", error)
-        // 오류 발생 시 더미 데이터 사용
+        setFilteredTags(dummyProfiles.filter((p) => p.type === "STORE").flatMap((profile) => profile.tags))
         setProfiles(dummyProfiles)
-        setFilteredProfiles(dummyProfiles)
+        setFilteredProfiles(dummyProfiles.filter((profile) => profile.type === "STORE"))
       }
     }
 
     fetchData()
   }, [])
 
+  // 시군구 데이터 가져오기
+  useEffect(() => {
+    const fetchDistricts = async () => {
+      if (!selectedProvince) {
+        setDistricts([])
+        setSelectedDistrict(null)
+        return
+      }
+
+      try {
+        const response = await regionAPI.getAddress(selectedProvince.cd)
+        setDistricts(response.data.result)
+        setSelectedDistrict(null)
+        setNeighborhoods([])
+      } catch (error) {
+        console.error("Error fetching districts:", error)
+      }
+    }
+
+    fetchDistricts()
+  }, [selectedProvince])
+
+  // 동읍면 데이터 가져오기
+  useEffect(() => {
+    const fetchNeighborhoods = async () => {
+      if (!selectedDistrict) {
+        setNeighborhoods([])
+        setSelectedNeighborhood(null)
+        return
+      }
+
+      try {
+        const response = await regionAPI.getAddress(selectedDistrict.cd)
+        setNeighborhoods(response.data.result)
+        setSelectedNeighborhood(null)
+      } catch (error) {
+        console.error("Error fetching neighborhoods:", error)
+      }
+    }
+
+    fetchNeighborhoods()
+  }, [selectedDistrict])
+
   const fetchProfiles = async () => {
     try {
       // 검색 버튼을 누르지 않았다면 API 호출 안함
-      if (!isSearched && profileType !== "all") {
+      if (!isSearched) {
         return
       }
 
@@ -142,22 +196,6 @@ const MainPage = () => {
           tags: filters.tags,
           regions: filters.regions,
         })
-      } else {
-        // Fetch both types and combine
-        const [ipResponse, storeResponse] = await Promise.all([
-          profileAPI.getIPProfiles({
-            tags: filters.tags,
-            regions: filters.regions,
-          }),
-          profileAPI.getStoreProfiles({
-            tags: filters.tags,
-            regions: filters.regions,
-          }),
-        ])
-
-        response = {
-          data: [...ipResponse.data, ...storeResponse.data],
-        }
       }
 
       setProfiles(response.data)
@@ -202,10 +240,15 @@ const MainPage = () => {
     })
     setIsSearched(false)
 
+    // 태그 필터링 업데이트
+    if (type === "ip") {
+      setFilteredTags(ipTags)
+    } else if (type === "store") {
+      setFilteredTags(storeTags)
+    }
+
     // 더미 데이터 필터링
-    if (type === "all") {
-      setFilteredProfiles(dummyProfiles)
-    } else if (type === "ip") {
+    if (type === "ip") {
       setFilteredProfiles(dummyProfiles.filter((profile) => profile.type === "IP"))
     } else if (type === "store") {
       setFilteredProfiles(dummyProfiles.filter((profile) => profile.type === "STORE"))
@@ -231,19 +274,71 @@ const MainPage = () => {
     }
   }
 
-  const handleRegionSelect = (regions) => {
-    setSelectedRegions(regions)
-    setFilters((prev) => ({
-      ...prev,
-      regions: regions.map((r) => r.id),
-    }))
+  // 태그 선택/해제 처리
+  const handleTagToggle = (tag) => {
+    const isSelected = selectedTags.some((t) => t.id === tag.id)
+
+    if (isSelected) {
+      const newTags = selectedTags.filter((t) => t.id !== tag.id)
+      setSelectedTags(newTags)
+      setFilters((prev) => ({
+        ...prev,
+        tags: newTags.map((t) => t.id),
+      }))
+    } else {
+      const newTags = [...selectedTags, tag]
+      setSelectedTags(newTags)
+      setFilters((prev) => ({
+        ...prev,
+        tags: newTags.map((t) => t.id),
+      }))
+    }
   }
 
-  const handleTagSelect = (tags) => {
-    setSelectedTags(tags)
+  // 지역 추가 처리
+  const handleAddRegion = () => {
+    // 선택된 지역 정보 생성
+    let regionToAdd = null
+    let fullName = ""
+
+    if (selectedNeighborhood) {
+      regionToAdd = selectedNeighborhood
+      fullName = `${selectedProvince.addr_name} ${selectedDistrict.addr_name} ${selectedNeighborhood.addr_name}`
+    } else if (selectedDistrict) {
+      regionToAdd = selectedDistrict
+      fullName = `${selectedProvince.addr_name} ${selectedDistrict.addr_name}`
+    } else if (selectedProvince) {
+      regionToAdd = selectedProvince
+      fullName = selectedProvince.addr_name
+    }
+
+    if (regionToAdd) {
+      // 이미 선택된 지역인지 확인
+      const alreadySelected = selectedRegions.some((region) => region.cd === regionToAdd.cd)
+
+      if (!alreadySelected) {
+        const newRegion = {
+          ...regionToAdd,
+          fullName,
+        }
+
+        const updatedRegions = [...selectedRegions, newRegion]
+        setSelectedRegions(updatedRegions)
+        setFilters((prev) => ({
+          ...prev,
+          regions: updatedRegions.map((r) => r.cd),
+        }))
+      }
+    }
+  }
+
+  // 지역 제거 처리
+  const handleRemoveRegion = (regionId) => {
+    const updatedRegions = selectedRegions.filter((region) => region.cd !== regionId)
+    setSelectedRegions(updatedRegions)
     setFilters((prev) => ({
       ...prev,
-      tags: tags.map((t) => t.id),
+      regions: updatedRegions.map((r) => r.cd),
     }))
   }
 
@@ -255,7 +350,7 @@ const MainPage = () => {
       case "store":
         return storeTags
       default:
-        return tags
+        return storeTags
     }
   }
 
@@ -268,12 +363,6 @@ const MainPage = () => {
 
       <section className="filter-section">
         <div className="profile-type-filter">
-          <button
-            className={`btn ${profileType === "all" ? "btn-primary" : ""}`}
-            onClick={() => handleProfileTypeChange("all")}
-          >
-            전체
-          </button>
           <button
             className={`btn ${profileType === "store" ? "btn-recruitment" : ""}`}
             onClick={() => handleProfileTypeChange("store")}
@@ -288,27 +377,109 @@ const MainPage = () => {
           </button>
         </div>
 
-        {profileType !== "all" && (
-          <div className="filter-buttons">
-            {/* IP 캐릭터 또는 매장일 때만 태그 선택 표시 */}
-            <button className="btn btn-filter" onClick={() => setShowTagSelector(true)}>
-              태그 선택 {selectedTags.length > 0 && `(${selectedTags.length})`}
-            </button>
-
-            {/* 매장일 때만 지역 선택 표시 */}
-            {profileType === "store" && (
-              <button className="btn btn-filter" onClick={() => setShowRegionSelector(true)}>
-                지역 선택 {selectedRegions.length > 0 && `(${selectedRegions.length})`}
-              </button>
-            )}
-
-            {/* 검색 버튼 */}
-            <button className="btn btn-search" onClick={handleSearch}>
-              검색
-            </button>
+        <div className={`filter-options ${profileType === "ip" ? "ip-filter" : ""}`}>
+          {/* 태그 선택 영역 */}
+          <div className="filter-option-section">
+            <h3 className="filter-title">태그 선택</h3>
+            <div className="search-box">
+              <input
+                type="text"
+                placeholder="태그 검색..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="search-input"
+              />
+            </div>
+            <div className="tags-container main-tags-container">
+              {filteredTags.length === 0 ? (
+                <p className="no-tags">검색 결과가 없습니다.</p>
+              ) : (
+                filteredTags.map((tag) => (
+                  <div
+                    key={tag.id}
+                    className={`tag-item main-tag ${selectedTags.some((t) => t.id === tag.id) ? "selected" : ""}`}
+                    onClick={() => handleTagToggle(tag)}
+                    title={tag.name}
+                  >
+                    {tag.name}
+                  </div>
+                ))
+              )}
+            </div>
           </div>
-        )}
 
+          {/* 지역 선택 영역 - 매장 타입일 때만 표시 */}
+          {profileType === "store" && (
+            <div className="filter-option-section">
+              <h3 className="filter-title">지역 선택</h3>
+              <div className="region-dropdowns">
+                <div className="region-dropdown">
+                  <label>시/도</label>
+                  <select
+                    value={selectedProvince?.cd || ""}
+                    onChange={(e) => {
+                      const province = provinces.find((p) => p.cd === e.target.value)
+                      setSelectedProvince(province || null)
+                    }}
+                  >
+                    <option value="">선택하세요</option>
+                    {provinces.map((province) => (
+                      <option key={province.cd} value={province.cd}>
+                        {province.addr_name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="region-dropdown">
+                  <label>시/군/구</label>
+                  <select
+                    value={selectedDistrict?.cd || ""}
+                    onChange={(e) => {
+                      const district = districts.find((d) => d.cd === e.target.value)
+                      setSelectedDistrict(district || null)
+                    }}
+                    disabled={!selectedProvince}
+                  >
+                    <option value="">선택하세요</option>
+                    {districts.map((district) => (
+                      <option key={district.cd} value={district.cd}>
+                        {district.addr_name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="region-dropdown">
+                  <label>읍/면/동</label>
+                  <select
+                    value={selectedNeighborhood?.cd || ""}
+                    onChange={(e) => {
+                      const neighborhood = neighborhoods.find((n) => n.cd === e.target.value)
+                      setSelectedNeighborhood(neighborhood || null)
+                    }}
+                    disabled={!selectedDistrict}
+                  >
+                    <option value="">선택하세요</option>
+                    {neighborhoods.map((neighborhood) => (
+                      <option key={neighborhood.cd} value={neighborhood.cd}>
+                        {neighborhood.addr_name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="region-actions">
+                <button className="btn btn-add-region" onClick={handleAddRegion} disabled={!selectedProvince}>
+                  지역 추가
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* 선택된 태그 표시 */}
         {selectedTags.length > 0 && (
           <div className="selected-items">
             <h4>선택된 태그:</h4>
@@ -316,13 +487,7 @@ const MainPage = () => {
               {selectedTags.map((tag) => (
                 <span key={tag.id} className="item-tag tag-color">
                   {tag.name}
-                  <button
-                    className="remove-item"
-                    onClick={() => {
-                      const newTags = selectedTags.filter((t) => t.id !== tag.id)
-                      handleTagSelect(newTags)
-                    }}
-                  >
+                  <button className="remove-item" onClick={() => handleTagToggle(tag)}>
                     ×
                   </button>
                 </span>
@@ -331,20 +496,15 @@ const MainPage = () => {
           </div>
         )}
 
+        {/* 선택된 지역 표시 */}
         {selectedRegions.length > 0 && profileType === "store" && (
           <div className="selected-items">
             <h4>선택된 지역:</h4>
             <div className="item-tags">
               {selectedRegions.map((region) => (
-                <span key={region.id} className="item-tag region-color">
+                <span key={region.cd} className="item-tag region-color">
                   {region.fullName}
-                  <button
-                    className="remove-item"
-                    onClick={() => {
-                      const newRegions = selectedRegions.filter((r) => r.id !== region.id)
-                      handleRegionSelect(newRegions)
-                    }}
-                  >
+                  <button className="remove-item" onClick={() => handleRemoveRegion(region.cd)}>
                     ×
                   </button>
                 </span>
@@ -352,6 +512,13 @@ const MainPage = () => {
             </div>
           </div>
         )}
+
+        {/* 검색 버튼 */}
+        <div className="search-button-container">
+          <button className="btn btn-search" onClick={handleSearch}>
+            검색
+          </button>
+        </div>
       </section>
 
       <section className="profiles-section">
@@ -372,23 +539,6 @@ const MainPage = () => {
 
       {showModal && selectedProfile && (
         <ProfileDetailModal profile={selectedProfile} onClose={() => setShowModal(false)} />
-      )}
-
-      {showRegionSelector && (
-        <RegionSelector
-          onRegionSelect={handleRegionSelect}
-          onClose={() => setShowRegionSelector(false)}
-          selectedRegions={selectedRegions}
-        />
-      )}
-
-      {showTagSelector && (
-        <TagSelector
-          tags={getCurrentTags()}
-          selectedTags={selectedTags}
-          onTagSelect={handleTagSelect}
-          onClose={() => setShowTagSelector(false)}
-        />
       )}
     </div>
   )

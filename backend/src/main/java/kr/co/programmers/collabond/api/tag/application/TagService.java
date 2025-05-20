@@ -9,6 +9,10 @@ import kr.co.programmers.collabond.api.tag.infrastructure.TagRepository;
 import kr.co.programmers.collabond.api.tag.domain.dto.TagResponseDto;
 import kr.co.programmers.collabond.api.tag.domain.dto.TagRequestDto;
 import kr.co.programmers.collabond.api.tag.interfaces.TagMapper;
+import kr.co.programmers.collabond.shared.exception.ErrorCode;
+import kr.co.programmers.collabond.shared.exception.custom.DuplicatedException;
+import kr.co.programmers.collabond.shared.exception.custom.InvalidException;
+import kr.co.programmers.collabond.shared.exception.custom.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +30,7 @@ public class TagService {
     public TagResponseDto create(TagRequestDto dto) {
         // 중복된 태그 이름 체크
         if (tagRepository.existsByNameAndType(dto.getName(), TagType.valueOf(dto.getType()))) {
-            throw new IllegalArgumentException("태그 이름과 타입이 같은 태그가 이미 존재합니다.");
+            throw new DuplicatedException(ErrorCode.DUPLICATED_TAG);
         }
 
         // Tag 엔티티로 변환
@@ -39,7 +43,7 @@ public class TagService {
     @Transactional
     public void delete(Long tagId) {
         Tag tag = tagRepository.findById(tagId)
-                .orElseThrow(() -> new IllegalArgumentException("태그가 존재하지 않습니다."));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.TAG_NOT_FOUND));
         tagRepository.delete(tag);
     }
 
@@ -54,19 +58,19 @@ public class TagService {
     @Transactional
     public void validateAndBindTags(Profile profile, List<Long> tagIds) {
         if (tagIds.size() > 5) {
-            throw new IllegalArgumentException("태그는 최대 5개까지 선택할 수 있습니다.");
+            throw new InvalidException(ErrorCode.OVER_MAX_TAG);
         }
 
         List<Tag> tags = tagRepository.findAllById(tagIds);
 
         if (tags.size() != tagIds.size()) {
-            throw new IllegalArgumentException("존재하지 않는 태그가 포함되어 있습니다.");
+            throw new NotFoundException(ErrorCode.INCLUDE_TAG_NOT_FOUND);
         }
 
         TagType profileType = TagType.valueOf(profile.getType().name());
         for (Tag tag : tags) {
             if (!tag.getType().equals(profileType)) {
-                throw new IllegalArgumentException("프로필 타입과 일치하지 않는 태그가 포함되어 있습니다.");
+                throw new InvalidException(ErrorCode.NOT_MATCH_TYPE_OF_TAG);
             }
         }
 
@@ -82,5 +86,3 @@ public class TagService {
         profile.getTags().clear();// orphanRemoval로 자동 삭제
     }
 }
-
-

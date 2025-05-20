@@ -40,7 +40,7 @@ const UserTypeSelectionPage = () => {
     try {
       setLoading(true)
 
-      const response = await userAPI.updateProfile(formData)
+      const response = await userAPI.signup(formData)
       setNickname(response.data.nickname);
       setRole(response.data.role);
       // Update user context

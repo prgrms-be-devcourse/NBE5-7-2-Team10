@@ -61,6 +61,7 @@ public class ApiExceptionHandler {
     @ExceptionHandler({InternalException.class})
     public <T> ResponseEntity<ApiErrorResponse<T>> handleInternalException(
             InternalException exception) {
+
         log.info("InternalException: {}", exception.getMessage());
 
         return ApiErrorResponse.error(exception.getMessage(), exception.getStatus());

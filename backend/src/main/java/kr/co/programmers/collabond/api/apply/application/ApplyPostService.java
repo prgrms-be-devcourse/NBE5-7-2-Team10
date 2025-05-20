@@ -90,10 +90,10 @@ public class ApplyPostService {
 
     @Transactional(readOnly = true)
     public Page<ApplyPostDto> findReceivedApplyPosts(
-            ReceivedApplyPostsRequestDto request
-            , OAuth2UserInfo userInfo
-            , Pageable pageable
-    ) {
+            ReceivedApplyPostsRequestDto request,
+            OAuth2UserInfo userInfo,
+            Pageable pageable) {
+
         User user = userService.findByProviderId(userInfo.getUsername());
 
         Page<ApplyPostDto> applyPosts = applyPostRepository

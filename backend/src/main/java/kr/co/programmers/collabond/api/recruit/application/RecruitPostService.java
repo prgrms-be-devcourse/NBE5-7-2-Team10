@@ -4,8 +4,8 @@ import kr.co.programmers.collabond.api.profile.application.ProfileService;
 import kr.co.programmers.collabond.api.profile.domain.Profile;
 import kr.co.programmers.collabond.api.recruit.domain.RecruitPost;
 import kr.co.programmers.collabond.api.recruit.domain.RecruitPostStatus;
-import kr.co.programmers.collabond.api.recruit.dto.RecruitPostRequestDto;
-import kr.co.programmers.collabond.api.recruit.dto.RecruitPostResponseDto;
+import kr.co.programmers.collabond.api.recruit.domain.dto.RecruitPostRequestDto;
+import kr.co.programmers.collabond.api.recruit.domain.dto.RecruitPostResponseDto;
 import kr.co.programmers.collabond.api.recruit.infrastructure.RecruitPostRepository;
 import kr.co.programmers.collabond.api.recruit.interfaces.RecruitPostMapper;
 import kr.co.programmers.collabond.api.user.application.UserService;
@@ -68,12 +68,10 @@ public class RecruitPostService {
             throw new ForbiddenException();
         }
 
-        post.update(
-                request.getTitle(),
+        post.update(request.getTitle(),
                 request.getDescription(),
                 RecruitPostStatus.valueOf(request.getStatus()),
-                request.getDeadline()
-        );
+                request.getDeadline());
 
         return RecruitPostMapper.toResponseDto(post);
     }

@@ -1,4 +1,4 @@
-package kr.co.programmers.collabond.api.recruit.dto;
+package kr.co.programmers.collabond.api.recruit.domain.dto;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -18,14 +18,14 @@ public class RecruitPostDto {
 
     @Builder
     private RecruitPostDto(
-            Long id
-            , String title
-            , String description
-            , String status
-            , LocalDateTime deadline
-            , Long writerProfileId
-            , String writerProfileName
-    ) {
+            Long id,
+            String title,
+            String description,
+            String status,
+            LocalDateTime deadline,
+            Long writerProfileId,
+            String writerProfileName) {
+
         this.id = id;
         this.title = title;
         this.description = description;

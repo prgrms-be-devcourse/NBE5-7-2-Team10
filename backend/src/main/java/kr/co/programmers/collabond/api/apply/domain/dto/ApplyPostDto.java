@@ -4,7 +4,7 @@ import kr.co.programmers.collabond.api.apply.domain.ApplyPost;
 import kr.co.programmers.collabond.api.apply.interfaces.ApplyPostMapper;
 import kr.co.programmers.collabond.api.attachment.domain.dto.AttachmentDto;
 import kr.co.programmers.collabond.api.profile.domain.dto.ProfileDto;
-import kr.co.programmers.collabond.api.recruit.dto.RecruitPostDto;
+import kr.co.programmers.collabond.api.recruit.domain.dto.RecruitPostDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,13 +26,12 @@ public class ApplyPostDto {
     private List<AttachmentDto> attachmentFiles;
 
     @Builder
-    private ApplyPostDto(
-            RecruitPostDto recruitPost
-            , ProfileDto profile
-            , String content
-            , String status
-            , List<AttachmentDto> attachmentFiles
-    ) {
+    private ApplyPostDto(RecruitPostDto recruitPost,
+                         ProfileDto profile,
+                         String content,
+                         String status,
+                         List<AttachmentDto> attachmentFiles) {
+
         this.recruitPost = recruitPost;
         this.profile = profile;
         this.content = content;

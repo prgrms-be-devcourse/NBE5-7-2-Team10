@@ -1,7 +1,7 @@
 package kr.co.programmers.collabond.api.recruit.interfaces;
 
-import kr.co.programmers.collabond.api.recruit.dto.RecruitPostRequestDto;
-import kr.co.programmers.collabond.api.recruit.dto.RecruitPostResponseDto;
+import kr.co.programmers.collabond.api.recruit.domain.dto.RecruitPostRequestDto;
+import kr.co.programmers.collabond.api.recruit.domain.dto.RecruitPostResponseDto;
 import kr.co.programmers.collabond.api.recruit.application.RecruitPostService;
 import kr.co.programmers.collabond.api.recruit.domain.RecruitPostStatus;
 import kr.co.programmers.collabond.core.auth.oauth2.OAuth2UserInfo;
@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/recruitments")
 @RequiredArgsConstructor
 public class RecruitPostController {
+
     private final RecruitPostService recruitPostService;
 
     // 모집글 작성

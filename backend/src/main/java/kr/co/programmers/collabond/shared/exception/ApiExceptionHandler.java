@@ -16,8 +16,8 @@ public class ApiExceptionHandler {
     public <T> ResponseEntity<ApiErrorResponse<T>> handleCustomException(
             AbstractCustomException exception) {
 
-        log.info("AbstractCustomException: {}", exception.getMessage());
-        log.info("AbstractCustomException Status: {}", exception.getStatus());
+        log.debug("AbstractCustomException: {}", exception.getMessage());
+        log.debug("AbstractCustomException Status: {}", exception.getStatus());
 
         return ApiErrorResponse.error(exception.getMessage(), exception.getStatus());
     }
@@ -26,25 +26,16 @@ public class ApiExceptionHandler {
     public <T> ResponseEntity<ApiErrorResponse<T>> handleDuplicatedException(
             DuplicatedException exception) {
 
-        log.info("DuplicatedException: {}", exception.getMessage());
+        log.debug("DuplicatedException: {}", exception.getMessage());
 
         return ApiErrorResponse.error(exception.getMessage(), exception.getStatus());
     }
 
-    @ExceptionHandler({NotFoundException.class})
-    public <T> ResponseEntity<ApiErrorResponse<T>> handleNotFoundException(
-            NotFoundException exception) {
+    @ExceptionHandler({ExpiredException.class})
+    public <T> ResponseEntity<ApiErrorResponse<T>> handleExpiredException(
+            ExpiredException exception) {
 
-        log.info("NotFoundException: {}", exception.getMessage());
-
-        return ApiErrorResponse.error(exception.getMessage(), exception.getStatus());
-    }
-
-    @ExceptionHandler({InvalidException.class})
-    public <T> ResponseEntity<ApiErrorResponse<T>> handleInvalidException(
-            InvalidException exception) {
-
-        log.info("InvalidException: {}", exception.getMessage());
+        log.debug("ExpiredException: {}", exception.getMessage());
 
         return ApiErrorResponse.error(exception.getMessage(), exception.getStatus());
     }
@@ -53,7 +44,7 @@ public class ApiExceptionHandler {
     public <T> ResponseEntity<ApiErrorResponse<T>> handleForbiddenException(
             ForbiddenException exception) {
 
-        log.info("ForbiddenException: {}", exception.getMessage());
+        log.debug("ForbiddenException: {}", exception.getMessage());
 
         return ApiErrorResponse.error(exception.getMessage(), exception.getStatus());
     }
@@ -62,7 +53,25 @@ public class ApiExceptionHandler {
     public <T> ResponseEntity<ApiErrorResponse<T>> handleInternalException(
             InternalException exception) {
 
-        log.info("InternalException: {}", exception.getMessage());
+        log.debug("InternalException: {}", exception.getMessage());
+
+        return ApiErrorResponse.error(exception.getMessage(), exception.getStatus());
+    }
+
+    @ExceptionHandler({InvalidException.class})
+    public <T> ResponseEntity<ApiErrorResponse<T>> handleInvalidException(
+            InvalidException exception) {
+
+        log.debug("InvalidException: {}", exception.getMessage());
+
+        return ApiErrorResponse.error(exception.getMessage(), exception.getStatus());
+    }
+
+    @ExceptionHandler({NotFoundException.class})
+    public <T> ResponseEntity<ApiErrorResponse<T>> handleNotFoundException(
+            NotFoundException exception) {
+
+        log.debug("NotFoundException: {}", exception.getMessage());
 
         return ApiErrorResponse.error(exception.getMessage(), exception.getStatus());
     }

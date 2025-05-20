@@ -17,7 +17,7 @@ public class ProfileMapper {
         return Profile.builder()
                 .user(user)
                 .address(address)
-                .type(ProfileType.valueOf(dto.getType()))// .type(dto.getType().name())
+                .type(ProfileType.valueOf(dto.getType()))
                 .name(dto.getName())
                 .description(dto.getDescription())
                 .detailAddress(dto.getDetailAddress())

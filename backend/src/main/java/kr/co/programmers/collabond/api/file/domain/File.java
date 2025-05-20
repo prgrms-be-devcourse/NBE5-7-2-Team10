@@ -11,8 +11,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "files")
 @Getter
-//@SQLDelete(sql = "UPDATE files SET deleted_at = NOW() WHERE id = ?")
-//@SQLRestriction("deleted_at IS NULL")
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class File extends OnlyCreatedEntity {
 
@@ -23,7 +21,7 @@ public class File extends OnlyCreatedEntity {
     private String originName;
 
     @Builder
-    public File(String savedName, String originName) {
+    private File(String savedName, String originName) {
         this.savedName = savedName;
         this.originName = originName;
     }

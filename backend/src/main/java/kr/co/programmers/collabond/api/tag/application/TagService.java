@@ -2,6 +2,7 @@ package kr.co.programmers.collabond.api.tag.application;
 
 import kr.co.programmers.collabond.api.profile.domain.Profile;
 import kr.co.programmers.collabond.api.profiletag.domain.ProfileTag;
+import kr.co.programmers.collabond.api.profiletag.interfaces.ProfileTagMapper;
 import kr.co.programmers.collabond.api.tag.domain.Tag;
 import kr.co.programmers.collabond.api.tag.domain.TagType;
 import kr.co.programmers.collabond.api.tag.infrastructure.TagRepository;
@@ -70,9 +71,7 @@ public class TagService {
         }
 
         for (Tag tag : tags) {
-            ProfileTag profileTag = ProfileTag.builder()
-                    .tag(tag)
-                    .build();
+            ProfileTag profileTag = ProfileTagMapper.toEntity(tag);
             profile.addTag(profileTag); // Profile이 연관관계 관리
         }
     }

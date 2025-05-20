@@ -1,9 +1,6 @@
 package kr.co.programmers.collabond.shared.exception;
 
-import kr.co.programmers.collabond.shared.exception.custom.DuplicatedException;
-import kr.co.programmers.collabond.shared.exception.custom.ForbiddenException;
-import kr.co.programmers.collabond.shared.exception.custom.InvalidException;
-import kr.co.programmers.collabond.shared.exception.custom.NotFoundException;
+import kr.co.programmers.collabond.shared.exception.custom.*;
 import kr.co.programmers.collabond.shared.util.ApiErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -57,6 +54,14 @@ public class ApiExceptionHandler {
             ForbiddenException exception) {
 
         log.info("ForbiddenException: {}", exception.getMessage());
+
+        return ApiErrorResponse.error(exception.getMessage(), exception.getStatus());
+    }
+
+    @ExceptionHandler({InternalException.class})
+    public <T> ResponseEntity<ApiErrorResponse<T>> handleInternalException(
+            InternalException exception) {
+        log.info("InternalException: {}", exception.getMessage());
 
         return ApiErrorResponse.error(exception.getMessage(), exception.getStatus());
     }

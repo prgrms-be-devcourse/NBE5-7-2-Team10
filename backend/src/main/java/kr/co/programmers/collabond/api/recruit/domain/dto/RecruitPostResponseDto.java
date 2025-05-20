@@ -1,4 +1,4 @@
-package kr.co.programmers.collabond.api.recruit.dto;
+package kr.co.programmers.collabond.api.recruit.domain.dto;
 
 import kr.co.programmers.collabond.api.profile.domain.dto.ProfileSimpleResponseDto;
 import kr.co.programmers.collabond.api.recruit.domain.RecruitPostStatus;

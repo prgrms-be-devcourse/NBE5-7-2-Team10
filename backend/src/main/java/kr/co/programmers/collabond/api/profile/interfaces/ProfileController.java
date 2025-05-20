@@ -27,12 +27,27 @@ public class ProfileController {
             @RequestPart(name = "profileImage", required = true) MultipartFile profileImage,
             @RequestPart(name = "thumbnailImage", required = true) MultipartFile thumbnailImage,
             @RequestPart(name = "extraImages", required = false) List<MultipartFile> extraImages,
-            @AuthenticationPrincipal OAuth2UserInfo userInfo
-    ) {
+            @AuthenticationPrincipal OAuth2UserInfo userInfo) {
+
         ProfileResponseDto response = profileService
                 .create(request, profileImage, thumbnailImage, extraImages, userInfo);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    //프로필 수정
+    @PatchMapping(value = "/{profileId}")
+    public ResponseEntity<ProfileResponseDto> update(
+            @PathVariable Long profileId,
+            @RequestPart("profileRequest") ProfileRequestDto request,
+            @RequestPart(name = "profileImage", required = false) MultipartFile profileImage,
+            @RequestPart(name = "thumbnailImage", required = false) MultipartFile thumbnailImage,
+            @RequestPart(name = "extraImages", required = false) List<MultipartFile> extraImages) {
+
+        ProfileResponseDto response = profileService
+                .update(profileId, request, profileImage, thumbnailImage, extraImages);
+
+        return ResponseEntity.ok(response);
     }
 
     //특정 프로필 id로 프로필 상세 조회
@@ -47,21 +62,6 @@ public class ProfileController {
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<ProfileResponseDto>> getByUser(@PathVariable Long userId) {
         return ResponseEntity.ok(profileService.findAllByUser(userId));
-    }
-
-    //프로필 수정
-    @PatchMapping(value = "/{profileId}")
-    public ResponseEntity<ProfileResponseDto> update(
-            @PathVariable Long profileId,
-            @RequestPart("profileRequest") ProfileRequestDto request,
-            @RequestPart(name = "profileImage", required = false) MultipartFile profileImage,
-            @RequestPart(name = "thumbnailImage", required = false) MultipartFile thumbnailImage,
-            @RequestPart(name = "extraImages", required = false) List<MultipartFile> extraImages
-    ) {
-        ProfileResponseDto response = profileService
-                .update(profileId, request, profileImage, thumbnailImage, extraImages);
-
-        return ResponseEntity.ok(response);
     }
 
     //프로필 삭제시 연결된 파일은 HARDDELETE 후 프로필은 SOFTDELETE됨

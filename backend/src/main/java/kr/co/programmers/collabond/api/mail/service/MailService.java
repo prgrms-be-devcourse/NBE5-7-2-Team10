@@ -13,8 +13,6 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import java.time.format.DateTimeFormatter;
-
 @Service
 @Slf4j
 @RequiredArgsConstructor

@@ -18,7 +18,6 @@ public class Image {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "profile_id", nullable = false)
     private Profile profile;
@@ -33,7 +32,7 @@ public class Image {
     private Integer priority;
 
     @Builder
-    public Image(Profile profile, File file, String type, Integer priority) {
+    private Image(Profile profile, File file, String type, Integer priority) {
         this.profile = profile;
         this.file = file;
         this.type = type;
@@ -43,6 +42,4 @@ public class Image {
     public void updateProfile(Profile profile) {
         this.profile = profile;
     }
-
 }
-

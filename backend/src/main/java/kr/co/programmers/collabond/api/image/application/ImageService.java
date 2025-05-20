@@ -20,5 +20,4 @@ public class ImageService {
     public List<Image> findByProfileId(Long profileId) {
         return imageRepository.findByProfileId(profileId);
     }
-
 }

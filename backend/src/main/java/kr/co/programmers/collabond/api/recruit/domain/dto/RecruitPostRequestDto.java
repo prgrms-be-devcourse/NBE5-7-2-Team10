@@ -1,4 +1,4 @@
-package kr.co.programmers.collabond.api.recruit.dto;
+package kr.co.programmers.collabond.api.recruit.domain.dto;
 
 import lombok.Getter;
 import lombok.Setter;

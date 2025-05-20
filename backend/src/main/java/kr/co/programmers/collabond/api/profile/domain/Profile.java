@@ -61,7 +61,6 @@ public class Profile extends UpdatedEntity {
     @OneToMany(mappedBy = "profile")
     private List<RecruitPost> recruitPosts = new ArrayList<>();
 
-
     @Column(nullable = false)
     private Boolean status;
 
@@ -110,7 +109,6 @@ public class Profile extends UpdatedEntity {
     public String getDisplayName() {
         return isDeleted() ? "(이름없음)" : this.name;
     }
-
 
     public boolean isStatus() {
         return Boolean.TRUE.equals(this.status);

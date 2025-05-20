@@ -34,8 +34,9 @@ public class Address {
     private String dong;
 
     @Builder
-    public Address(Long id, String sidoCode, String sigunguCode, String dongCode,
-                   String sido, String sigungu, String dong) {
+    private Address(Long id, String sidoCode, String sigunguCode, String dongCode,
+                    String sido, String sigungu, String dong) {
+
         this.id = id;
         this.sidoCode = sidoCode;
         this.sigunguCode = sigunguCode;

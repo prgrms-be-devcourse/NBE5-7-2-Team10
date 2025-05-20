@@ -26,13 +26,12 @@ public class ApplyPostDto {
     private List<AttachmentDto> attachmentFiles;
 
     @Builder
-    private ApplyPostDto(
-            RecruitPostDto recruitPost
-            , ProfileDto profile
-            , String content
-            , String status
-            , List<AttachmentDto> attachmentFiles
-    ) {
+    private ApplyPostDto(RecruitPostDto recruitPost,
+                         ProfileDto profile,
+                         String content,
+                         String status,
+                         List<AttachmentDto> attachmentFiles) {
+
         this.recruitPost = recruitPost;
         this.profile = profile;
         this.content = content;

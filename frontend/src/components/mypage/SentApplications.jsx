@@ -105,7 +105,7 @@ const SentApplications = () => {
                     <p>{application.profile.type === "IP" ? "IP 캐릭터" : "매장"}</p>
                   </div>
                 </div>
-                <div className={`status-badge ${application.status.toLowerCase()}`}>
+                <div className={`status-badge.${application.status.toLowerCase()}`}>
                   {getStatusLabel(application.status)}
                 </div>
               </div>

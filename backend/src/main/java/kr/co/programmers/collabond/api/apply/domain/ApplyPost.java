@@ -54,4 +54,8 @@ public class ApplyPost extends OnlyCreatedEntity {
             attachment.addApplyPost(this);
         }
     }
+
+    public void updateStatus(ApplyPostStatus status) {
+        this.status = status;
+    }
 }

@@ -63,4 +63,13 @@ public class ApplyPostController {
 
         return ResponseEntity.ok(applyPosts);
     }
+
+    @PatchMapping("/accept/{applicationId}")
+    public ResponseEntity<Void> acceptApply(@PathVariable Long applicationId,
+                                            @AuthenticationPrincipal OAuth2UserInfo userInfo) {
+
+        applyPostService.acceptApply(applicationId, userInfo);
+
+        return ResponseEntity.ok().build();
+    }
 }

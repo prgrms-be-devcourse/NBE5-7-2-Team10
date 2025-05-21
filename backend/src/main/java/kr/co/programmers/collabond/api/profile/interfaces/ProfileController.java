@@ -1,10 +1,15 @@
 package kr.co.programmers.collabond.api.profile.interfaces;
 
 import kr.co.programmers.collabond.api.profile.application.ProfileService;
+import kr.co.programmers.collabond.api.profile.domain.ProfileType;
+import kr.co.programmers.collabond.api.profile.domain.dto.ProfileDetailResponseDto;
 import kr.co.programmers.collabond.api.profile.domain.dto.ProfileRequestDto;
 import kr.co.programmers.collabond.api.profile.domain.dto.ProfileResponseDto;
 import kr.co.programmers.collabond.core.auth.oauth2.OAuth2UserInfo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -69,5 +74,17 @@ public class ProfileController {
     public ResponseEntity<Void> delete(@PathVariable Long profileId) {
         profileService.delete(profileId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Page<ProfileDetailResponseDto>> searchProfiles(
+            @RequestParam String type,
+            @RequestParam(required = false) List<Long> tagIds,
+            @RequestParam(required = false) List<String> addressCodes,
+            Pageable pageable) {
+        Page<ProfileDetailResponseDto> profiles = profileService.searchProfiles(
+                ProfileType.valueOf(type.toUpperCase()), addressCodes, tagIds, pageable);
+
+        return ResponseEntity.ok(profiles);
     }
 }

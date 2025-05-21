@@ -1,26 +1,27 @@
 package kr.co.programmers.collabond.api.profile.interfaces;
 
-import kr.co.programmers.collabond.api.address.interfaces.AddressMapper;
-import kr.co.programmers.collabond.api.profile.domain.ProfileType;
-import kr.co.programmers.collabond.api.address.domain.Address;
+import kr.co.programmers.collabond.api.image.domain.Image;
 import kr.co.programmers.collabond.api.profile.domain.Profile;
-import kr.co.programmers.collabond.api.profile.domain.dto.ProfileDto;
-import kr.co.programmers.collabond.api.profile.domain.dto.ProfileRequestDto;
-import kr.co.programmers.collabond.api.profile.domain.dto.ProfileResponseDto;
-import kr.co.programmers.collabond.api.profile.domain.dto.ProfileSimpleResponseDto;
+import kr.co.programmers.collabond.api.profile.domain.ProfileType;
+import kr.co.programmers.collabond.api.profile.domain.dto.*;
+import kr.co.programmers.collabond.api.tag.domain.dto.TagResponseDto;
 import kr.co.programmers.collabond.api.tag.interfaces.TagMapper;
 import kr.co.programmers.collabond.api.user.domain.User;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class ProfileMapper {
 
-    public static Profile toEntity(ProfileRequestDto dto, User user, Address address) {
+    public static Profile toEntity(ProfileRequestDto dto, User user) {
         return Profile.builder()
                 .user(user)
-                .address(address)
+                .address(dto.getAddress())
+                .addressCode(dto.getAddressCode())
                 .type(ProfileType.valueOf(dto.getType()))
                 .name(dto.getName())
                 .description(dto.getDescription())
-                .detailAddress(dto.getDetailAddress())
                 .collaboCount(0)
                 .status(true)
                 .build();
@@ -41,12 +42,12 @@ public class ProfileMapper {
         return ProfileResponseDto.builder()
                 .id(entity.getId())
                 .userId(entity.getUser().getId())
-                .addressId(entity.getAddress() != null ? entity.getAddress().getId() : null)
                 .type(entity.getType().name())
                 .name(entity.getName())
                 .imageUrl(imageUrl)
                 .description(entity.getDescription())
-                .detailAddress(entity.getDetailAddress())
+                .addressCode(entity.getAddressCode())
+                .address(entity.getAddress())
                 .collaboCount(entity.getCollaboCount())
                 .status(entity.isStatus())
                 .tags(
@@ -64,7 +65,45 @@ public class ProfileMapper {
                 .profileId(entity.getId())
                 .imageUrl(imageUrl)
                 .type(entity.getType().name())
-                .address(AddressMapper.toDto(entity.getAddress()))
+                .address(entity.getAddress())
+                .build();
+    }
+
+    public static ProfileDetailResponseDto toDetailResponseDto(Profile profile) {
+        String profileImageUrl = null;
+        String thumbnailImageUrl = null;
+        List<String> extraImageUrls = new ArrayList<>();
+
+        for (Image image : profile.getImages()) {
+            if ("PROFILE".equals(image.getType())) {
+                profileImageUrl = image.getFile().getSavedName();
+            } else if ("THUMBNAIL".equals(image.getType())) {
+                thumbnailImageUrl = image.getFile().getSavedName();
+            } else {
+                extraImageUrls.add(image.getFile().getSavedName());
+            }
+        }
+
+        List<TagResponseDto> tagDtos = profile.getTags().stream()
+                .map(tag -> TagMapper.toDto(tag.getTag()))
+                .collect(Collectors.toList());
+
+        return ProfileDetailResponseDto.builder()
+                .id(profile.getId())
+                .userId(profile.getUser().getId())
+                .type(profile.getType().name())
+                .name(profile.getName())
+                .profileImageUrl(profileImageUrl)
+                .thumbnailImageUrl(thumbnailImageUrl)
+                .extraImageUrls(extraImageUrls)
+                .description(profile.getDescription())
+                .address(profile.getAddress())
+                .addressCode(profile.getAddressCode())
+                .collaboCount(profile.getCollaboCount())
+                .status(profile.isStatus())
+                .tags(tagDtos)
+                .createdAt(profile.getCreatedAt())
+                .updatedAt(profile.getUpdatedAt())
                 .build();
     }
 }

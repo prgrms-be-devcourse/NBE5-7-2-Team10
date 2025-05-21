@@ -11,6 +11,7 @@ public class ProfileDto {
     private String name;
     private String description;
     private String type;
+    private String imageUrl;
     private int collaboCount;
     private Long userId;
 }

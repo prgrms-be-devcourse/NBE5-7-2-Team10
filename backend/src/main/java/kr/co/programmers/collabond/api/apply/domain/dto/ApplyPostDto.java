@@ -9,11 +9,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
 @NoArgsConstructor
 public class ApplyPostDto {
+
+    private Long id;
 
     private RecruitPostDto recruitPost;
 
@@ -25,29 +28,36 @@ public class ApplyPostDto {
 
     private List<AttachmentDto> attachmentFiles;
 
+    private LocalDateTime createdAt;
+
     @Builder
-    private ApplyPostDto(RecruitPostDto recruitPost,
+    private ApplyPostDto(Long id,
+                         RecruitPostDto recruitPost,
                          ProfileDto profile,
                          String content,
                          String status,
-                         List<AttachmentDto> attachmentFiles) {
+                         List<AttachmentDto> attachmentFiles,
+                         LocalDateTime createdAt) {
 
+        this.id = id;
         this.recruitPost = recruitPost;
         this.profile = profile;
         this.content = content;
         this.status = status;
         this.attachmentFiles = attachmentFiles;
+        this.createdAt = createdAt;
     }
 
-    // todo : dto에서 생성자 사용하지 않는 방법이 있나 찾아보기
     public ApplyPostDto(
             ApplyPost applyPost
     ) {
         ApplyPostDto a = ApplyPostMapper.toDto(applyPost);
+        this.id = a.getId();
         this.recruitPost = a.getRecruitPost();
         this.profile = a.getProfile();
         this.content = a.getContent();
         this.status = a.getStatus();
         this.attachmentFiles = a.getAttachmentFiles();
+        this.createdAt = a.getCreatedAt();
     }
 }

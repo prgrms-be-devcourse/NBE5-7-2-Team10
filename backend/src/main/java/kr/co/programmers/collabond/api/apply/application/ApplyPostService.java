@@ -88,9 +88,12 @@ public class ApplyPostService {
                                                  Pageable pageable) {
 
         User user = userService.findByProviderId(userInfo.getUsername());
-        Page<ApplyPostDto> applyPosts = applyPostRepository
-                .findAllSentByUserId(user.getId(), request.getStatus(), pageable);
 
+        Page<ApplyPostDto> applyPosts = request.getStatus() != null
+                ? applyPostRepository
+                .findAllSentByUserIdAndStatus(user.getId(), request.getStatus(), pageable)
+                : applyPostRepository
+                .findAllSentByUser(user.getId(), pageable);
         return applyPosts;
     }
 
@@ -102,8 +105,11 @@ public class ApplyPostService {
 
         User user = userService.findByProviderId(userInfo.getUsername());
 
-        Page<ApplyPostDto> applyPosts = applyPostRepository
-                .findAllReceivedByUserId(user.getId(), request.getStatus(), pageable);
+        Page<ApplyPostDto> applyPosts = request.getStatus() != null
+                ? applyPostRepository
+                .findAllReceivedByUserIdAndStatus(user.getId(), request.getStatus(), pageable)
+                : applyPostRepository
+                .findAllReceivedByUser(user.getId(), pageable);
 
         return applyPosts;
     }

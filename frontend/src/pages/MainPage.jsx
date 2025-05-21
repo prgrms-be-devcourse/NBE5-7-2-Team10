@@ -114,7 +114,6 @@ const MainPage = () => {
         // 지역 데이터 가져오기 (시도)
         try {
           const provincesResponse = await regionAPI.getAddress()
-          console.log(provincesResponse.data.result)
           setProvinces(provincesResponse.data.result)
         } catch (error) {
           console.error("Error fetching provinces:", error)
@@ -185,21 +184,39 @@ const MainPage = () => {
         return
       }
 
-      let response
-      if (profileType === "ip") {
-        response = await profileAPI.getIPProfiles({
-          tags: filters.tags,
-          regions: filters.regions,
-        })
-      } else if (profileType === "store") {
-        response = await profileAPI.getStoreProfiles({
-          tags: filters.tags,
-          regions: filters.regions,
-        })
-      }
+      const params = {
+        type: profileType,
+        tagIds: filters.tags,            // 배열 [1, 2, ...]
+        addressCodes: filters.regions,   // 배열 ["11000", "22000", ...]
+        page: 0,                         // 페이지 번호 (0부터 시작)
+        size: 10,                     // 한 페이지에 가져올 수
+      };
 
-      setProfiles(response.data)
-      setFilteredProfiles(response.data)
+      const pa = buildQuery(params);
+
+      console.log(pa)
+
+      const response = await profileAPI.searchProfiles(pa);
+      console.log(response);
+
+      setProfiles(response.data.content);        // 실제 리스트
+      setFilteredProfiles(response.data.content);
+
+      // let response
+      // if (profileType === "ip") {
+      //   response = await profileAPI.getIPProfiles({
+      //     tags: filters.tags,
+      //     regions: filters.regions,
+      //   })
+      // } else if (profileType === "store") {
+      //   response = await profileAPI.getStoreProfiles({
+      //     tags: filters.tags,
+      //     regions: filters.regions,
+      //   })
+      // }
+
+      // setProfiles(response.data)
+      // setFilteredProfiles(response.data)
     } catch (error) {
       console.error("Error fetching profiles:", error)
 
@@ -222,6 +239,20 @@ const MainPage = () => {
       setFilteredProfiles(filteredDummies)
     }
   }
+
+  const buildQuery = (params) => {
+    const query = new URLSearchParams();
+
+    Object.entries(params).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        value.forEach((v) => query.append(key, v));
+      } else {
+        query.append(key, value);
+      }
+    });
+
+    return query.toString();
+  };
 
   // 검색 버튼 클릭 시에만 API 호출
   const handleSearch = () => {

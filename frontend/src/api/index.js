@@ -140,6 +140,7 @@ export const profileAPI = {
   deleteProfile: (profileId) => api.delete(`/api/profiles/${profileId}`),
   getIPProfiles: (params) => api.get("/api/profiles/ip", { params }),
   getStoreProfiles: (params) => api.get("/api/profiles/store", { params }),
+  searchProfiles: (params) => api.get(`/api/profiles/search?${params}`),
 };
 
 // Recruitment API

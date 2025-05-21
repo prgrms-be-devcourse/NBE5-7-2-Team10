@@ -28,6 +28,7 @@ public class ApplyPostMapper {
 
     public static ApplyPostDto toDto(ApplyPost entity) {
         return ApplyPostDto.builder()
+                .id(entity.getId())
                 .recruitPost(RecruitPostMapper.toDto(entity.getRecruitPost()))
                 .profile(ProfileMapper.toDto(entity.getProfile()))
                 .content(entity.getContent())
@@ -39,6 +40,7 @@ public class ApplyPostMapper {
                                 .map(AttachmentMapper::toDto)
                                 .collect(Collectors.toList())
                 )
+                .createdAt(entity.getCreatedAt())
                 .build();
     }
 }

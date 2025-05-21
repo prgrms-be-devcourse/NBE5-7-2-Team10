@@ -295,7 +295,7 @@ const ProfileEdit = () => {
                 <div key={profile.id} className="profile-card">
                   <div className="profile-image">
                     <img 
-                      src={`http://localhost:8080/api/files/images/${profile.imageUrl}`}
+                      src={`http://localhost:8080/api/files/images/${profile.imageUrl}` || "/placeholder-profile.png"}
                       // src={profile.imageUrl || "/placeholder-profile.png"} 
                       alt={profile.name} 
                     />

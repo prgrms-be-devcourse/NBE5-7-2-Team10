@@ -20,13 +20,18 @@ const SentApplications = () => {
   const fetchApplications = async () => {
     try {
       setLoading(true)
+      const sortMapping = {
+        newest: "createdAt,desc",
+        oldest: "createdAt,asc",
+      }
       const params = {
         status: filter !== "all" ? filter : undefined,
-        sort,
+        sort: sortMapping[sort]
       }
 
       const response = await applicationAPI.getSentApplications(params)
-      setApplications(response.data)
+      const data = response.data?.content || []
+      setApplications(Array.isArray(data) ? data : [])
     } catch (error) {
       console.error("Error fetching applications:", error)
     } finally {
@@ -92,7 +97,7 @@ const SentApplications = () => {
               <div className="application-header">
                 <div className="profile-info">
                   <img
-                    src={application.profile.imageUrl || "/placeholder-profile.png"}
+                    src={`http://localhost:8080/api/files/images/${application.profile.imageUrl}` || "/placeholder-profile.png"}
                     alt={application.profile.name}
                   />
                   <div>
@@ -116,7 +121,7 @@ const SentApplications = () => {
                   <span className="application-date">
                     신청일: {new Date(application.createdAt).toLocaleDateString()}
                   </span>
-                  <span className="recruitment-title">모집글: {application.recruitment.title}</span>
+                  <span className="recruitment-title">모집글: {application.recruitPost.title}</span>
                 </div>
               </div>
 

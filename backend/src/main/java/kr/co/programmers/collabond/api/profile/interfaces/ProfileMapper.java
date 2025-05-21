@@ -1,8 +1,8 @@
 package kr.co.programmers.collabond.api.profile.interfaces;
 
 import kr.co.programmers.collabond.api.image.domain.Image;
-import kr.co.programmers.collabond.api.profile.domain.Profile;
 import kr.co.programmers.collabond.api.profile.domain.ProfileType;
+import kr.co.programmers.collabond.api.profile.domain.Profile;
 import kr.co.programmers.collabond.api.profile.domain.dto.*;
 import kr.co.programmers.collabond.api.tag.domain.dto.TagResponseDto;
 import kr.co.programmers.collabond.api.tag.interfaces.TagMapper;
@@ -33,6 +33,13 @@ public class ProfileMapper {
                 .name(entity.getName())
                 .description(entity.getDescription())
                 .type(entity.getType().toString())
+                .imageUrl(
+                        entity.getImages().stream()
+                                .filter(i -> i.getType().equals("PROFILE"))
+                                .findFirst()
+                                .map(profile -> profile.getFile().getSavedName())
+                                .orElse(null)
+                )
                 .collaboCount(entity.getCollaboCount())
                 .userId(entity.getUser().getId())
                 .build();

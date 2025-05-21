@@ -45,7 +45,7 @@ const ApplicationDetailModal = ({ application, onClose, onAccept, isReceived }) 
           <div className="detail-section">
             <h3>프로필 정보</h3>
             <div className="profile-detail">
-              <img src={application.profile.imageUrl || "/placeholder-profile.png"} alt={application.profile.name} />
+              <img src={`http://localhost:8080/api/files/images/${application.profile.imageUrl}` || "/placeholder-profile.png"} alt={application.profile.name} />
               <div>
                 <h4>{application.profile.name}</h4>
                 <p>{application.profile.type === "IP" ? "IP 캐릭터" : "매장"}</p>
@@ -57,11 +57,11 @@ const ApplicationDetailModal = ({ application, onClose, onAccept, isReceived }) 
           <div className="detail-section">
             <h3>모집글 정보</h3>
             <div className="recruitment-detail">
-              <h4>{application.recruitment.title}</h4>
-              <p>{application.recruitment.description}</p>
+              <h4>{application.recruitPost.title}</h4>
+              <p>{application.recruitPost.description}</p>
               <div className="detail-row">
                 <span className="detail-label">마감일</span>
-                <span>{new Date(application.recruitment.deadline).toLocaleDateString()}</span>
+                <span>{new Date(application.recruitPost.deadline).toLocaleDateString()}</span>
               </div>
             </div>
           </div>

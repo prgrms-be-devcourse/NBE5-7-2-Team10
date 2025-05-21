@@ -19,7 +19,15 @@ public interface ApplyPostRepository extends JpaRepository<ApplyPost, Long> {
             FROM ApplyPost a
             WHERE a.status = :status and a.profile.user.id = :userId
             """)
-    Page<ApplyPostDto> findAllSentByUserId(Long userId, String status, Pageable pageable);
+    Page<ApplyPostDto> findAllSentByUserIdAndStatus(Long userId, String status, Pageable pageable);
+
+    @Query("""
+            SELECT new kr.co.programmers.collabond.api.apply.domain.dto.ApplyPostDto(a)
+            FROM ApplyPost a
+            WHERE a.profile.user.id = :userId
+            """)
+    Page<ApplyPostDto> findAllSentByUser(Long userId, Pageable pageable);
+
 
     // 받은 applyPost를 보는 것이기 때문에 status는 recruitPost의 상태
     @Query("""
@@ -27,5 +35,14 @@ public interface ApplyPostRepository extends JpaRepository<ApplyPost, Long> {
             FROM ApplyPost a
             WHERE a.recruitPost.status = :status and a.recruitPost.profile.user.id = :userId
             """)
-    Page<ApplyPostDto> findAllReceivedByUserId(Long userId, String status, Pageable pageable);
+    Page<ApplyPostDto> findAllReceivedByUserIdAndStatus(Long userId, String status, Pageable pageable);
+
+    @Query("""
+            SELECT new kr.co.programmers.collabond.api.apply.domain.dto.ApplyPostDto(a)
+            FROM ApplyPost a
+            WHERE a.recruitPost.profile.user.id = :userId
+            """)
+    Page<ApplyPostDto> findAllReceivedByUser(Long userId, Pageable pageable);
+
+
 }

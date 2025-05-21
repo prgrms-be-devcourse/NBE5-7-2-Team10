@@ -6,7 +6,6 @@ import kr.co.programmers.collabond.api.image.domain.Image;
 import kr.co.programmers.collabond.api.profiletag.domain.ProfileTag;
 import kr.co.programmers.collabond.api.recruit.domain.RecruitPost;
 import kr.co.programmers.collabond.api.user.domain.User;
-import kr.co.programmers.collabond.api.address.domain.Address;
 import kr.co.programmers.collabond.shared.domain.UpdatedEntity;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,12 +28,9 @@ public class Profile extends UpdatedEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "address_id")
-    private Address address;
+    private String addressCode;
 
-    @Column(name = "detail_address", length = 255)
-    private String detailAddress;
+    private String address;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -65,20 +61,20 @@ public class Profile extends UpdatedEntity {
     private Boolean status;
 
     @Builder
-    public Profile(User user, Address address, ProfileType type, String name, String description,
-                   String detailAddress, Integer collaboCount, Boolean status) {
+    public Profile(User user, String addressCode, String address, ProfileType type, String name,
+                   String description, Integer collaboCount, Boolean status) {
         this.user = user;
+        this.addressCode = addressCode;
         this.address = address;
         this.type = type;
         this.name = name;
         this.description = description;
-        this.detailAddress = detailAddress;
         this.collaboCount = collaboCount;
         this.status = status;
     }
 
-    public Profile update(String name, String description, Address address,
-                          String detailAddress, Integer collaboCount, Boolean status) {
+    public Profile update(String name, String description, String addressCode, String address,
+                          Integer collaboCount, Boolean status) {
         if (name != null) {
             this.name = name;
         }
@@ -87,12 +83,8 @@ public class Profile extends UpdatedEntity {
             this.description = description;
         }
 
-        if (address != null) {
-            this.address = address;
-        }
-
-        if (detailAddress != null) {
-            this.detailAddress = detailAddress;
+        if (addressCode != null) {
+            this.addressCode = address;
         }
 
         if (collaboCount != null) {
@@ -114,7 +106,7 @@ public class Profile extends UpdatedEntity {
         return Boolean.TRUE.equals(this.status);
     }
 
-    public void update(String name, String description, String detailAddress) {
+    public void update(String name, String description, String addressCode, String address) {
         if (name != null) {
             this.name = name;
         }
@@ -123,7 +115,13 @@ public class Profile extends UpdatedEntity {
             this.description = description;
         }
 
-        this.detailAddress = detailAddress;
+        if( addressCode != null ){
+            this.addressCode = addressCode;
+        }
+
+        if(address != null){
+            this.address = address;
+        }
     }
 
     public void addImage(Image image) {

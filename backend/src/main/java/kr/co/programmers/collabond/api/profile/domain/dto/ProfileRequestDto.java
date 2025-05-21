@@ -10,10 +10,10 @@ import java.util.List;
 @Builder
 public class ProfileRequestDto {
     private Long userId;
-    private Long addressId;
     private String type;
     private String name;
     private String description;
-    private String detailAddress;
+    private String address;
+    private String addressCode;
     private List<Long> tagIds;
 }

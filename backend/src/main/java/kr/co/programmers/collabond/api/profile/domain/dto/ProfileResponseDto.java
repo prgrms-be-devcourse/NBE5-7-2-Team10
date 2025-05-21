@@ -13,12 +13,12 @@ import java.util.List;
 public class ProfileResponseDto {
     private Long id;
     private Long userId;
-    private Long addressId;
     private String type;
     private String name;
     private String imageUrl;
     private String description;
-    private String detailAddress;
+    private String address;
+    private String addressCode;
     private int collaboCount;
     private boolean status;
     private List<TagResponseDto> tags;

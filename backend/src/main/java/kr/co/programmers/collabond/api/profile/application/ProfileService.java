@@ -1,21 +1,20 @@
 package kr.co.programmers.collabond.api.profile.application;
 
-import kr.co.programmers.collabond.api.address.application.AddressService;
-import kr.co.programmers.collabond.api.address.domain.Address;
-import kr.co.programmers.collabond.api.file.domain.File;
 import kr.co.programmers.collabond.api.file.application.FileService;
+import kr.co.programmers.collabond.api.file.domain.File;
 import kr.co.programmers.collabond.api.image.application.ImageService;
 import kr.co.programmers.collabond.api.image.domain.Image;
 import kr.co.programmers.collabond.api.image.infrastructure.ImageMapper;
 import kr.co.programmers.collabond.api.profile.domain.Profile;
+import kr.co.programmers.collabond.api.profile.domain.ProfileType;
+import kr.co.programmers.collabond.api.profile.domain.dto.ProfileDetailResponseDto;
 import kr.co.programmers.collabond.api.profile.domain.dto.ProfileRequestDto;
 import kr.co.programmers.collabond.api.profile.domain.dto.ProfileResponseDto;
 import kr.co.programmers.collabond.api.profile.infrastructure.ProfileRepository;
-import kr.co.programmers.collabond.api.recruit.domain.RecruitPost;
+import kr.co.programmers.collabond.api.profile.interfaces.ProfileMapper;
 import kr.co.programmers.collabond.api.tag.application.TagService;
 import kr.co.programmers.collabond.api.user.application.UserService;
 import kr.co.programmers.collabond.api.user.domain.User;
-import kr.co.programmers.collabond.api.profile.interfaces.ProfileMapper;
 import kr.co.programmers.collabond.core.auth.oauth2.OAuth2UserInfo;
 import kr.co.programmers.collabond.shared.exception.ErrorCode;
 import kr.co.programmers.collabond.shared.exception.custom.ForbiddenException;
@@ -24,6 +23,9 @@ import kr.co.programmers.collabond.shared.exception.custom.InvalidException;
 import kr.co.programmers.collabond.shared.exception.custom.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,7 +38,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ProfileService {
 
-    private final AddressService addressService;
     private final ImageService imageService;
     private final FileService fileService;
     private final UserService userService;
@@ -61,14 +62,8 @@ public class ProfileService {
             throw new InvalidException(ErrorCode.CREATE_NO_MORE);
         }
 
-        // profile의 adressId 가 있을 경우 주소 엔티티 조회, 있으면 주소 가져오고 없으면 null
-        Address address = null;
-        if (dto.getAddressId() != null) {
-            address = addressService.findByAddressId(dto.getAddressId());
-        }
-
         // Profile 엔티티 생성, db에 저장 후 ResponseDto 반환
-        Profile profile = ProfileMapper.toEntity(dto, user, address);
+        Profile profile = ProfileMapper.toEntity(dto, user);
 
         saveImage(profile, profileImage, "PROFILE", 1);
         saveImage(profile, thumbnailImage, "THUMBNAIL", 1);
@@ -102,7 +97,7 @@ public class ProfileService {
         Profile profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
-        profile.update(dto.getName(), dto.getDescription(), dto.getDetailAddress());
+        profile.update(dto.getName(), dto.getDescription(), dto.getAddressCode(), dto.getAddress());
 
         updateImage(profile, profileImage, "PROFILE");
         updateImage(profile, thumbnailImage, "THUMBNAIL");
@@ -200,5 +195,27 @@ public class ProfileService {
                 .findAny()
                 .orElse(null);
         return profileImage.getFile().getSavedName();
+    }
+
+    public Page<ProfileDetailResponseDto> searchProfiles(
+            ProfileType type, List<String> addressCodes, List<Long> tagIds, Pageable pageable) {
+        Page<Profile> profiles;
+
+        boolean hasAddressCodes = addressCodes != null && !addressCodes.isEmpty();
+        boolean hasTagIds = tagIds != null && !tagIds.isEmpty();
+
+        if (hasAddressCodes && hasTagIds) {
+            profiles = profileRepository.findByTypeAndTagIdsAndAddressCodes(type, tagIds, addressCodes, pageable);
+        } else if (hasAddressCodes) {
+            profiles = profileRepository.findByTypeAndAddressCodes(type, addressCodes, pageable);
+        } else if (hasTagIds) {
+            profiles = profileRepository.findByTypeAndTagIds(type, tagIds, pageable);
+        } else {
+            profiles = profileRepository.findAll(pageable);
+        }
+
+        List<ProfileDetailResponseDto> result = profiles
+                .map(ProfileMapper::toDetailResponseDto).getContent();
+        return new PageImpl<>(result, pageable, result.size());
     }
 }

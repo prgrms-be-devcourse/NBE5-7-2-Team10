@@ -22,7 +22,6 @@ const isBrowser = typeof window !== "undefined";
 
 export const api = axios.create({
   baseURL: BASE_URL,
-
 });
 
 // 브라우저 환경에서만 토큰 처리
@@ -76,19 +75,48 @@ export const apiClient = axios.create({
   baseURL: "https://sgisapi.kostat.go.kr/OpenAPI3",
 });
 
+// apiClient.interceptors.response.use(
+//   (response) => response,
+//   async (error) => {
+//     const { config, response } = error;
+//     alert(response);
+//     if (response?.data?.errCd === -401) {
+//       const authRes = await apiClient.get("/auth/authentication.json", {
+//         params: { consumer_key: consumerKey, consumer_secret: consumerSecret },
+//       });
+//       const newToken = authRes.data.result.accessToken;
+//       setGovAccessToken(newToken);
+//       config.params.accessToken = newToken;
+//       return apiClient.request(config);
+//     }
+//     return Promise.reject(error);
+//   }
+// );
+
 apiClient.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const { config, response } = error;
-    if (response?.data?.errCd === -401) {
-      const authRes = await apiClient.get("/auth/authentication.json", {
-        params: { consumer_key: consumerKey, consumer_secret: consumerSecret },
-      });
-      const newToken = authRes.data.result.accessToken;
-      setGovAccessToken(newToken);
-      config.params.accessToken = newToken;
-      return apiClient.request(config);
+  async (response) => {
+    // 응답이 200이어도 내부 errCd가 -401이면 예외 처리
+    if (response.data?.errCd === -401) {
+      try {
+        const authRes = await apiClient.get("/auth/authentication.json", {
+          params: {
+            consumer_key: consumerKey,
+            consumer_secret: consumerSecret,
+          },
+        });
+        const newToken = authRes.data.result.accessToken;
+        setGovAccessToken(newToken);
+
+        window.location.href = "/";
+      } catch (e) {
+        return Promise.reject(e);
+      }
     }
+
+    return response;
+  },
+  (error) => {
+    // 일반적인 HTTP 오류 처리
     return Promise.reject(error);
   }
 );
@@ -96,6 +124,7 @@ apiClient.interceptors.response.use(
 // User API
 export const userAPI = {
   signup: (userData) => api.patch("/api/users/signup", userData),
+  getMyUserInfo: () => api.get("/api/users"),
   getUserInfo: (userId) => api.get(`/api/users/${userId}`),
   updateUserInfo: (data) => api.patch(`/api/users`, data),
   deleteAccount: () => api.delete(`/api/users`),
@@ -111,7 +140,7 @@ export const profileAPI = {
   deleteProfile: (profileId) => api.delete(`/api/profiles/${profileId}`),
   getIPProfiles: (params) => api.get("/api/profiles/ip", { params }),
   getStoreProfiles: (params) => api.get("/api/profiles/store", { params }),
-  getUserProfiles: (userId) => api.get(`/api/profiles/user/${userId}`),
+  searchProfiles: (params) => api.get(`/api/profiles/search?${params}`),
 };
 
 // Recruitment API

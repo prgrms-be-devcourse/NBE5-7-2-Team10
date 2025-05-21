@@ -17,6 +17,10 @@ const ApplicationDetailModal = ({ application, onClose, onAccept, isReceived }) 
     }
   }
 
+  const getStatusClass = (status) => {
+    return status.toLowerCase();
+  };
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="application-detail-modal" onClick={(e) => e.stopPropagation()}>
@@ -32,7 +36,7 @@ const ApplicationDetailModal = ({ application, onClose, onAccept, isReceived }) 
             <h3>지원 정보</h3>
             <div className="detail-row">
               <span className="detail-label">상태</span>
-              <span className={`status-badge ${application.status.toLowerCase()}`}>
+              <span className={`status-badge.${getStatusClass(application.status)}`}>
                 {getStatusLabel(application.status)}
               </span>
             </div>

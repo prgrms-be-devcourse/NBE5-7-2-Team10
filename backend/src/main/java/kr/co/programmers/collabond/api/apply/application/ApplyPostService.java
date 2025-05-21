@@ -1,6 +1,7 @@
 package kr.co.programmers.collabond.api.apply.application;
 
 import kr.co.programmers.collabond.api.apply.domain.ApplyPost;
+import kr.co.programmers.collabond.api.apply.domain.ApplyPostStatus;
 import kr.co.programmers.collabond.api.apply.domain.dto.ApplyPostRequestDto;
 import kr.co.programmers.collabond.api.apply.domain.dto.ApplyPostDto;
 import kr.co.programmers.collabond.api.apply.domain.dto.ReceivedApplyPostsRequestDto;
@@ -22,6 +23,7 @@ import kr.co.programmers.collabond.api.user.application.UserService;
 import kr.co.programmers.collabond.api.user.domain.User;
 import kr.co.programmers.collabond.core.auth.oauth2.OAuth2UserInfo;
 import kr.co.programmers.collabond.shared.exception.ErrorCode;
+import kr.co.programmers.collabond.shared.exception.custom.ForbiddenException;
 import kr.co.programmers.collabond.shared.exception.custom.InvalidException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -112,5 +114,29 @@ public class ApplyPostService {
                 .findAllReceivedByUser(user.getId(), pageable);
 
         return applyPosts;
+    }
+
+    @Transactional
+    public void acceptApply(Long applicationId, OAuth2UserInfo userInfo) {
+
+        ApplyPost receivedApply = applyPostRepository.findById(applicationId)
+                .orElseThrow(() -> new InvalidException(ErrorCode.APPLY_NOT_FOUND));
+
+        User loginUser = userService.findByProviderId(userInfo.getUsername());
+
+        if (!receivedApply.getRecruitPost().getProfile().getUser().getId()
+                .equals(loginUser.getId())) {
+            throw new ForbiddenException(ErrorCode.FORBIDDEN_REQUEST);
+        }
+
+        receivedApply.updateStatus(ApplyPostStatus.ACCEPTED);
+        updateCollaboCount(receivedApply);
+
+        // todo : 메일 전송
+    }
+
+    private void updateCollaboCount(ApplyPost applyPost) {
+        applyPost.getProfile().updateCollaboCount();
+        applyPost.getRecruitPost().getProfile().updateCollaboCount();
     }
 }

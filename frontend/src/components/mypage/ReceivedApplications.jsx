@@ -72,13 +72,17 @@ const ReceivedApplications = () => {
   const getStatusLabel = (status) => {
     switch (status) {
       case "PENDING":
-        return "대기중"
+        return "대기중";
       case "ACCEPTED":
-        return "수락됨"
+        return "수락됨";
       default:
         return status
     }
   }
+
+  const getStatusClass = (status) => {
+    return status.toLowerCase();
+  };
 
   return (
     <div className="applications">
@@ -119,7 +123,7 @@ const ReceivedApplications = () => {
                     <p>{application.profile.type === "IP" ? "IP 캐릭터" : "매장"}</p>
                   </div>
                 </div>
-                <div className={`status-badge ${application.status.toLowerCase()}`}>
+                <div className={`status-badge.${getStatusClass(application.status)}`}>
                   {getStatusLabel(application.status)}
                 </div>
               </div>

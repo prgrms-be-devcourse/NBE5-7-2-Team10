@@ -135,4 +135,8 @@ public class Profile extends UpdatedEntity {
         this.tags.add(tag);
         tag.updateProfile(this);
     }
+
+    public void updateCollaboCount() {
+        this.collaboCount = this.collaboCount + 1;
+    }
 }

@@ -46,12 +46,29 @@ public class ProfileMapper {
     }
 
     public static ProfileResponseDto toResponseDto(Profile entity, String imageUrl) {
+        String profileImageUrl = null;
+        String thumbnailImageUrl = null;
+        List<String> extraImageUrls = new ArrayList<>();
+
+        for (Image image : entity.getImages()) {
+            if ("PROFILE".equals(image.getType())) {
+                profileImageUrl = image.getFile().getSavedName();
+            } else if ("THUMBNAIL".equals(image.getType())) {
+                thumbnailImageUrl = image.getFile().getSavedName();
+            } else {
+                extraImageUrls.add(image.getFile().getSavedName());
+            }
+        }
+
+
         return ProfileResponseDto.builder()
                 .id(entity.getId())
                 .userId(entity.getUser().getId())
                 .type(entity.getType().name())
                 .name(entity.getName())
-                .imageUrl(imageUrl)
+                .profileImageUrl(profileImageUrl)
+                .thumbnailImageUrl(thumbnailImageUrl)
+                .extraImageUrls(extraImageUrls)
                 .description(entity.getDescription())
                 .addressCode(entity.getAddressCode())
                 .address(entity.getAddress())

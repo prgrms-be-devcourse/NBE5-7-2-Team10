@@ -25,7 +25,7 @@ public class ApplyPost extends OnlyCreatedEntity {
     @JoinColumn(name = "profile_id")
     private Profile profile;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 1000)
     private String content;
 
     @Enumerated(EnumType.STRING)

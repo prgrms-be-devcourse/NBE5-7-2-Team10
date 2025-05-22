@@ -185,7 +185,15 @@ const RecruitmentDetailModal = ({ recruitment, onClose, isOwner = false, onDelet
               <button className="modal-close" onClick={onClose}>&times;</button>
             </div>
             <div className="profile-info">
-              <img src={recruitment.profile.imageUrl || "/placeholder-profile.png"} alt="Profile" />
+             <img
+                src={`http://localhost:8080/api/files/images/${recruitment.profile.imageUrl}`}
+                alt=""
+                onError={e => {
+                e.currentTarget.onerror = null;    // 무한루프 방지
+                e.currentTarget.src = "";
+                }}
+                style={{ backgroundColor: "#f0f0f0" }}
+                  />
               <h3>{recruitment.profile.name}</h3>
               <p>{recruitment.profile.type === "IP" ? "IP 캐릭터" : "매장"}</p>
               <p>{recruitment.profile.address?.sido} {recruitment.profile.address?.sigungu}</p>

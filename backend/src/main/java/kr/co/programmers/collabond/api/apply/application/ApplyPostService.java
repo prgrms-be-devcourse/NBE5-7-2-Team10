@@ -2,8 +2,8 @@ package kr.co.programmers.collabond.api.apply.application;
 
 import kr.co.programmers.collabond.api.apply.domain.ApplyPost;
 import kr.co.programmers.collabond.api.apply.domain.ApplyPostStatus;
-import kr.co.programmers.collabond.api.apply.domain.dto.ApplyPostRequestDto;
 import kr.co.programmers.collabond.api.apply.domain.dto.ApplyPostDto;
+import kr.co.programmers.collabond.api.apply.domain.dto.ApplyPostRequestDto;
 import kr.co.programmers.collabond.api.apply.domain.dto.ReceivedApplyPostsRequestDto;
 import kr.co.programmers.collabond.api.apply.domain.dto.SentApplyPostsRequestDto;
 import kr.co.programmers.collabond.api.apply.infrastructure.ApplyPostRepository;
@@ -12,8 +12,6 @@ import kr.co.programmers.collabond.api.attachment.domain.Attachment;
 import kr.co.programmers.collabond.api.attachment.interfaces.AttachmentMapper;
 import kr.co.programmers.collabond.api.file.application.FileService;
 import kr.co.programmers.collabond.api.file.domain.File;
-import kr.co.programmers.collabond.api.mail.dto.ReceivedApplyMailSendRequestDto;
-import kr.co.programmers.collabond.api.mail.interfaces.MailMapper;
 import kr.co.programmers.collabond.api.mail.service.MailService;
 import kr.co.programmers.collabond.api.profile.application.ProfileService;
 import kr.co.programmers.collabond.api.profile.domain.Profile;
@@ -33,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,10 +75,7 @@ public class ApplyPostService {
 
         ApplyPost save = applyPostRepository.save(applyPost);
 
-        ReceivedApplyMailSendRequestDto mailSendRequestDto =
-                MailMapper.toDto(recruitPost, profile, save.getCreatedAt());
-
-        mailService.sendReceivedApplyMail(mailSendRequestDto);
+        mailService.sendReceivedApplyMail(recruitPost, profile, save.getCreatedAt());
 
         return ApplyPostMapper.toDto(save);
     }
@@ -131,8 +127,9 @@ public class ApplyPostService {
 
         receivedApply.updateStatus(ApplyPostStatus.ACCEPTED);
         updateCollaboCount(receivedApply);
+        LocalDateTime acceptedAt = LocalDateTime.now();
 
-        // todo : 메일 전송
+        mailService.sendBondCompletionEmails(receivedApply, acceptedAt);
     }
 
     private void updateCollaboCount(ApplyPost applyPost) {

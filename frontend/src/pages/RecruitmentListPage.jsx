@@ -150,7 +150,7 @@ const RecruitmentListPage = () => {
 
             return (
               <div key={recruitment.id} className="recruitment-card" onClick={(e) => handleRecruitmentClick(recruitment, e)}>
-                <div className={`recruitment-tag ${isIP ? "ip-tag" : "store-tag"}`}>{isIP ? "IP캐릭터모집" : "매장모집"}</div>
+                <div className={`recruitment-tag ${isIP ? "ip-tag" : "store-tag"}`}>{isIP ? "매장모집" : "IP캐릭터모집" }</div>
                 <div className="recruitment-status">{statusLabel}</div>
                 <h2 className="recruitment-title">{recruitment.title}</h2>
                 <div className="recruitment-info">

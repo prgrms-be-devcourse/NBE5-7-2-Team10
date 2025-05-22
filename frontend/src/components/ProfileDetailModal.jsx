@@ -10,6 +10,7 @@ const ProfileDetailModal = ({ profile, onClose }) => {
 
   const isIP = profile.type === "IP"
   const createdDate = new Date(profile.createdAt).toLocaleDateString()
+  console.log(profile)
 
   // 태그 목록
   const tagElements =

@@ -78,14 +78,16 @@ const RecruitmentListPage = () => {
     e.stopPropagation()
     console.log("요청할 profileId:", profileId)
     try {
-      const response = await axios.get(`http://localhost:8080/api/profiles/${profileId}`)
-      setSelectedProfile(response.data)
-      setShowProfileModal(true)
-    } catch (error) {
-      console.error("프로필 상세 조회 실패:", error)
-      alert("프로필 상세 정보를 불러올 수 없습니다.")
-    }
+     const response = await axios.get(`http://localhost:8080/api/profiles/${profileId}`)
+     const profile = response.data
+
+    setSelectedProfile(profile)
+    setShowProfileModal(true)
+  } catch (error) {
+    console.error("프로필 상세 조회 실패:", error)
+    alert("프로필 상세 정보를 불러올 수 없습니다.")
   }
+}
 
   const handleFilterChange = (e) => setFilter(e.target.value)
   const handleSortChange = (e) => setSort(e.target.value)
@@ -171,7 +173,15 @@ const RecruitmentListPage = () => {
                 </div>
                 <div className="recruitment-footer">
                   <div className="profile-info">
-                    <img src={recruitment.profile.imageUrl || "/placeholder-profile.png"} alt={recruitment.profile.name} />
+                     <img
+                        src={`http://localhost:8080/api/files/images/${recruitment.profile.imageUrl}`}
+                        alt=""
+                        onError={e => {
+                        e.currentTarget.onerror = null;    // 무한루프 방지
+                        e.currentTarget.src = "";
+                    }}
+                    style={{ backgroundColor: "#f0f0f0" }}
+                     />
                     <div className="profile-details">
                       <div className="profile-name">{recruitment.profile.name}</div>
                     </div>

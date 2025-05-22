@@ -118,11 +118,20 @@ useEffect(() => {
       tags: profile.tags.map(t => t.id),
       status: profile.status.toString(),
       profileImageFile: null,
-      profileImagePreview: profile.profileImageUrl,
+      profileImagePreview: profile.profileImageUrl // 파일명만 들고있던 기존 상태 -> 파일명이 있으면 로컬8080 전체url 주고 없으면 널
+        ? `http://localhost:8080/api/files/images/${profile.profileImageUrl}`
+        : "",
+
       thumbnailImageFile: null,
-      thumbnailImagePreview: profile.thumbnailImageUrl,
+      thumbnailImagePreview: profile.thumbnailImageUrl
+        ? `http://localhost:8080/api/files/images/${profile.thumbnailImageUrl}`
+        : "",
+
       extraImageFiles: [],
-      extraImagePreviews: profile.extraImageUrls || [],
+      extraImagePreviews: Array.isArray(profile.extraImageUrls)
+        ? `http://localhost:8080/api/files/images/${name}`
+        : [],
+
       addressCode: profile.addressCode || "",
       address: profile.address || "",
     })
@@ -266,7 +275,12 @@ useEffect(() => {
             <label>프로필 이미지 (PROFILE)</label>
             <div className="image-upload">
               <div className="image-preview">
-                <img src={formData.profileImagePreview || "/placeholder-profile.png"} alt="PROFILE" />
+                <img
+                  src={formData.profileImagePreview }
+                  alt=""
+                  onError={e => { e.currentTarget.src = "" }} 
+                  style={{ backgroundColor: "#f0f0f0" }}
+                />
               </div>
               <input type="file" accept="image/*" onChange={handleProfileImageChange} />
             </div>
@@ -277,7 +291,15 @@ useEffect(() => {
             <label>썸네일 이미지 (THUMBNAIL)</label>
             <div className="image-upload">
               <div className="image-preview">
-                <img src={formData.thumbnailImagePreview || "/placeholder-profile.png"} alt="THUMBNAIL" />
+                <img
+                  src={formData.thumbnailImagePreview }
+                  alt=""
+                  onError={e => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = ""
+                  }}
+                  style={{ backgroundColor: "#f0f0f0" }}
+              />
               </div>
               <input type="file" accept="image/*" onChange={handleThumbnailChange} />
             </div>
@@ -424,12 +446,15 @@ useEffect(() => {
               {profiles.map(profile => (
                 <div key={profile.id} className="profile-card">
                   <div className="profile-image">
-                    <img
-                      src={profile.profileImageUrl
-                        ? `http://localhost:8080/api/files/images/${profile.profileImageUrl}`
-                        : "/placeholder-profile.png"}
-                      alt={profile.name}
-                    />
+                  <img
+                    src={`http://localhost:8080/api/files/images/${profile.imageUrl}`}
+                    alt=""
+                    onError={e => {
+                      e.currentTarget.onerror = null;    // 무한루프 방지
+                      e.currentTarget.src = "";
+                    }}
+                    style={{ backgroundColor: "#f0f0f0" }}
+                  />
                     <div className={`status-badge ${profile.status ? "active" : "inactive"}`}>
                       {profile.status ? "활성" : "비활성"}
                     </div>

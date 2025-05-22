@@ -182,13 +182,38 @@ export const tagAPI = {
   getStoreTags: () => api.get("/api/tags?type=STORE"),
 };
 
-// Region API
+// // Region API
+// export const regionAPI = {
+//   getAddress: async (cd) => {
+//     const token = await getGovAccessToken();
+//     const res = await apiClient.get(
+//       `/addr/stage.json?accessToken=${token}${cd ? `&cd=${cd}` : ""}`
+//     );
+//     return res;
+//   },
+// };
+
 export const regionAPI = {
+  // 기존: 법정동 단계별 공통 엔드포인트
   getAddress: async (cd) => {
     const token = await getGovAccessToken();
-    const res = await apiClient.get(
+    return apiClient.get(
       `/addr/stage.json?accessToken=${token}${cd ? `&cd=${cd}` : ""}`
     );
-    return res;
+  },
+
+  // 1) 시/도 목록만: cd 없이 호출
+  getProvinces() {
+    return this.getAddress();
+  },
+
+  // 2) 시/군/구: 상위 코드 넘겨서 호출
+  getDistricts(cd) {
+    return this.getAddress(cd);
+  },
+
+  // 3) 읍/면/동: 상위 코드 넘겨서 호출
+  getNeighborhoods(cd) {
+    return this.getAddress(cd);
   },
 };

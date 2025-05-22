@@ -174,37 +174,58 @@ useEffect(() => {
     }))
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
+ const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
-      setLoading(true)
-      const data = new FormData()
-      data.append("name", formData.name)
-      data.append("description", formData.description)
-      data.append("status", formData.status)
-      formData.tags.forEach(id => data.append("tagIds", id))
-      // address if STORE
-      if (!isIP) {
-        data.append("addressCode", formData.addressCode)
-        data.append("address", formData.address)
-      }
-      // images
-      if (formData.profileImageFile) data.append("profileImage", formData.profileImageFile)
-      if (formData.thumbnailImageFile) data.append("thumbnailImage", formData.thumbnailImageFile)
-      formData.extraImageFiles.forEach(file => data.append("extraImages", file))
+      setLoading(true);
 
-      await profileAPI.updateProfile(editingProfile.id, data)
-      const refreshed = await profileAPI.getUserProfiles(userId)
-      setProfiles(refreshed.data || [])
-      setEditingProfile(null)
-      resetForm()
+      // 1) ProfileRequestDto 에 맞춘 JSON 파트 생성
+      const profileRequest = {
+        name:        formData.name,
+        description: formData.description,
+        tagIds:      formData.tags,
+        status:      formData.status === "true",
+        type:        isIP ? "IP" : "STORE",
+        // STORE일 때만 addressId 필드로 전달
+        addressId:   !isIP ? formData.addressCode : undefined,
+        address:     !isIP ? formData.address : undefined,
+      };
+
+      // 2) FormData 준비
+      const data = new FormData();
+      // 가장 먼저 profileRequest 파트로 붙입니다 (application/json)
+      data.append(
+        "profileRequest",
+        new Blob([JSON.stringify(profileRequest)], { type: "application/json" })
+      );
+
+      // 3) 이미지 파일 파트들
+      if (formData.profileImageFile) {
+        data.append("profileImage", formData.profileImageFile);
+      }
+      if (formData.thumbnailImageFile) {
+        data.append("thumbnailImage", formData.thumbnailImageFile);
+      }
+      formData.extraImageFiles.forEach((file) => {
+        data.append("extraImages", file);
+      });
+
+      // 4) 업데이트 API 호출
+      await profileAPI.updateProfile(editingProfile.id, data);
+
+      // 5) 목록 새로고침
+      const refreshed = await profileAPI.getUserProfiles(userId);
+      setProfiles(refreshed.data || []);
+      setEditingProfile(null);
+      resetForm();
     } catch (err) {
-      console.error("Error saving profile:", err)
-      alert("프로필 저장에 실패했습니다.")
+      console.error("Error saving profile:", err);
+      alert("프로필 저장에 실패했습니다.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
+
 
   const handleCancel = () => {
     setEditingProfile(null)

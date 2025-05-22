@@ -5,81 +5,62 @@ import { regionAPI } from "../api";
 import "./RegionSelector.css";
 
 const SingleRegionSelector = ({ initialCode, onSelect }) => {
-  const [provinces, setProvinces] = useState([]);
-  const [districts, setDistricts] = useState([]);
+  const [provinces, setProvinces]         = useState([]);
+  const [districts, setDistricts]         = useState([]);
   const [neighborhoods, setNeighborhoods] = useState([]);
 
-  const [selectedProvince, setSelectedProvince] = useState(null);
-  const [selectedDistrict, setSelectedDistrict] = useState(null);
-  const [selectedNeighborhood, setSelectedNeighborhood] = useState(null);
+  const [selProvince, setSelProvince]       = useState(null);
+  const [selDistrict, setSelDistrict]       = useState(null);
+  const [selNeighborhood, setSelNeighborhood] = useState(null);
 
-  // 1) 도/특별시 목록 불러오기
+  // 1) 시/도
   useEffect(() => {
     const fetchProvinces = async () => {
-      const res = await regionAPI.getProvinces();
-      // res.data.result 안에 [{ cd, ctp_kor, … }, …] 형태로 내려옴
-      const items = (res.data.result || []).map((r) => ({
-        id: r.cd,                    // 내부 구분용
-        code: r.cd,                  // 법정동 코드
-        name: r.ctp_kor || r.ctp_nm, // 도/특별시 명
-      }));
-      setProvinces(items);
+      const res = await regionAPI.getAddress();       // cd 없이 호출 → 시/도
+      setProvinces(res.data.result || []);
     };
     fetchProvinces();
   }, []);
 
-  // 2) 시/군/구 목록 불러오기
+  // 2) 시/군/구
   useEffect(() => {
-    if (!selectedProvince) return;
+    if (!selProvince) return;
     const fetchDistricts = async () => {
-      const res = await regionAPI.getDistricts(selectedProvince.code);
-      const items = (res.data.result || []).map((r) => ({
-        id: r.cd,
-        code: r.cd,
-        name: r.sigungu_kor || r.sigungu_nm,
-      }));
-      setDistricts(items);
-      setSelectedDistrict(null);
+      const res = await regionAPI.getAddress(selProvince.cd);
+      setDistricts(res.data.result || []);
+      setSelDistrict(null);
       setNeighborhoods([]);
     };
     fetchDistricts();
-  }, [selectedProvince]);
+  }, [selProvince]);
 
-  // 3) 읍/면/동 목록 불러오기
+  // 3) 읍/면/동
   useEffect(() => {
-    if (!selectedDistrict) return;
+    if (!selDistrict) return;
     const fetchNeighborhoods = async () => {
-      const res = await regionAPI.getNeighborhoods(selectedDistrict.code);
-      const items = (res.data.result || []).map((r) => ({
-        id: r.cd,
-        code: r.cd,
-        name: r.emd_kor || r.emd_nm,
-      }));
-      setNeighborhoods(items);
-      setSelectedNeighborhood(null);
+      const res = await regionAPI.getAddress(selDistrict.cd);
+      setNeighborhoods(res.data.result || []);
+      setSelNeighborhood(null);
     };
     fetchNeighborhoods();
-  }, [selectedDistrict]);
+  }, [selDistrict]);
 
   const handleFinalSelect = () => {
     let code = "";
     let fullAddress = "";
 
-    if (selectedNeighborhood) {
-      code = selectedNeighborhood.code;
-      fullAddress = `${selectedProvince.name} ${selectedDistrict.name} ${selectedNeighborhood.name}`;
-    } else if (selectedDistrict) {
-      code = selectedDistrict.code;
-      fullAddress = `${selectedProvince.name} ${selectedDistrict.name}`;
-    } else if (selectedProvince) {
-      code = selectedProvince.code;
-      fullAddress = selectedProvince.name;
+    if (selNeighborhood) {
+      code = selNeighborhood.cd;
+      fullAddress = `${selProvince.addr_name} ${selDistrict.addr_name} ${selNeighborhood.addr_name}`;
+    } else if (selDistrict) {
+      code = selDistrict.cd;
+      fullAddress = `${selProvince.addr_name} ${selDistrict.addr_name}`;
+    } else if (selProvince) {
+      code = selProvince.cd;
+      fullAddress = selProvince.addr_name;
     }
 
-    if (code && fullAddress) {
-      // 부모가 expect 하는 shape: { code, fullAddress }
-      onSelect({ code, fullAddress });
-    }
+    if (code) onSelect({ code, fullAddress });
   };
 
   return (
@@ -87,51 +68,51 @@ const SingleRegionSelector = ({ initialCode, onSelect }) => {
       <label>지역 선택</label>
       <div className="region-dropdowns">
         <select
-          value={selectedProvince?.id || ""}
-          onChange={(e) =>
-            setSelectedProvince(
-              provinces.find((p) => p.id === e.target.value)
+          value={selProvince?.cd || ""}
+          onChange={e =>
+            setSelProvince(
+              provinces.find(p => p.cd === e.target.value) || null
             )
           }
         >
           <option value="">시/도 선택</option>
-          {provinces.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.name}
+          {provinces.map(p => (
+            <option key={p.cd} value={p.cd}>
+              {p.addr_name}
             </option>
           ))}
         </select>
 
         <select
-          disabled={!selectedProvince}
-          value={selectedDistrict?.id || ""}
-          onChange={(e) =>
-            setSelectedDistrict(
-              districts.find((d) => d.id === e.target.value)
+          disabled={!selProvince}
+          value={selDistrict?.cd || ""}
+          onChange={e =>
+            setSelDistrict(
+              districts.find(d => d.cd === e.target.value) || null
             )
           }
         >
           <option value="">시/군/구 선택</option>
-          {districts.map((d) => (
-            <option key={d.id} value={d.id}>
-              {d.name}
+          {districts.map(d => (
+            <option key={d.cd} value={d.cd}>
+              {d.addr_name}
             </option>
           ))}
         </select>
 
         <select
-          disabled={!selectedDistrict}
-          value={selectedNeighborhood?.id || ""}
-          onChange={(e) =>
-            setSelectedNeighborhood(
-              neighborhoods.find((n) => n.id === e.target.value)
+          disabled={!selDistrict}
+          value={selNeighborhood?.cd || ""}
+          onChange={e =>
+            setSelNeighborhood(
+              neighborhoods.find(n => n.cd === e.target.value) || null
             )
           }
         >
           <option value="">읍/면/동 선택</option>
-          {neighborhoods.map((n) => (
-            <option key={n.id} value={n.id}>
-              {n.name}
+          {neighborhoods.map(n => (
+            <option key={n.cd} value={n.cd}>
+              {n.addr_name}
             </option>
           ))}
         </select>

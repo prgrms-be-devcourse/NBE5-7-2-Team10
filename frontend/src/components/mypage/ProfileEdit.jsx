@@ -120,16 +120,18 @@ useEffect(() => {
       profileImageFile: null,
       profileImagePreview: profile.profileImageUrl // 파일명만 들고있던 기존 상태 -> 파일명이 있으면 로컬8080 전체url 주고 없으면 널
         ? `http://localhost:8080/api/files/images/${profile.profileImageUrl}`
-        : "",
+        : null,
 
       thumbnailImageFile: null,
       thumbnailImagePreview: profile.thumbnailImageUrl
         ? `http://localhost:8080/api/files/images/${profile.thumbnailImageUrl}`
-        : "",
+        : null,
 
       extraImageFiles: [],
       extraImagePreviews: Array.isArray(profile.extraImageUrls)
-        ? `http://localhost:8080/api/files/images/${name}`
+        ? profile.extraImageUrls.map(filename =>
+          `http://localhost:8080/api/files/images/${filename}`
+        )
         : [],
 
       addressCode: profile.addressCode || "",
@@ -291,18 +293,22 @@ useEffect(() => {
             <label>썸네일 이미지 (THUMBNAIL)</label>
             <div className="image-upload">
               <div className="image-preview">
-                <img
-                  src={formData.thumbnailImagePreview }
-                  alt=""
-                  onError={e => {
-                    e.currentTarget.onerror = null;
-                    e.currentTarget.src = ""
-                  }}
-                  style={{ backgroundColor: "#f0f0f0" }}
-              />
+                 {formData.thumbnailImagePreview ? (
+                  <img
+                    src={formData.thumbnailImagePreview}
+                    alt="썸네일 미리보기"
+                    onError={e => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = "/placeholder-thumbnail.png";
+                    }}
+                    />
+                  ) : (
+                    <div className="empty-preview">썸네일이 없습니다</div>
+                  )}
+
               </div>
               <input type="file" accept="image/*" onChange={handleThumbnailChange} />
-            </div>
+              </div>
           </div>
 
           {/* EXTRA Images */}
@@ -447,11 +453,13 @@ useEffect(() => {
                 <div key={profile.id} className="profile-card">
                   <div className="profile-image">
                   <img
-                    src={`http://localhost:8080/api/files/images/${profile.imageUrl}`}
+                    src={profile.profileImageUrl
+                      ? `http://localhost:8080/api/files/images/${profile.profileImageUrl}`
+                      : "/placeholder-profile.png"}
                     alt=""
                     onError={e => {
                       e.currentTarget.onerror = null;    // 무한루프 방지
-                      e.currentTarget.src = "";
+                      e.currentTarget.src = "/placeholder-profile.png";
                     }}
                     style={{ backgroundColor: "#f0f0f0" }}
                   />

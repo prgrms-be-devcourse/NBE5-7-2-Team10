@@ -7,7 +7,6 @@ import ProfileDetailModal from "../components/ProfileDetailModal"
 import "./MainPage.css"
 
 const MainPage = () => {
-  const [profiles, setProfiles] = useState([])
   const [filteredProfiles, setFilteredProfiles] = useState([])
   const [selectedProfile, setSelectedProfile] = useState(null)
   const [showModal, setShowModal] = useState(false)
@@ -22,6 +21,12 @@ const MainPage = () => {
   })
   const [isSearched, setIsSearched] = useState(false)
 
+  // 페이지네이션 관련 상태
+  const [currentPage, setCurrentPage] = useState(0)
+  const [totalPages, setTotalPages] = useState(1)
+  const [isLoading, setIsLoading] = useState(false)
+  const pageSize = 9 // 한 페이지에 표시할 항목 수
+
   // 태그 검색 관련 상태
   const [searchTerm, setSearchTerm] = useState("")
   const [filteredTags, setFilteredTags] = useState([])
@@ -34,58 +39,6 @@ const MainPage = () => {
   const [selectedDistrict, setSelectedDistrict] = useState(null)
   const [selectedNeighborhood, setSelectedNeighborhood] = useState(null)
   const [selectedRegions, setSelectedRegions] = useState([])
-
-  // 테스트용 더미 데이터
-  const dummyProfiles = [
-    {
-      id: "dummy-1",
-      name: "테스트 IP 캐릭터",
-      type: "IP",
-      description: "귀여운 캐릭터입니다. 다양한 콜라보레이션 경험이 있습니다.",
-      region: "서울 강남구",
-      imageUrl: "/placeholder-profile.png",
-      tags: [
-        { id: "tag-1", name: "캐릭터" },
-        { id: "tag-2", name: "귀여움" },
-      ],
-    },
-    {
-      id: "dummy-2",
-      name: "테스트 매장",
-      type: "STORE",
-      description: "트렌디한 카페입니다. IP 캐릭터와의 콜라보를 원합니다.",
-      region: "서울 마포구",
-      imageUrl: "/placeholder-profile.png",
-      tags: [
-        { id: "tag-3", name: "카페" },
-        { id: "tag-4", name: "디저트" },
-      ],
-    },
-    {
-      id: "dummy-3",
-      name: "인기 IP 캐릭터",
-      type: "IP",
-      description: "인기 있는 캐릭터로 다양한 제품에 활용 가능합니다.",
-      region: "부산 해운대구",
-      imageUrl: "/placeholder-profile.png",
-      tags: [
-        { id: "tag-5", name: "인기" },
-        { id: "tag-6", name: "캐릭터" },
-      ],
-    },
-    {
-      id: "dummy-4",
-      name: "트렌디 레스토랑",
-      type: "STORE",
-      description: "모던한 분위기의 레스토랑입니다. 특별한 콜라보를 찾고 있습니다.",
-      region: "인천 연수구",
-      imageUrl: "/placeholder-profile.png",
-      tags: [
-        { id: "tag-7", name: "레스토랑" },
-        { id: "tag-8", name: "모던" },
-      ],
-    },
-  ]
 
   // 태그 필터링
   useEffect(() => {
@@ -119,15 +72,18 @@ const MainPage = () => {
           console.error("Error fetching provinces:", error)
         }
 
-        // 초기 데이터 로드 - 기본 타입(store)에 맞는 프로필 조회
-        // 실제 API 호출 대신 더미 데이터 사용
-        setProfiles(dummyProfiles)
-        setFilteredProfiles(dummyProfiles.filter((profile) => profile.type === "STORE"))
+        const params = {
+          type: profileType,
+          page: 0,
+          size: pageSize,
+        }
+
+        const response = await profileAPI.searchProfiles(buildQuery(params))
+        console.log(response)
+        setFilteredProfiles(response.data.content)
+        setTotalPages(response.data.totalPages)
       } catch (error) {
         console.error("Error fetching data:", error)
-        setFilteredTags(dummyProfiles.filter((p) => p.type === "STORE").flatMap((profile) => profile.tags))
-        setProfiles(dummyProfiles)
-        setFilteredProfiles(dummyProfiles.filter((profile) => profile.type === "STORE"))
       }
     }
 
@@ -177,91 +133,72 @@ const MainPage = () => {
     fetchNeighborhoods()
   }, [selectedDistrict])
 
-  const fetchProfiles = async () => {
+  const fetchProfiles = async (pageNumber = 0) => {
     try {
-      // 검색 버튼을 누르지 않았다면 API 호출 안함
-      if (!isSearched) {
-        return
-      }
+      setIsLoading(true)
 
       const params = {
         type: profileType,
-        tagIds: filters.tags,            // 배열 [1, 2, ...]
-        addressCodes: filters.regions,   // 배열 ["11000", "22000", ...]
-        page: 0,                         // 페이지 번호 (0부터 시작)
-        size: 10,                     // 한 페이지에 가져올 수
-      };
+        tagIds: filters.tags, // 배열 [1, 2, ...]
+        addressCodes: filters.regions, // 배열 ["11000", "22000", ...]
+        page: pageNumber, // 페이지 번호 (0부터 시작)
+        size: pageSize, // 한 페이지에 가져올 수
+      }
 
-      const pa = buildQuery(params);
-
-      console.log(pa)
-
-      const response = await profileAPI.searchProfiles(pa);
-      console.log(response);
-
-      setProfiles(response.data.content);        // 실제 리스트
-      setFilteredProfiles(response.data.content);
-
-      // let response
-      // if (profileType === "ip") {
-      //   response = await profileAPI.getIPProfiles({
-      //     tags: filters.tags,
-      //     regions: filters.regions,
-      //   })
-      // } else if (profileType === "store") {
-      //   response = await profileAPI.getStoreProfiles({
-      //     tags: filters.tags,
-      //     regions: filters.regions,
-      //   })
-      // }
-
-      // setProfiles(response.data)
-      // setFilteredProfiles(response.data)
+      const response = await profileAPI.searchProfiles(buildQuery(params))
+      console.log(response)
+      setFilteredProfiles(response.data.content)
+      setTotalPages(response.data.totalPages)
+      setCurrentPage(pageNumber)
+      setIsLoading(false)
     } catch (error) {
       console.error("Error fetching profiles:", error)
-
-      // API 오류 시 더미 데이터로 대체
-      let filteredDummies = [...dummyProfiles]
-
-      // 프로필 타입에 따라 필터링
-      if (profileType === "ip") {
-        filteredDummies = filteredDummies.filter((profile) => profile.type === "IP")
-      } else if (profileType === "store") {
-        filteredDummies = filteredDummies.filter((profile) => profile.type === "STORE")
-      }
-
-      // 태그 필터링 (실제로는 백엔드에서 처리)
-      if (filters.tags.length > 0) {
-        filteredDummies = filteredDummies.filter((profile) => profile.tags.some((tag) => filters.tags.includes(tag.id)))
-      }
-
-      setProfiles(filteredDummies)
-      setFilteredProfiles(filteredDummies)
+      setIsLoading(false)
     }
   }
 
   const buildQuery = (params) => {
-    const query = new URLSearchParams();
+    const query = new URLSearchParams()
 
     Object.entries(params).forEach(([key, value]) => {
       if (Array.isArray(value)) {
-        value.forEach((v) => query.append(key, v));
+        value.forEach((v) => query.append(key, v))
       } else {
-        query.append(key, value);
+        query.append(key, value)
       }
-    });
+    })
 
-    return query.toString();
-  };
+    return query.toString()
+  }
 
   // 검색 버튼 클릭 시에만 API 호출
   const handleSearch = () => {
     setIsSearched(true)
-    fetchProfiles()
+    setCurrentPage(0)
+    fetchProfiles(0)
+  }
+
+  // 페이지 변경 핸들러
+  const handlePageChange = (pageNumber) => {
+    fetchProfiles(pageNumber)
+  }
+
+  // 이전 페이지로 이동
+  const goToPreviousPage = () => {
+    if (currentPage > 0) {
+      fetchProfiles(currentPage - 1)
+    }
+  }
+
+  // 다음 페이지로 이동
+  const goToNextPage = () => {
+    if (currentPage < totalPages - 1) {
+      fetchProfiles(currentPage + 1)
+    }
   }
 
   // 프로필 타입 변경 시 필터 초기화
-  const handleProfileTypeChange = (type) => {
+  const handleProfileTypeChange = async (type) => {
     setProfileType(type)
     setSelectedTags([])
     setSelectedRegions([])
@@ -270,6 +207,7 @@ const MainPage = () => {
       regions: [],
     })
     setIsSearched(false)
+    setCurrentPage(0)
 
     // 태그 필터링 업데이트
     if (type === "ip") {
@@ -278,28 +216,26 @@ const MainPage = () => {
       setFilteredTags(storeTags)
     }
 
-    // 더미 데이터 필터링
-    if (type === "ip") {
-      setFilteredProfiles(dummyProfiles.filter((profile) => profile.type === "IP"))
-    } else if (type === "store") {
-      setFilteredProfiles(dummyProfiles.filter((profile) => profile.type === "STORE"))
+    const params = {
+      type,
+      page: 0,
+      size: pageSize,
     }
+
+    const response = await profileAPI.searchProfiles(buildQuery(params))
+    setFilteredProfiles(response.data.content)
+    setTotalPages(response.data.totalPages)
   }
 
   const handleProfileClick = async (profileId) => {
     try {
       // 더미 데이터에서 프로필 찾기
-      const dummyProfile = dummyProfiles.find((p) => p.id === profileId)
-      if (dummyProfile) {
-        setSelectedProfile(dummyProfile)
+      const selected = filteredProfiles.find((p) => p.id === profileId)
+      if (selected) {
+        setSelectedProfile(selected)
         setShowModal(true)
         return
       }
-
-      // 실제 API 호출
-      const response = await profileAPI.getProfile(profileId)
-      setSelectedProfile(response.data)
-      setShowModal(true)
     } catch (error) {
       console.error("Error fetching profile details:", error)
     }
@@ -383,6 +319,46 @@ const MainPage = () => {
       default:
         return storeTags
     }
+  }
+
+  // 페이지네이션 버튼 렌더링
+  const renderPaginationButtons = () => {
+    if (totalPages <= 1) return null
+
+    const pageButtons = []
+    const maxVisibleButtons = 5 // 최대 표시할 페이지 버튼 수
+
+    let startPage = Math.max(0, currentPage - Math.floor(maxVisibleButtons / 2))
+    const endPage = Math.min(totalPages - 1, startPage + maxVisibleButtons - 1)
+
+    // 표시할 버튼이 maxVisibleButtons보다 적을 경우 startPage 조정
+    if (endPage - startPage + 1 < maxVisibleButtons) {
+      startPage = Math.max(0, endPage - maxVisibleButtons + 1)
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pageButtons.push(
+        <button
+          key={i}
+          className={`pagination-button ${currentPage === i ? "active" : ""}`}
+          onClick={() => handlePageChange(i)}
+        >
+          {i + 1}
+        </button>,
+      )
+    }
+
+    return (
+      <div className="pagination">
+        <button className="pagination-button prev" onClick={goToPreviousPage} disabled={currentPage === 0}>
+          이전
+        </button>
+        {pageButtons}
+        <button className="pagination-button next" onClick={goToNextPage} disabled={currentPage === totalPages - 1}>
+          다음
+        </button>
+      </div>
+    )
   }
 
   return (
@@ -555,16 +531,26 @@ const MainPage = () => {
       <section className="profiles-section">
         <h2 className="section-title">프로필 목록</h2>
 
-        {filteredProfiles.length === 0 ? (
+        {isLoading ? (
+          <div className="loading-indicator">
+            <div className="spinner"></div>
+            <p>프로필을 불러오는 중...</p>
+          </div>
+        ) : filteredProfiles.length === 0 ? (
           <div className="no-profiles">
             <p>검색 결과가 없습니다.</p>
           </div>
         ) : (
-          <div className="profiles-grid">
-            {filteredProfiles.map((profile) => (
-              <ProfileCard key={profile.id} profile={profile} onClick={() => handleProfileClick(profile.id)} />
-            ))}
-          </div>
+          <>
+            <div className="profiles-grid">
+              {filteredProfiles.map((profile) => (
+                <ProfileCard key={profile.id} profile={profile} onClick={() => handleProfileClick(profile.id)} />
+              ))}
+            </div>
+
+            {/* 페이지네이션 버튼 */}
+            {renderPaginationButtons()}
+          </>
         )}
       </section>
 

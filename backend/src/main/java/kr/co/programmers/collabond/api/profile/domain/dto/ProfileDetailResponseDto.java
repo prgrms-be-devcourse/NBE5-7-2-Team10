@@ -10,6 +10,7 @@ import java.util.List;
 public record ProfileDetailResponseDto(
         Long id,
         Long userId,
+        String nickname,
         String type,
         String name,
         String profileImageUrl,

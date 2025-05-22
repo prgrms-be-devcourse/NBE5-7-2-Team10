@@ -1,6 +1,5 @@
 package kr.co.programmers.collabond.api.profile.domain.dto;
 
-import kr.co.programmers.collabond.api.profile.domain.ProfileType;
 import lombok.*;
 
 @Getter
@@ -12,6 +11,7 @@ public class ProfileDto {
     private String name;
     private String description;
     private String type;
+    private String imageUrl;
     private int collaboCount;
     private Long userId;
 }

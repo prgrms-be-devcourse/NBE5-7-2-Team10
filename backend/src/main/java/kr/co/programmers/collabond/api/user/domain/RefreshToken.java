@@ -16,7 +16,7 @@ public class RefreshToken extends OnlyUpdatedEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
@@ -28,7 +28,7 @@ public class RefreshToken extends OnlyUpdatedEntity {
     private TokenStatus status = TokenStatus.VALID;
 
     @Builder
-    public RefreshToken(User user, String token) {
+    private RefreshToken(User user, String token) {
         this.user = user;
         this.token = token;
     }

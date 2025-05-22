@@ -2,6 +2,7 @@ server:
   port: ${PORT}
 
 spring:
+
   application:
     name: collabond
 
@@ -23,6 +24,11 @@ spring:
     url: jdbc:mysql://localhost:3306/collabond
     username: ${MYSQL_ID}
     password: ${MYSQL_PW}
+
+  sql:
+    init:
+      mode: always
+      encoding: UTF-8
 
   jpa:
     properties:
@@ -75,10 +81,9 @@ logging:
   level:
     org.springframework.security: TRACE
 
-
 custom:
   file:
-    path: ${user.home}/collabond/images/  # ?? ?? ??
+    path: ${FILE_PATH}/collabond/images/  # ?? ?? ??
   cors:
     allowed-origin: http://localhost:3000
   jwt:
@@ -86,7 +91,9 @@ custom:
       access: 600 # 10분
       refresh: 604800 # 7일
     secret: 76a6057b59bd44c7a87bbaa0576dae0376a6057b59bd44c7a87bbaa0576dae0376a6057b59bd44c7a87bbaa0576dae03
-    redirect-main: http://localhost:3000/oauth
-    redirect-sign-up: http://localhost:3000/signup
+    redirect-login-success: ${custom.cors.allowed-origin}/auth/callback
   mail:
-    subject: ??
+    subject:
+      apply-received: '[Collabond] 작성하신 지원 공고에 대해 새로운 지원자가 있습니다!'
+      bond-completed: '[Collabond] 본딩이 성사됐습니다!'
+      bond-requested: '[Collabond] 본딩이 요청됐습니다!'

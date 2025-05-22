@@ -1,0 +1,115 @@
+.profile-card {
+  background-color: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.profile-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.ip-profile .profile-image-container {
+  background-color: var(--ip-color);
+  background-image: linear-gradient(135deg, var(--ip-color), #f8c9a4);
+}
+
+.store-profile .profile-image-container {
+  background-color: var(--recruitment-color);
+  background-image: linear-gradient(135deg, var(--recruitment-color), #a4d8f8);
+}
+
+.profile-image-container {
+  width: 100%;
+  padding-top: 75%; /* 4:3 Aspect Ratio */
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.profile-thumbnail {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70%;
+  height: 70%;
+  object-fit: contain;
+}
+
+.profile-info {
+  padding: 16px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+}
+
+.profile-name {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #333;
+}
+
+.profile-address {
+  font-size: 13px;
+  color: #888;
+  margin: 0 0 12px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profile-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: auto;
+}
+
+.tag {
+  background-color: #f0f0f0;
+  color: #666;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.ip-profile .tag {
+  background-color: rgba(var(--ip-color-rgb, 255, 152, 0), 0.1);
+  color: var(--ip-color, #ff9800);
+}
+
+.store-profile .tag {
+  background-color: rgba(var(--recruitment-color-rgb, 33, 150, 243), 0.1);
+  color: var(--recruitment-color, #2196f3);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .profile-name {
+    font-size: 16px;
+  }
+
+  .profile-address {
+    font-size: 12px;
+  }
+
+  .tag {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+}

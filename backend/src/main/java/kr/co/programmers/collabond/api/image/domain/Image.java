@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+
 @Entity
 @Table(name = "images")
 @Getter
@@ -21,7 +22,7 @@ public class Image {
     @JoinColumn(name = "profile_id", nullable = false)
     private Profile profile;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "file_id", nullable = false)
     private File file;
 
@@ -31,10 +32,14 @@ public class Image {
     private Integer priority;
 
     @Builder
-    public Image(Profile profile, File file, String type, Integer priority) {
+    private Image(Profile profile, File file, String type, Integer priority) {
         this.profile = profile;
         this.file = file;
         this.type = type;
         this.priority = priority;
+    }
+
+    public void updateProfile(Profile profile) {
+        this.profile = profile;
     }
 }

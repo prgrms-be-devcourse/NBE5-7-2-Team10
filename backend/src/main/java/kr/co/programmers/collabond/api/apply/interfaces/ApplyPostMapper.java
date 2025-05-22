@@ -14,11 +14,10 @@ import java.util.stream.Collectors;
 
 public class ApplyPostMapper {
 
-    public static ApplyPost toEntity(
-            RecruitPost recruitPost
-            , Profile profile
-            , ApplyPostRequestDto request
-    ) {
+    public static ApplyPost toEntity(RecruitPost recruitPost,
+                                     Profile profile,
+                                     ApplyPostRequestDto request) {
+
         return ApplyPost.builder()
                 .recruitPost(recruitPost)
                 .profile(profile)
@@ -29,15 +28,19 @@ public class ApplyPostMapper {
 
     public static ApplyPostDto toDto(ApplyPost entity) {
         return ApplyPostDto.builder()
+                .id(entity.getId())
                 .recruitPost(RecruitPostMapper.toDto(entity.getRecruitPost()))
                 .profile(ProfileMapper.toDto(entity.getProfile()))
                 .content(entity.getContent())
                 .status(entity.getStatus().toString())
                 .attachmentFiles(
-                        entity.getAttachments().stream()
+                        entity.getAttachments() == null
+                                ? null
+                                : entity.getAttachments().stream()
                                 .map(AttachmentMapper::toDto)
                                 .collect(Collectors.toList())
                 )
+                .createdAt(entity.getCreatedAt())
                 .build();
     }
 }

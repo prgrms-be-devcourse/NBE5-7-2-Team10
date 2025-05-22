@@ -5,7 +5,7 @@ import kr.co.programmers.collabond.shared.exception.ErrorCode;
 
 public class DuplicatedException extends AbstractCustomException {
     public DuplicatedException() {
-        super(ErrorCode.INVALID_REQUEST);
+        super(ErrorCode.DUPLICATED_DATA);
     }
 
     public DuplicatedException(ErrorCode errorCode) {

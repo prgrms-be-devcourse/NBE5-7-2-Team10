@@ -1,15 +1,7 @@
 package kr.co.programmers.collabond.api.tag.domain.dto;
 
-import kr.co.programmers.collabond.api.tag.domain.TagType;
-import lombok.*;
+import lombok.Builder;
 
-@Getter
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
-public class TagResponseDto {
-    private Long id;
-    private String name;
-    private TagType type;
-}
+public record TagResponseDto(Long id, String name, String type) { }
 

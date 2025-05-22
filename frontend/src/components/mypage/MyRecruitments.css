@@ -1,0 +1,212 @@
+.my-recruitments {
+  padding: 20px 0;
+}
+
+.section-header {
+  margin-bottom: 24px;
+}
+
+.section-header h2 {
+  margin: 0 0 16px 0;
+  font-size: 24px;
+}
+
+.header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.filter-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.filter-controls select {
+  min-width: 120px;
+}
+
+.recruitments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.recruitment-card {
+  background-color: var(--white-color);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.recruitment-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.ip-recruitment {
+  border-left: 4px solid var(--ip-color);
+}
+
+.store-recruitment {
+  border-left: 4px solid var(--recruitment-color);
+}
+
+.recruitment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.profile-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profile-info img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-info h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.profile-info p {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: white;
+}
+
+.status-badge.recruiting {
+  background-color: #4caf50;
+}
+
+.status-badge.completed {
+  background-color: #2196f3;
+}
+
+.status-badge.closed {
+  background-color: #f44336;
+}
+
+.recruitment-content {
+  margin-bottom: 16px;
+}
+
+.recruitment-title {
+  margin: 0 0 12px 0;
+  font-size: 20px;
+}
+
+.recruitment-description {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #555;
+}
+
+.recruitment-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.recruitment-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: #777;
+}
+
+.deadline.expired {
+  color: #f44336;
+}
+
+.recruitment-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-edit {
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.btn-edit:hover {
+  background-color: #1976d2;
+}
+
+.btn-delete {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.btn-delete:hover {
+  background-color: #d32f2f;
+}
+
+.no-recruitments {
+  text-align: center;
+  padding: 40px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+}
+
+@media (max-width: 768px) {
+  .header-actions {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .filter-controls {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .recruitment-footer {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .recruitment-actions {
+    align-self: flex-end;
+  }
+}

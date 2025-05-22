@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collabond - 새로운 지원자 알림</title>
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #FF9F1C 0%, #2EC4B6 100%);
+            padding: 30px;
+            text-align: center;
+        }
+        .header img {
+            max-width: 200px;
+        }
+        .content {
+            padding: 30px;
+        }
+        .section {
+            margin-bottom: 25px;
+        }
+        h1 {
+            color: #ffffff;
+            margin: 0;
+            font-size: 24px;
+        }
+        h2 {
+            color: #2EC4B6;
+            font-size: 20px;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        .info-box {
+            background-color: #f9f9f9;
+            border-left: 4px solid #FF9F1C;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .info-item {
+            margin-bottom: 10px;
+        }
+        .label {
+            font-weight: bold;
+            color: #555;
+            display: inline-block;
+            width: 120px;
+        }
+        .value {
+            color: #333;
+        }
+        .footer {
+            background-color: #f5f5f5;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+        }
+        .button {
+            display: inline-block;
+            background-color: #2EC4B6;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .highlight {
+            color: #FF9F1C;
+            font-weight: bold;
+        }
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .accept-button {
+            background-color: #2EC4B6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 0 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        .view-button {
+            background-color: #FF9F1C;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 0 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Collabond</h1>
+        <p style="color: white; margin-top: 10px;">점주와 IP 제공자의 콜라보 매칭 플랫폼</p>
+    </div>
+
+    <div class="content">
+        <div class="section">
+            <h2>✨ 새로운 지원자가 있습니다</h2>
+            <p>
+                안녕하세요, 귀하의 모집 공고 <span class="highlight" th:text="${recruitPostTitle}">모집 공고 제목</span>에
+                새로운 지원자가 지원했습니다. 아래에서 지원자 정보를 확인하실 수 있습니다.
+            </p>
+        </div>
+
+        <div class="section">
+            <h2>📋 모집 공고 정보</h2>
+            <div class="info-box">
+                <div class="info-item">
+                    <span class="label">공고 제목:</span>
+                    <span class="value highlight" th:text="${recruitPostTitle}">모집 공고 제목</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>👤 지원자 정보</h2>
+            <div class="info-box">
+                <div class="info-item">
+                    <span class="label">이름:</span>
+                    <span class="value" th:text="${applicantName}">지원자 이름</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">프로필:</span>
+                    <span class="value" th:text="${applicantProfileName}">지원자 프로필 이름</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">지원 시간:</span>
+                    <span class="value" th:text="${#temporals.format(appliedAt, 'yyyy년 MM월 dd일 HH시 mm분')}">2023년 5월 23일 14시 30분</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🤝 다음 단계</h2>
+            <p>
+                지원자의 프로필과 지원서를 검토하고 적합한 지원자인지 판단해 보세요.
+                마이페이지에서 지원서 상세 내용을 확인하고 수락 또는 거절할 수 있습니다.
+            </p>
+
+            <div class="action-buttons">
+                <a href="http://localhost:3000/mypage/received-applications" class="view-button">지원서 확인하기</a>
+                <a href="http://localhost:3000/mypage" class="accept-button">마이페이지로 이동</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>
+            본 이메일은 Collabond 서비스에서 자동으로 발송되었습니다.<br>
+        </p>
+        <p>© 2023 Collabond. All rights reserved.</p>
+    </div>
+</div>
+</body>
+</html>

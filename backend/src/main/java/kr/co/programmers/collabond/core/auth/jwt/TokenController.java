@@ -1,6 +1,5 @@
 package kr.co.programmers.collabond.core.auth.jwt;
 
-import kr.co.programmers.collabond.api.user.infrastructure.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,14 +8,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/api/tokens")
 @RequiredArgsConstructor
 public class TokenController {
     private final TokenService tokenService;
-    private final RefreshTokenRepository refreshTokenRepository;
 
     @PostMapping("/refresh")
-    public ResponseEntity<?> refreshToken(@RequestBody String refreshToken) {
-        return ResponseEntity.ok(tokenService.refreshAccessToken(refreshToken));
+    public ResponseEntity<AccessTokenResponseDto> refreshToken(
+            @RequestBody RefreshTokenRequestDto request) {
+        return ResponseEntity.ok(tokenService.refreshAccessToken(request.refreshToken()));
     }
 
     @PostMapping("/logout")

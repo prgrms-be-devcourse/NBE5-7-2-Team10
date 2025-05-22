@@ -6,7 +6,6 @@ import kr.co.programmers.collabond.api.image.domain.Image;
 import kr.co.programmers.collabond.api.profiletag.domain.ProfileTag;
 import kr.co.programmers.collabond.api.recruit.domain.RecruitPost;
 import kr.co.programmers.collabond.api.user.domain.User;
-import kr.co.programmers.collabond.api.address.domain.Address;
 import kr.co.programmers.collabond.shared.domain.UpdatedEntity;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,7 +13,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -29,12 +28,9 @@ public class Profile extends UpdatedEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "address_id")
-    private Address address;
+    private String addressCode;
 
-    @Column(name = "detail_address", length = 255)
-    private String detailAddress;
+    private String address;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -43,45 +39,42 @@ public class Profile extends UpdatedEntity {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 1000)
     private String description;
 
-    @Column(name = "collabo_count",nullable = false)
-    private Integer collaboCount =0;
+    @Column(name = "collabo_count", nullable = false)
+    private Integer collaboCount = 0;
 
-    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
-    private List<Image> images;
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Image> images = new ArrayList<>();
 
-    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
-    private List<ProfileTag> tags;
-
-    @OneToMany(mappedBy = "profile")
-    private List<ApplyPost> applyPosts;
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProfileTag> tags = new ArrayList<>();
 
     @OneToMany(mappedBy = "profile")
-    private List<RecruitPost> recruitPosts;
+    private List<ApplyPost> applyPosts = new ArrayList<>();
 
-    /**
-     * true - 활성 / false - 비활성
-     */
+    @OneToMany(mappedBy = "profile")
+    private List<RecruitPost> recruitPosts = new ArrayList<>();
+
     @Column(nullable = false)
     private Boolean status;
 
     @Builder
-    public Profile(User user, Address address, ProfileType type, String name, String description
-            , String detailAddress, Integer collaboCount, Boolean status) {
+    public Profile(User user, String addressCode, String address, ProfileType type, String name,
+                   String description, Integer collaboCount, Boolean status) {
         this.user = user;
+        this.addressCode = addressCode;
         this.address = address;
         this.type = type;
         this.name = name;
         this.description = description;
-        this.detailAddress = detailAddress;
         this.collaboCount = collaboCount;
         this.status = status;
     }
 
-    public Profile update(String name, String description, Address address, String detailAddress
-            , Integer collaboCount, Boolean status) {
+    public Profile update(String name, String description, String addressCode, String address,
+                          Integer collaboCount, Boolean status) {
         if (name != null) {
             this.name = name;
         }
@@ -90,12 +83,8 @@ public class Profile extends UpdatedEntity {
             this.description = description;
         }
 
-        if (address != null) {
-            this.address = address;
-        }
-
-        if (detailAddress != null) {
-            this.detailAddress = detailAddress;
+        if (addressCode != null) {
+            this.addressCode = address;
         }
 
         if (collaboCount != null) {
@@ -108,16 +97,16 @@ public class Profile extends UpdatedEntity {
 
         return this;
     }
+
     public String getDisplayName() {
         return isDeleted() ? "(이름없음)" : this.name;
     }
-
 
     public boolean isStatus() {
         return Boolean.TRUE.equals(this.status);
     }
 
-    public void update(String name, String description, String detailAddress) {
+    public void update(String name, String description, String addressCode, String address, boolean status) {
         if (name != null) {
             this.name = name;
         }
@@ -126,6 +115,27 @@ public class Profile extends UpdatedEntity {
             this.description = description;
         }
 
-        this.detailAddress = detailAddress;
+        if( addressCode != null ){
+            this.addressCode = addressCode;
+        }
+
+        if(address != null){
+            this.address = address;
+        }
+        this.status = status;
+    }
+
+    public void addImage(Image image) {
+        images.add(image);
+        image.updateProfile(this);
+    }
+
+    public void addTag(ProfileTag tag) {
+        this.tags.add(tag);
+        tag.updateProfile(this);
+    }
+
+    public void updateCollaboCount() {
+        this.collaboCount = this.collaboCount + 1;
     }
 }

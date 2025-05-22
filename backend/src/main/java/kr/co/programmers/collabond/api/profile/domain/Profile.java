@@ -106,7 +106,7 @@ public class Profile extends UpdatedEntity {
         return Boolean.TRUE.equals(this.status);
     }
 
-    public void update(String name, String description, String addressCode, String address) {
+    public void update(String name, String description, String addressCode, String address, boolean status) {
         if (name != null) {
             this.name = name;
         }
@@ -122,6 +122,7 @@ public class Profile extends UpdatedEntity {
         if(address != null){
             this.address = address;
         }
+        this.status = status;
     }
 
     public void addImage(Image image) {

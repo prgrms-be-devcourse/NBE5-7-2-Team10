@@ -101,7 +101,7 @@ public class ProfileService {
         Profile profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
-        profile.update(dto.getName(), dto.getDescription(), dto.getAddressCode(), dto.getAddress());
+        profile.update(dto.getName(), dto.getDescription(), dto.getAddressCode(), dto.getAddress(), dto.isStatus());//활성/비활성 업데이트
 
         updateImage(profile, profileImage, "PROFILE");
         updateImage(profile, thumbnailImage, "THUMBNAIL");

@@ -2,195 +2,260 @@
 
 import { useState, useEffect } from "react"
 import { getUserId, getRole } from "../../utils/storage"
-import { profileAPI, tagAPI, regionAPI, userAPI } from "../../api"
+import { profileAPI, tagAPI, regionAPI } from "../../api"
 import ProfileCreateModal from "./ProfileCreateModal"
+import SingleRegionSelector from "../SingleRegionSelector"
 import "./ProfileEdit.css"
+
+
 
 const ProfileEdit = () => {
   const userId = parseInt(getUserId(), 10)
   const role = getRole()
+  const [provinces, setProvinces]       = useState([])     // 시/도
+  const [districts, setDistricts]       = useState([])     // 시/군/구
+  const [neighborhoods, setNeighborhoods] = useState([])    // 읍/면/동
 
+  const [selProvince, setSelProvince]       = useState(null)
+  const [selDistrict, setSelDistrict]       = useState(null)
+  const [selNeighborhood, setSelNeighborhood] = useState(null)
   if (!userId || !role) return null
 
-  const isIP = role === "ROLE_IP"
+  const isIP    = role === "ROLE_IP"
+  const isStore = role === "ROLE_STORE"
 
   const [profiles, setProfiles] = useState([])
-  const [tags, setTags] = useState([])
-  //const [regions, setRegions] = useState([])
+  const [allTags, setAllTags] = useState([])
+  const [regions, setRegions] = useState([])
   const [editingProfile, setEditingProfile] = useState(null)
   const [showCreateModal, setShowCreateModal] = useState(false)
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    region: "",
-    tags: [],
-    imageFile: null,
-    imagePreview: null,
-    status: "true",
-  })
   const [loading, setLoading] = useState(true)
 
-  
+  const initialForm = {
+    name: "",
+    description: "",
+    tags: [],
+    status: "true",
+    // images
+    profileImageFile: null,
+    profileImagePreview: null,
+    thumbnailImageFile: null,
+    thumbnailImagePreview: null,
+    extraImageFiles: [],
+    extraImagePreviews: [],
+    // address for STORE
+    addressCode: "",
+    address: "",
+  }
+  const [formData, setFormData] = useState(initialForm)
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [profilesResponse, tagsResponse, regionsResponse] = await Promise.all([
+        const [profilesRes, tagsRes, provincesRes] = await Promise.all([
           profileAPI.getUserProfiles(userId),
           tagAPI.getAllTags(),
-          //regionAPI.getAllRegions(),
+         
         ])
-        console.log("userId sent to getUserProfiles:", userId)
+        setProfiles(profilesRes.data || [])
+        setAllTags(tagsRes.data)
+        
+         // **시/도 목록만 미리 가져오기**
+         const provRes = await regionAPI.getAddress()
+         setProvinces(provRes.data.result || [])
 
-        setProfiles(profilesResponse.data || [])
-        setTags(tagsResponse.data)
-       // setRegions(regionsResponse.data)
-      } catch (error) {
-        console.error("Error fetching data:", error)
+      } catch (err) {
+        console.error("Error fetching data:", err)
       } finally {
         setLoading(false)
       }
     }
-
     fetchData()
   }, [userId])
 
-  const resetForm = () => {
-    setFormData({
-      name: "",
-      description: "",
-      region: "",
-      tags: [],
-      imageFile: null,
-      imagePreview: null,
-      status: "true",
-    })
+  const filteredTags = allTags.filter(tag => {
+    const t = tag.tagType ?? tag.type
+    if (isIP)    return t === "IP"
+    if (isStore) return t === "STORE"
+    return false
+  })
+  // selProvince 변경 시
+useEffect(() => {
+  if (!selProvince) {
+    setDistricts([])
+    return
   }
+  regionAPI.getAddress(selProvince.cd)
+    .then(res => {
+      setDistricts(res.data.result || [])
+      setSelDistrict(null)
+      setNeighborhoods([])
+    })
+    .catch(console.error)
+}, [selProvince])
+
+// selDistrict 변경 시
+useEffect(() => {
+  if (!selDistrict) {
+    setNeighborhoods([])
+    return
+  }
+  regionAPI.getAddress(selDistrict.cd)
+    .then(res => {
+      setNeighborhoods(res.data.result || [])
+      setSelNeighborhood(null)
+    })
+    .catch(console.error)
+}, [selDistrict])
+
+  const resetForm = () => setFormData(initialForm)
 
   const handleEditClick = (profile) => {
     setEditingProfile(profile)
-
     setFormData({
       name: profile.name,
       description: profile.description,
-      //region: profile.region.id,
-      tags: profile.tags.map((tag) => tag.id),
-      imageFile: null,
-      imagePreview: profile.imageUrl,
+      tags: profile.tags.map(t => t.id),
       status: profile.status.toString(),
+      profileImageFile: null,
+      profileImagePreview: profile.profileImageUrl // 파일명만 들고있던 기존 상태 -> 파일명이 있으면 로컬8080 전체url 주고 없으면 널
+        ? `http://localhost:8080/api/files/images/${profile.profileImageUrl}`
+        : "",
+
+      thumbnailImageFile: null,
+      thumbnailImagePreview: profile.thumbnailImageUrl
+        ? `http://localhost:8080/api/files/images/${profile.thumbnailImageUrl}`
+        : "",
+
+      extraImageFiles: [],
+      extraImagePreviews: Array.isArray(profile.extraImageUrls)
+        ? `http://localhost:8080/api/files/images/${name}`
+        : [],
+
+      addressCode: profile.addressCode || "",
+      address: profile.address || "",
     })
   }
 
-  const handleCreateClick = () => {
-    setShowCreateModal(true)
-  }
+  const handleCreateClick = () => setShowCreateModal(true)
 
   const handleChange = (e) => {
     const { name, value } = e.target
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
+    setFormData(prev => ({ ...prev, [name]: value }))
   }
 
   const handleTagChange = (e) => {
-    const options = e.target.options
-    const selectedTags = []
+    const selected = Array.from(e.target.selectedOptions).map(o => o.value)
+    setFormData(prev => ({ ...prev, tags: selected }))
+  }
 
-    for (let i = 0; i < options.length; i++) {
-      if (options[i].selected) {
-        selectedTags.push(options[i].value)
-      }
-    }
-
-    setFormData((prev) => ({
+  const handleProfileImageChange = (e) => {
+    const file = e.target.files[0]
+    if (file) setFormData(prev => ({
       ...prev,
-      tags: selectedTags,
+      profileImageFile: file,
+      profileImagePreview: URL.createObjectURL(file)
+    }))
+  }
+  const handleThumbnailChange = (e) => {
+    const file = e.target.files[0]
+    if (file) setFormData(prev => ({
+      ...prev,
+      thumbnailImageFile: file,
+      thumbnailImagePreview: URL.createObjectURL(file)
+    }))
+  }
+  const handleExtraImagesChange = (e) => {
+    const files = Array.from(e.target.files)
+    const previews = files.map(f => URL.createObjectURL(f))
+    setFormData(prev => ({
+      ...prev,
+      extraImageFiles: files,
+      extraImagePreviews: previews
     }))
   }
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0]
-    if (file) {
-      setFormData((prev) => ({
-        ...prev,
-        imageFile: file,
-        imagePreview: URL.createObjectURL(file),
-      }))
-    }
+  const handleRegionSelect = (selection) => {
+    setFormData(prev => ({
+      ...prev,
+      addressCode: selection.code,
+      address: selection.fullAddress
+    }))
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-
+ const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
-      setLoading(true)
+      setLoading(true);
 
-      const formDataToSend = new FormData()
-      formDataToSend.append("name", formData.name)
-      formDataToSend.append("description", formData.description)
-      //formDataToSend.append("regionId", formData.region)
-      formData.tags.forEach((tagId) => {
-        formDataToSend.append("tagIds", tagId)
-      })
-      formDataToSend.append("status", formData.status)
+      // 1) ProfileRequestDto 에 맞춘 JSON 파트 생성
+      const profileRequest = {
+        name:        formData.name,
+        description: formData.description,
+        tagIds:      formData.tags,
+        status:      formData.status === "true",
+        type:        isIP ? "IP" : "STORE",
+        // STORE일 때만 addressId 필드로 전달
+        addressId:   !isIP ? formData.addressCode : undefined,
+        address:     !isIP ? formData.address : undefined,
+      };
 
-      if (formData.imageFile) {
-        formDataToSend.append("image", formData.imageFile)
+      // 2) FormData 준비
+      const data = new FormData();
+      // 가장 먼저 profileRequest 파트로 붙입니다 (application/json)
+      data.append(
+        "profileRequest",
+        new Blob([JSON.stringify(profileRequest)], { type: "application/json" })
+      );
+
+      // 3) 이미지 파일 파트들
+      if (formData.profileImageFile) {
+        data.append("profileImage", formData.profileImageFile);
       }
+      if (formData.thumbnailImageFile) {
+        data.append("thumbnailImage", formData.thumbnailImageFile);
+      }
+      formData.extraImageFiles.forEach((file) => {
+        data.append("extraImages", file);
+      });
 
-      await profileAPI.updateProfile(editingProfile.id, formDataToSend)
+      // 4) 업데이트 API 호출
+      await profileAPI.updateProfile(editingProfile.id, data);
 
-      // Refresh profiles
-      const profilesResponse = await profileAPI.getUserProfiles(userId)
-      setProfiles(profilesResponse.data.profiles || [])
-
-      setEditingProfile(null)
-      resetForm()
-    } catch (error) {
-      console.error("Error saving profile:", error)
-      alert("프로필 저장에 실패했습니다.")
+      // 5) 목록 새로고침
+      const refreshed = await profileAPI.getUserProfiles(userId);
+      setProfiles(refreshed.data || []);
+      setEditingProfile(null);
+      resetForm();
+    } catch (err) {
+      console.error("Error saving profile:", err);
+      alert("프로필 저장에 실패했습니다.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
+
 
   const handleCancel = () => {
     setEditingProfile(null)
     resetForm()
   }
 
-  const handleProfileCreated = async (newProfile) => {
-    // Refresh profiles after creation // 
-    //const profilesResponse = await userAPI.getProfile(userId)
-    const profilesResponse = await profileAPI.getUserProfiles(userId)
-    setProfiles(profilesResponse.data || [])
-  }
-
-  // 프로필 삭제 핸들러 추가
-  const handleDeleteProfile = async (profileId) => {
-    if (!window.confirm("정말로 이 프로필을 삭제하시겠습니까?")) {
-      return
-    }
-
+  const handleDeleteProfile = async (id) => {
+    if (!window.confirm("정말로 프로필을 삭제하시겠습니까?")) return
     try {
       setLoading(true)
-      await profileAPI.deleteProfile(profileId)
-
-      // 프로필 목록 새로고침
-      const profilesResponse = await profileAPI.getUserProfiles(userId)
-      setProfiles(profilesResponse.data.profiles || [])
-
+      await profileAPI.deleteProfile(id)
+      const refreshed = await profileAPI.getUserProfiles(userId)
+      setProfiles(refreshed.data || [])
       alert("프로필이 삭제되었습니다.")
-    } catch (error) {
-      console.error("Error deleting profile:", error)
+    } catch (err) {
+      console.error(err)
       alert("프로필 삭제에 실패했습니다.")
     } finally {
       setLoading(false)
     }
   }
-
-  
 
   return (
     <div className="profile-edit">
@@ -205,79 +270,166 @@ const ProfileEdit = () => {
         <form onSubmit={handleSubmit} className="profile-form">
           <h3>프로필 수정</h3>
 
+          {/* PROFILE Image */}
           <div className="form-group">
-            <label>프로필 이미지</label>
+            <label>프로필 이미지 (PROFILE)</label>
             <div className="image-upload">
               <div className="image-preview">
-                <img src={formData.imagePreview || "/placeholder-profile.png"} alt="프로필 이미지" />
+                <img
+                  src={formData.profileImagePreview }
+                  alt=""
+                  onError={e => { e.currentTarget.src = "" }} 
+                  style={{ backgroundColor: "#f0f0f0" }}
+                />
               </div>
-              <input type="file" accept="image/*" onChange={handleImageChange} />
+              <input type="file" accept="image/*" onChange={handleProfileImageChange} />
             </div>
           </div>
 
+          {/* THUMBNAIL Image */}
+          <div className="form-group">
+            <label>썸네일 이미지 (THUMBNAIL)</label>
+            <div className="image-upload">
+              <div className="image-preview">
+                <img
+                  src={formData.thumbnailImagePreview }
+                  alt=""
+                  onError={e => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = ""
+                  }}
+                  style={{ backgroundColor: "#f0f0f0" }}
+              />
+              </div>
+              <input type="file" accept="image/*" onChange={handleThumbnailChange} />
+            </div>
+          </div>
+
+          {/* EXTRA Images */}
+          <div className="form-group">
+            <label>추가 이미지 (EXTRA)</label>
+            <div className="image-upload multiple">
+              <div className="image-previews">
+                {formData.extraImagePreviews.map((src, idx) => (
+                  <img key={idx} src={src} alt={`extra-${idx}`} />
+                ))}
+              </div>
+              <input type="file" accept="image/*" multiple onChange={handleExtraImagesChange} />
+            </div>
+          </div>
+
+          {/* Name, Description */}
           <div className="form-group">
             <label htmlFor="name">이름</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className="form-control"
-              required
-            />
+            <input id="name" name="name" value={formData.name} onChange={handleChange} className="form-control" required />
           </div>
-
           <div className="form-group">
             <label htmlFor="description">소개</label>
-            <textarea
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              className="form-control"
-              rows="4"
-              required
-            ></textarea>
+            <textarea id="description" name="description" value={formData.description} onChange={handleChange} className="form-control" rows={4} required />
           </div>
 
-        
-
+          {/* Address (STORE only) */}
+          {!isIP && (
           <div className="form-group">
-            <label htmlFor="tags">태그 (여러 개 선택 가능)</label>
-            <select
-              id="tags"
-              name="tags"
-              multiple
-              value={formData.tags}
-              onChange={handleTagChange}
-              className="form-control"
-              required
-            >
-              {tags.map((tag) => (
-                <option key={tag.id} value={tag.id}>
-                  {tag.name}
-                </option>
+            <label>주소 선택</label>
+            <div className="region-dropdowns">
+              <select
+                value={selProvince?.cd || ""}
+                onChange={e => {
+                  const prov = provinces.find(p => p.cd === e.target.value);
+                  setSelProvince(prov || null);
+                  setFormData(prev => ({
+                    ...prev,
+                    addressCode: prov?.cd || "",
+                    address: prov ? prov.addr_name : ""
+                  }));
+                }}
+              >
+                <option value="">시/도 선택</option>
+                {provinces.map(p => (
+                  <option key={p.cd} value={p.cd}>
+                    {p.addr_name}
+                  </option>
+                ))}
+              </select>
+
+              <select
+                disabled={!selProvince}
+                value={selDistrict?.cd || ""}
+                onChange={e => {
+                  const dist = districts.find(d => d.cd === e.target.value);
+                  setSelDistrict(dist || null);
+                  setFormData(prev => ({
+                    ...prev,
+                    addressCode: dist?.cd || prev.addressCode,
+                    address: dist
+                      ? `${selProvince.addr_name} ${dist.addr_name}`
+                      : prev.address
+                  }));
+                }}
+              >
+                <option value="">시/군/구 선택</option>
+                {districts.map(d => (
+                  <option key={d.cd} value={d.cd}>
+                    {d.addr_name}
+                  </option>
+                ))}
+              </select>
+
+              <select
+                disabled={!selDistrict}
+                value={selNeighborhood?.cd || ""}
+                onChange={e => {
+                  const hood = neighborhoods.find(n => n.cd === e.target.value);
+                  setSelNeighborhood(hood || null);
+                  setFormData(prev => ({
+                    ...prev,
+                    addressCode: hood?.cd || prev.addressCode,
+                    address: hood
+                      ? `${selProvince.addr_name} ${selDistrict.addr_name} ${hood.addr_name}`
+                      : prev.address
+                  }));
+                }}
+              >
+                <option value="">읍/면/동 선택</option>
+                {neighborhoods.map(n => (
+                  <option key={n.cd} value={n.cd}>
+                    {n.addr_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            {formData.address && (
+              <p className="selected-address">선택된 주소: {formData.address}</p>
+            )}
+          </div>
+          )}
+
+
+          {/* Tags */}
+          <div className="form-group">
+            <label>태그 (여러 개 선택 가능)</label>
+            <select multiple value={formData.tags} onChange={handleTagChange} className="form-control" >
+              {filteredTags.map(tag => (
+                <option key={tag.id} value={tag.id}>{tag.name}</option>
               ))}
             </select>
-            <small>Ctrl 키를 누른 상태에서 여러 개 선택 가능합니다.</small>
+            <small>Ctrl 키를 누르고 선택하세요.</small>
           </div>
 
+          {/* Status */}
           <div className="form-group">
-            <label htmlFor="status">상태</label>
-            <select id="status" name="status" value={formData.status} onChange={handleChange} className="form-control">
+            <label>상태</label>
+            <select name="status" value={formData.status} onChange={handleChange} className="form-control">
               <option value="true">활성</option>
               <option value="false">비활성</option>
             </select>
           </div>
 
+          {/* Actions */}
           <div className="form-actions">
-            <button type="submit" className="btn btn-primary">
-              저장
-            </button>
-            <button type="button" className="btn btn-secondary" onClick={handleCancel}>
-              취소
-            </button>
+            <button type="submit" className="btn btn-primary">저장</button>
+            <button type="button" className="btn btn-secondary" onClick={handleCancel}>취소</button>
           </div>
         </form>
       ) : (
@@ -291,47 +443,35 @@ const ProfileEdit = () => {
             </div>
           ) : (
             <div className="profiles-grid">
-              {profiles.map((profile) => (
+              {profiles.map(profile => (
                 <div key={profile.id} className="profile-card">
                   <div className="profile-image">
-                    <img 
-                      src={`http://localhost:8080/api/files/images/${profile.imageUrl}` || "/placeholder-profile.png"}
-                      // src={profile.imageUrl || "/placeholder-profile.png"} 
-                      alt={profile.name} 
-                    />
+                  <img
+                    src={`http://localhost:8080/api/files/images/${profile.imageUrl}`}
+                    alt=""
+                    onError={e => {
+                      e.currentTarget.onerror = null;    // 무한루프 방지
+                      e.currentTarget.src = "";
+                    }}
+                    style={{ backgroundColor: "#f0f0f0" }}
+                  />
                     <div className={`status-badge ${profile.status ? "active" : "inactive"}`}>
                       {profile.status ? "활성" : "비활성"}
                     </div>
                   </div>
-
                   <div className="profile-info">
                     <h3>{profile.name}</h3>
-                  
                     <p className="profile-description">{profile.description}</p>
-
                     <div className="profile-meta">
-                      <span className="created-date">생성일: {new Date(profile.createdAt).toLocaleDateString()}</span>
-                      <span className="collabo-count">콜라보 횟수: {profile.collaboCount || 0}</span>
+                      <span>생성일: {new Date(profile.createdAt).toLocaleDateString()}</span>
+                      <span>콜라보 횟수: {profile.collaboCount || 0}</span>
                     </div>
-
                     <div className="profile-tags">
-                      {profile.tags.map((tag) => (
-                        <span key={tag.id} className="tag">
-                          {tag.name}
-                        </span>
-                      ))}
+                      {profile.tags.map(tag => <span key={tag.id} className="tag">{tag.name}</span>)}
                     </div>
-
                     <div className="profile-actions">
-                      <button className="btn btn-primary edit-profile-btn" onClick={() => handleEditClick(profile)}>
-                        수정
-                      </button>
-                      <button
-                        className="btn btn-danger delete-profile-btn"
-                        onClick={() => handleDeleteProfile(profile.id)}
-                      >
-                        삭제
-                      </button>
+                      <button className="btn btn-primary" onClick={() => handleEditClick(profile)}>수정</button>
+                      <button className="btn btn-danger" onClick={() => handleDeleteProfile(profile.id)}>삭제</button>
                     </div>
                   </div>
                 </div>
@@ -344,9 +484,13 @@ const ProfileEdit = () => {
       {showCreateModal && (
         <ProfileCreateModal
           onClose={() => setShowCreateModal(false)}
-          onProfileCreated={handleProfileCreated}
-          tags={tags}
-     
+          onProfileCreated={async () => {
+            const res = await profileAPI.getUserProfiles(userId)
+            setProfiles(res.data || [])
+          }}
+          tags={filteredTags}
+          regions={regions}
+          isIP={isIP}
         />
       )}
     </div>

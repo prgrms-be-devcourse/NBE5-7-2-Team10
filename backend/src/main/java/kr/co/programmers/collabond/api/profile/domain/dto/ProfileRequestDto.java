@@ -15,5 +15,8 @@ public class ProfileRequestDto {
     private String description;
     private String address;
     private String addressCode;
+    private boolean status;
     private List<Long> tagIds;
+
+
 }

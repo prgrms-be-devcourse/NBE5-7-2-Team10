@@ -11,5 +11,6 @@ public class ProfileSimpleResponseDto {
     private String type;
     private String imageUrl;
     private String address;
+    private boolean status;
 }
 

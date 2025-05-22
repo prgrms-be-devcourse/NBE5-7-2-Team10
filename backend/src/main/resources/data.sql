@@ -29,6 +29,7 @@ INSERT INTO tags (id, name, type, created_at) VALUES (7, '천진난만', 'IP', N
 INSERT INTO tags (id, name, type, created_at) VALUES (8, '병맛', 'IP', NOW());
 INSERT INTO tags (id, name, type, created_at) VALUES (9, '웃긴', 'IP', NOW());
 INSERT INTO tags (id, name, type, created_at) VALUES (10, '깜찍뽀짝', 'IP', NOW());
+/*
 INSERT INTO profiles (id, user_id, address_code, address, type, name, description, collabo_count, status, created_at, updated_at) VALUES (1, 1, 11, '상세주소1', 'STORE', '매장프로필1', '설명1', 2, TRUE, NOW(), NOW());
 INSERT INTO profiles (id, user_id, address_code, address, type, name, description, collabo_count, status, created_at, updated_at) VALUES (2, 2, 11, '상세주소2', 'STORE', '매장프로필2', '설명2', 4, TRUE, NOW(), NOW());
 INSERT INTO profiles (id, user_id, address_code, address, type, name, description, collabo_count, status, created_at, updated_at) VALUES (3, 3, 11, '상세주소3', 'STORE', '매장프로필3', '설명3', 6, TRUE, NOW(), NOW());
@@ -69,3 +70,4 @@ INSERT INTO apply_posts (id, recruit_post_id, profile_id, content, status, creat
 INSERT INTO apply_posts (id, recruit_post_id, profile_id, content, status, created_at) VALUES (8, 8, 3, '지원내용8', 'PENDING', NOW());
 INSERT INTO apply_posts (id, recruit_post_id, profile_id, content, status, created_at) VALUES (9, 9, 4, '지원내용9', 'PENDING', NOW());
 INSERT INTO apply_posts (id, recruit_post_id, profile_id, content, status, created_at) VALUES (10, 10, 5, '지원내용10', 'PENDING', NOW());
+*/

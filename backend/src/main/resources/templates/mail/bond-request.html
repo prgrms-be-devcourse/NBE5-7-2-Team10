@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Collabond - 새로운 지원자 알림</title>
+    <title>Collabond - 프로필 연락 요청</title>
     <style>
         body {
             font-family: 'Noto Sans KR', sans-serif;
@@ -85,30 +85,33 @@
             color: #FF9F1C;
             font-weight: bold;
         }
-        .action-buttons {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
+        .role-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+            margin-left: 8px;
         }
-        .accept-button {
+        .role-ip {
             background-color: #2EC4B6;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            margin: 0 10px;
-            border-radius: 4px;
-            font-weight: bold;
-            text-decoration: none;
         }
-        .view-button {
+        .role-store {
             background-color: #FF9F1C;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            margin: 0 10px;
-            border-radius: 4px;
-            font-weight: bold;
-            text-decoration: none;
+        }
+        .role-admin {
+            background-color: #6c757d;
+        }
+        .role-tmp {
+            background-color: #adb5bd;
+        }
+        .message-box {
+            background-color: #f0f9f8;
+            border: 1px solid #d1e7e5;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
         }
     </style>
 </head>
@@ -121,52 +124,54 @@
 
     <div class="content">
         <div class="section">
-            <h2>✨ 새로운 지원자가 있습니다</h2>
+            <h2>📨 프로필 연락 요청이 도착했습니다</h2>
             <p>
-                안녕하세요, 귀하의 모집 공고 <span class="highlight" th:text="${recruitPostTitle}">모집 공고 제목</span>에
-                새로운 지원자가 지원했습니다. 아래에서 지원자 정보를 확인하실 수 있습니다.
+                안녕하세요, <span class="highlight" th:text="${requestedProfileName}">프로필명</span>님!
+                귀하의 프로필을 보고 연락을 요청한 회원이 있습니다.
             </p>
         </div>
 
         <div class="section">
-            <h2>📋 모집 공고 정보</h2>
+            <h2>👤 요청 회원 정보</h2>
             <div class="info-box">
                 <div class="info-item">
-                    <span class="label">공고 제목:</span>
-                    <span class="value highlight" th:text="${recruitPostTitle}">모집 공고 제목</span>
+                    <span class="label">닉네임:</span>
+                    <span class="value" th:text="${requestedUserNickname}">요청 회원 닉네임</span>
+                    <span th:if="${requestedUserRole == 'ROLE_IP'}" class="role-badge role-ip">IP 제공자</span>
+                    <span th:if="${requestedUserRole == 'ROLE_STORE'}" class="role-badge role-store">점주</span>
+                    <span th:if="${requestedUserRole == 'ROLE_ADMIN'}" class="role-badge role-admin">관리자</span>
+                    <span th:if="${requestedUserRole == 'ROLE_TMP'}" class="role-badge role-tmp">임시회원</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">이메일:</span>
+                    <span class="value" th:text="${requestedUserEmail}">요청 회원 이메일</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">요청 시간:</span>
+                    <span class="value" th:text="${#temporals.format(requestedAt, 'yyyy년 MM월 dd일 HH시 mm분')}">2023년 5월 23일 14시 30분</span>
                 </div>
             </div>
         </div>
 
         <div class="section">
-            <h2>👤 지원자 정보</h2>
-            <div class="info-box">
-                <div class="info-item">
-                    <span class="label">이름:</span>
-                    <span class="value" th:text="${applicantName}">지원자 이름</span>
-                </div>
-                <div class="info-item">
-                    <span class="label">프로필:</span>
-                    <span class="value" th:text="${applicantProfileName}">지원자 프로필 이름</span>
-                </div>
-                <div class="info-item">
-                    <span class="label">지원 시간:</span>
-                    <span class="value" th:text="${#temporals.format(appliedAt, 'yyyy년 MM월 dd일 HH시 mm분')}">2023년 5월 23일 14시 30분</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="section">
-            <h2>🤝 다음 단계</h2>
+            <h2>💬 연락 방법</h2>
             <p>
-                지원자의 프로필과 지원서를 검토하고 적합한 지원자인지 판단해 보세요.
-                마이페이지에서 지원서 상세 내용을 확인하고 수락 또는 거절할 수 있습니다.
+                위 이메일 주소로 직접 연락하여 콜라보레이션에 대해 논의하실 수 있습니다.
+                상대방은 귀하의 프로필을 보고 관심을 표현했으니, 좋은 기회가 될 수 있습니다.
             </p>
 
-            <div class="action-buttons">
-                <a href="http://localhost:3000/mypage/received-applications" class="view-button">지원서 확인하기</a>
-                <a href="http://localhost:3000/mypage" class="accept-button">마이페이지로 이동</a>
+            <div class="message-box">
+                <p style="margin-top: 0;">
+                    <strong>💡 참고사항</strong><br>
+                    • 상대방의 요청에 응답하는 것은 귀하의 선택입니다.<br>
+                    • 연락 시 Collabond를 통해 알게 되었다고 언급하시면 좋습니다.<br>
+                    • 협업 조건은 양측이 합의하여 결정하세요.<br>
+                </p>
             </div>
+        </div>
+
+        <div class="section" style="text-align: center;">
+            <a href="http://localhost:3000/mypage" class="button">마이페이지로 이동</a>
         </div>
     </div>
 

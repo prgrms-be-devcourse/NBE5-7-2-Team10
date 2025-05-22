@@ -75,24 +75,6 @@ export const apiClient = axios.create({
   baseURL: "https://sgisapi.kostat.go.kr/OpenAPI3",
 });
 
-// apiClient.interceptors.response.use(
-//   (response) => response,
-//   async (error) => {
-//     const { config, response } = error;
-//     alert(response);
-//     if (response?.data?.errCd === -401) {
-//       const authRes = await apiClient.get("/auth/authentication.json", {
-//         params: { consumer_key: consumerKey, consumer_secret: consumerSecret },
-//       });
-//       const newToken = authRes.data.result.accessToken;
-//       setGovAccessToken(newToken);
-//       config.params.accessToken = newToken;
-//       return apiClient.request(config);
-//     }
-//     return Promise.reject(error);
-//   }
-// );
-
 apiClient.interceptors.response.use(
   async (response) => {
     // 응답이 200이어도 내부 errCd가 -401이면 예외 처리

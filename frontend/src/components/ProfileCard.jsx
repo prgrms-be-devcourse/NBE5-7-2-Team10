@@ -6,21 +6,26 @@ const ProfileCard = ({ profile, onClick }) => {
 
   return (
     <div className={`profile-card ${isIP ? "ip-profile" : "store-profile"}`} onClick={onClick}>
-      <div className="profile-type-badge">{isIP ? "IP 캐릭터" : "매장"}</div>
-      <div className="profile-image">
-        <img src={profile.imageUrl || "/placeholder-profile.png"} alt={profile.name} />
+      <div className="profile-image-container">
+        <img
+          src={`http://localhost:8080/api/files/images/${profile.thumbnailImageUrl}`}
+          alt={profile.name}
+          className="profile-thumbnail"
+        />
       </div>
       <div className="profile-info">
-        <h3>{profile.name}</h3>
-        <p className="profile-location">{profile.region}</p>
-        <p className="profile-description">{profile.description}</p>
+        <h3 className="profile-name">{profile.name}</h3>
+        <p className="profile-address">{profile.address}</p>
         <div className="profile-tags">
           {profile.tags &&
-            profile.tags.map((tag) => (
-              <span key={tag.id} className="tag">
-                {tag.name}
-              </span>
-            ))}
+            profile.tags.map(
+              (tag, index) =>
+                index < 5 && (
+                  <span key={tag.id} className="tag">
+                    {tag.name}
+                  </span>
+                ),
+            )}
         </div>
       </div>
     </div>

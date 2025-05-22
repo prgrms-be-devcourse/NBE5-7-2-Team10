@@ -1,5 +1,7 @@
 package kr.co.programmers.collabond.api.profile.application;
 
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
 import kr.co.programmers.collabond.api.file.application.FileService;
 import kr.co.programmers.collabond.api.file.domain.File;
 import kr.co.programmers.collabond.api.image.application.ImageService;
@@ -26,10 +28,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -198,24 +202,42 @@ public class ProfileService {
     }
 
     public Page<ProfileDetailResponseDto> searchProfiles(
-            ProfileType type, List<String> addressCodes, List<Long> tagIds, Pageable pageable) {
-        Page<Profile> profiles;
+            ProfileType type,
+            List<String> addressCodes,
+            List<Long> tagIds,
+            Pageable pageable
+    ) {
+        Specification<Profile> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
 
-        boolean hasAddressCodes = addressCodes != null && !addressCodes.isEmpty();
-        boolean hasTagIds = tagIds != null && !tagIds.isEmpty();
+            // 1) 타입 필터
+            predicates.add(cb.equal(root.get("type"), type));
+            // 2) 상태 필터
+            predicates.add(cb.isTrue(root.get("status")));
 
-        if (hasAddressCodes && hasTagIds) {
-            profiles = profileRepository.findByTypeAndTagIdsAndAddressCodes(type, tagIds, addressCodes, pageable);
-        } else if (hasAddressCodes) {
-            profiles = profileRepository.findByTypeAndAddressCodes(type, addressCodes, pageable);
-        } else if (hasTagIds) {
-            profiles = profileRepository.findByTypeAndTagIds(type, tagIds, pageable);
-        } else {
-            profiles = profileRepository.findAll(pageable);
-        }
+            // 3) addressCode prefix 필터 (OR)
+            if (addressCodes != null && !addressCodes.isEmpty()) {
+                List<Predicate> orList = addressCodes.stream()
+                        .map(code -> cb.like(root.get("addressCode"), code + "%"))
+                        .toList();
+                predicates.add(cb.or(orList.toArray(new Predicate[0])));
+            }
 
-        List<ProfileDetailResponseDto> result = profiles
-                .map(ProfileMapper::toDetailResponseDto).getContent();
-        return new PageImpl<>(result, pageable, result.size());
+            // 4) tagIds 필터 (JOIN + IN)
+            if (tagIds != null && !tagIds.isEmpty()) {
+                Join<Profile, ?> tagJoin = root.join("tags");
+                predicates.add(tagJoin.get("tag").get("id").in(tagIds));
+                query.distinct(true);  // JOIN 시 중복 제거
+            }
+
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        Page<Profile> page = profileRepository.findAll(spec, pageable);
+        List<ProfileDetailResponseDto> dtos = page
+                .map(ProfileMapper::toDetailResponseDto)
+                .getContent();
+
+        return new PageImpl<>(dtos, pageable, page.getTotalElements());
     }
 }

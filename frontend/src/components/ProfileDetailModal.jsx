@@ -5,92 +5,112 @@ import { recruitmentAPI } from "../api"
 import "./ProfileDetailModal.css"
 
 const ProfileDetailModal = ({ profile, onClose }) => {
-  const [recruitments, setRecruitments] = useState([])
   const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    const fetchRecruitments = async () => {
-      try {
-        const response = await recruitmentAPI.getProfileRecruitments(profile.id)
-        setRecruitments(response.data)
-      } catch (error) {
-        console.error("Error fetching recruitments:", error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchRecruitments()
-  }, [profile.id])
+  const [activeImageIndex, setActiveImageIndex] = useState(0)
 
   const isIP = profile.type === "IP"
+  const createdDate = new Date(profile.createdAt).toLocaleDateString()
+
+  // 태그 목록
+  const tagElements =
+    profile.tags &&
+    profile.tags.map((tag) => (
+      <span key={tag.id} className="profile-tag">
+        {tag.name}
+      </span>
+    ))
+
+  // 추가 이미지 갤러리
+  const extraImages =
+    profile.extraImageUrls && profile.extraImageUrls.length > 0 ? (
+      <div className="extra-images-gallery">
+        <div className="gallery-scroll">
+          {profile.extraImageUrls.map((url, index) => (
+            <div
+              key={index}
+              className={`gallery-item ${activeImageIndex === index ? "active" : ""}`}
+              onClick={() => setActiveImageIndex(index)}
+            >
+              <img src={`http://localhost:8080/api/files/images/${url}`} alt={`${profile.name} 이미지 ${index + 1}`} />
+              <div className="gallery-item-caption">{`${profile.name} ${index + 1}`}</div>
+            </div>
+          ))}
+        </div>
+        <button className="gallery-nav prev" onClick={() => setActiveImageIndex(Math.max(0, activeImageIndex - 1))}>
+          &lt;
+        </button>
+        <button
+          className="gallery-nav next"
+          onClick={() => setActiveImageIndex(Math.min(profile.extraImageUrls.length - 1, activeImageIndex + 1))}
+        >
+          &gt;
+        </button>
+      </div>
+    ) : null
+
+  const address = 
+    profile.address ? (
+      <div className="detail-section">
+        <h3>주소</h3>
+        <p>{profile.address}</p>
+      </div>
+    ) : null
 
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="profile-detail-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h2>{profile.name}</h2>
-          <button className="modal-close" onClick={onClose}>
-            &times;
-          </button>
-        </div>
+        <button className="modal-close" onClick={onClose}>
+          &times;
+        </button>
 
-        <div className="profile-detail-content">
-          <div className="profile-detail-image">
-            <img src={profile.imageUrl || "/placeholder-profile.png"} alt={profile.name} />
+        <div className="profile-header">
+          <div className="profile-thumbnail-container">
+            <img
+              src={`http://localhost:8080/api/files/images/${profile.thumbnailImageUrl}`}
+              alt={profile.name}
+              className="profile-thumbnail"
+            />
           </div>
 
-          <div className="profile-detail-info">
-            <div className="profile-type-badge">{isIP ? "IP 캐릭터" : "매장"}</div>
-
-            <div className="info-group">
-              <h3>소개</h3>
-              <p>{profile.description}</p>
+          <div className="profile-header-info">
+            <div className="profile-title-box">
+              <h1 className="profile-title">{profile.name}</h1>
+              <span className="status-badge profile-status">{profile.status ? "활성" : "비활성"}</span>
             </div>
+            <p className="profile-description">{profile.description}</p>
+            <div className="profile-tags-container">{tagElements}</div>
+            <div className="profile-actions">
+              <div className="profile-creator">
+                <div className="profile-image-small">
+                  <img src={`http://localhost:8080/api/files/images/${profile.profileImageUrl}`} alt="프로필 이미지" />
+                </div>
+                <span className="profile-user-nickname">{profile.nickname}</span>
+              </div>
 
-            <div className="info-group">
-              <h3>지역</h3>
-              <p>{profile.region}</p>
-            </div>
-
-            <div className="info-group">
-              <h3>태그</h3>
-              <div className="profile-tags">
-                {profile.tags &&
-                  profile.tags.map((tag) => (
-                    <span key={tag.id} className="tag">
-                      {tag.name}
-                    </span>
-                  ))}
+              <div className="action-buttons">
+                <button className="contact-button">연락 요청하기</button>
               </div>
             </div>
-
-            <div className="info-group">
-              <h3>콜라보 횟수</h3>
-              <p>{profile.collaboCount || 0}회</p>
-            </div>
           </div>
         </div>
 
-        {recruitments.length > 0 && (
-          <div className="profile-recruitments">
-            <h3>모집 게시글</h3>
-            <div className="recruitments-list">
-              {recruitments.map((recruitment) => (
-                <div key={recruitment.id} className="recruitment-item">
-                  <h4>{recruitment.title}</h4>
-                  <p>{recruitment.description}</p>
-                  <div className="recruitment-footer">
-                    <span className="deadline">마감일: {new Date(recruitment.deadline).toLocaleDateString()}</span>
-                    <a href={`/recruitment/${recruitment.id}`} className="view-link">
-                      자세히 보기
-                    </a>
-                  </div>
-                </div>
-              ))}
-            </div>
+        {extraImages}
+
+        <div className="profile-details">
+
+          {address}
+
+          <div className="detail-section">
+            <h3>콜라보 횟수</h3>
+            <p>{profile.collaboCount || 0}회</p>
           </div>
-        )}
+
+          <div className="detail-section">
+            <h3>프로필 생성일</h3>
+            <p>{createdDate}</p>
+          </div>
+        </div>
+
       </div>
     </div>
   )

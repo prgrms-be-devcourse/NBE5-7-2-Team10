@@ -98,6 +98,7 @@ public class ProfileMapper {
         return ProfileDetailResponseDto.builder()
                 .id(profile.getId())
                 .userId(profile.getUser().getId())
+                .nickname(profile.getUser().getNickname())
                 .type(profile.getType().name())
                 .name(profile.getName())
                 .profileImageUrl(profileImageUrl)

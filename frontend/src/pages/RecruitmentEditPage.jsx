@@ -2,13 +2,13 @@
 
 import { useState, useEffect, useContext } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import { AuthContext } from "../contexts/AuthContext"
 import { recruitmentAPI, profileAPI } from "../api"
+import { getUserInfo } from "../utils/storage"
 import "./RecruitmentCreatePage.css" // 같은 스타일 사용
 
 const RecruitmentEditPage = () => {
   const { id } = useParams()
-  const { user } = useContext(AuthContext)
+  const  user  =getUserInfo()
   const navigate = useNavigate()
   const [userProfiles, setUserProfiles] = useState([])
   const [loading, setLoading] = useState(true)
@@ -29,7 +29,7 @@ const RecruitmentEditPage = () => {
         const recruitment = recruitmentResponse.data
 
         // 사용자 프로필 가져오기
-        const profilesResponse = await profileAPI.getUserProfiles(user.id)
+        const profilesResponse = await profileAPI.getUserProfiles(user.userId)
         setUserProfiles(profilesResponse.data)
 
         // 폼 데이터 설정
@@ -49,7 +49,7 @@ const RecruitmentEditPage = () => {
     }
 
     fetchData()
-  }, [id, user.id, navigate])
+  }, [id, user.userId, navigate])
 
   const handleChange = (e) => {
     const { name, value } = e.target

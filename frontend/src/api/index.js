@@ -118,7 +118,7 @@ export const profileAPI = {
   createProfile: (data) => api.post("/api/profiles", data),
   getProfile: (profileId) => api.get(`/api/profiles/${profileId}`),
   updateProfile: (profileId, data) =>
-    api.patch(`/api/profiles/${profileId}`, data),
+  api.patch(`/api/profiles/${profileId}`, data),
   deleteProfile: (profileId) => api.delete(`/api/profiles/${profileId}`),
   getIPProfiles: (params) => api.get("/api/profiles/ip", { params }),
   getStoreProfiles: (params) => api.get("/api/profiles/store", { params }),

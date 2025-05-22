@@ -199,3 +199,7 @@ export const regionAPI = {
     return this.getAddress(cd);
   },
 };
+
+export const mailAPI = {
+  sendRequestMail: (profileId) => api.post(`/api/mail/${profileId}`),
+};

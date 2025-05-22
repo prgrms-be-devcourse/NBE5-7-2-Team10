@@ -45,8 +45,8 @@ public class RecruitPostMapper {
                 .profile(profile)
                 .status(
                         (dto.getStatus() == null || dto.getStatus().isEmpty())
-                                ? RecruitPostStatus.RECRUITING
-                                : RecruitPostStatus.valueOf(dto.getStatus())
+                            ? RecruitPostStatus.RECRUITING
+                            : RecruitPostStatus.valueOf(dto.getStatus())
                 )
                 .build();
     }

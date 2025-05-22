@@ -145,4 +145,13 @@ public class RecruitPostService {
                 .orElse(null);
         return profileImage.getFile().getSavedName();
     }
+
+    // 단건 조회 기능 - 5/23 수정
+    public RecruitPostResponseDto getRecruitPostById(Long recruitmentId) {
+        RecruitPost recruitPost = recruitPostRepository.findById(recruitmentId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.RECRUIT_NOT_FOUND));
+
+        String imgPath = getProfileImgName(recruitPost);
+        return RecruitPostMapper.toResponseDto(recruitPost, imgPath);
+    }
 }

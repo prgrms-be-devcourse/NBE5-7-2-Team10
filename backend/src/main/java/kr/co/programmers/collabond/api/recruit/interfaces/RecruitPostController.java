@@ -32,6 +32,15 @@ public class RecruitPostController {
                 .body(recruitPostService.createRecruitPost(request, userInfo));
     }
 
+    // 모집글 단건 조회 - 5/23일 수정
+    @GetMapping("/{recruitmentId}")
+    public ResponseEntity<RecruitPostResponseDto> getRecruitPostById(
+            @PathVariable Long recruitmentId) {
+
+        // 특정 ID의 모집글을 조회하여 반환
+        return ResponseEntity.ok(recruitPostService.getRecruitPostById(recruitmentId));
+    }
+
     // 모집글 수정
     @PatchMapping("/{recruitmentId}")
     public ResponseEntity<RecruitPostResponseDto> updateRecruitPost(

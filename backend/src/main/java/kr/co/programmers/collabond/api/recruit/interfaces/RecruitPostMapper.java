@@ -33,7 +33,7 @@ public class RecruitPostMapper {
                 .profileName(entity.getProfile().getName())
                 .profile(ProfileMapper.toSimpleDto(entity.getProfile(), fullPath))
                 .createdAt(entity.getCreatedAt())
-                .deletedAt(entity.getDeletedAt()) // 소프트 삭제 시간 포함
+                .deletedAt(entity.getDeletedAt())
                 .build();
     }
 
@@ -43,11 +43,9 @@ public class RecruitPostMapper {
                 .description(dto.getDescription())
                 .deadline(dto.getDeadline())
                 .profile(profile)
-                .status(
-                        (dto.getStatus() == null || dto.getStatus().isEmpty())
-                                ? RecruitPostStatus.RECRUITING
-                                : RecruitPostStatus.valueOf(dto.getStatus())
-                )
+                .status((dto.getStatus() == null || dto.getStatus().isEmpty())
+                        ? RecruitPostStatus.RECRUITING
+                        : RecruitPostStatus.valueOf(dto.getStatus()))
                 .build();
     }
 }

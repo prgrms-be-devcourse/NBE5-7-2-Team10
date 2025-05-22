@@ -94,4 +94,6 @@ custom:
     redirect-login-success: ${custom.cors.allowed-origin}/auth/callback
   mail:
     subject:
-      apply-received: '[Collabond] 새로운 지원자가 있습니다!'
+      apply-received: '[Collabond] 작성하신 지원 공고에 대해 새로운 지원자가 있습니다!'
+      bond-completed: '[Collabond] 본딩이 성사됐습니다!'
+      bond-requested: '[Collabond] 본딩이 요청됐습니다!'

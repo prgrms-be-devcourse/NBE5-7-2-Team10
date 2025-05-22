@@ -1,7 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { recruitmentAPI } from "../api"
+import { mailAPI } from "../api"
+import {isSignedIn} from "../utils/storage"
 import "./ProfileDetailModal.css"
 
 const ProfileDetailModal = ({ profile, onClose }) => {
@@ -57,6 +58,20 @@ const ProfileDetailModal = ({ profile, onClose }) => {
       </div>
     ) : null
 
+  const sendBtn = 
+    isSignedIn() ? (
+      <div className="action-buttons">
+                <button className="contact-button"onClick={() => {
+                    try {
+                      mailAPI.sendRequestMail(profile.id)
+                      alert("메일이 전송되었습니다!")
+                    } catch (err) {
+                      console.error("메일 전송 오류 발생: ", err)
+                    }
+                  }}>연락 요청하기</button>
+              </div>
+    ) : null
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="profile-detail-modal" onClick={(e) => e.stopPropagation()}>
@@ -88,9 +103,7 @@ const ProfileDetailModal = ({ profile, onClose }) => {
                 <span className="profile-user-nickname">{profile.nickname}</span>
               </div>
 
-              <div className="action-buttons">
-                <button className="contact-button">연락 요청하기</button>
-              </div>
+              {sendBtn}
             </div>
           </div>
         </div>

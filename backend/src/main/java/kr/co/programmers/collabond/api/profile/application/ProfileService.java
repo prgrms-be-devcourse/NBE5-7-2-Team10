@@ -144,6 +144,7 @@ public class ProfileService {
                 .toList();
     }
 
+
     // 이미지 저장 메서드
     private void saveImage(Profile profile,
                            MultipartFile imageFile,

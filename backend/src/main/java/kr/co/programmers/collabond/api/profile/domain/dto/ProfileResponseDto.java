@@ -15,7 +15,6 @@ public class ProfileResponseDto {
     private Long userId;
     private String type;
     private String name;
-    private String imageUrl;
     private String description;
     private String address;
     private String addressCode;
@@ -24,4 +23,7 @@ public class ProfileResponseDto {
     private List<TagResponseDto> tags;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String profileImageUrl;
+    private String thumbnailImageUrl;
+    private List<String> extraImageUrls;
 }

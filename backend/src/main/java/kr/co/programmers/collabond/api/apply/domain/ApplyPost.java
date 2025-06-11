@@ -25,7 +25,7 @@ public class ApplyPost extends OnlyCreatedEntity {
     @JoinColumn(name = "profile_id")
     private Profile profile;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 1000)
     private String content;
 
     @Enumerated(EnumType.STRING)
@@ -36,8 +36,11 @@ public class ApplyPost extends OnlyCreatedEntity {
     private List<Attachment> attachments;
 
     @Builder
-    public ApplyPost(RecruitPost recruitPost, Profile profile, String content
-            , ApplyPostStatus status) {
+    private ApplyPost(RecruitPost recruitPost,
+                      Profile profile,
+                      String content,
+                      ApplyPostStatus status) {
+
         this.recruitPost = recruitPost;
         this.profile = profile;
         this.content = content;
@@ -50,5 +53,9 @@ public class ApplyPost extends OnlyCreatedEntity {
         for (Attachment attachment : attachments) {
             attachment.addApplyPost(this);
         }
+    }
+
+    public void updateStatus(ApplyPostStatus status) {
+        this.status = status;
     }
 }

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collabond - 프로필 연락 요청</title>
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #FF9F1C 0%, #2EC4B6 100%);
+            padding: 30px;
+            text-align: center;
+        }
+        .header img {
+            max-width: 200px;
+        }
+        .content {
+            padding: 30px;
+        }
+        .section {
+            margin-bottom: 25px;
+        }
+        h1 {
+            color: #ffffff;
+            margin: 0;
+            font-size: 24px;
+        }
+        h2 {
+            color: #2EC4B6;
+            font-size: 20px;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        .info-box {
+            background-color: #f9f9f9;
+            border-left: 4px solid #FF9F1C;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .info-item {
+            margin-bottom: 10px;
+        }
+        .label {
+            font-weight: bold;
+            color: #555;
+            display: inline-block;
+            width: 120px;
+        }
+        .value {
+            color: #333;
+        }
+        .footer {
+            background-color: #f5f5f5;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+        }
+        .button {
+            display: inline-block;
+            background-color: #2EC4B6;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .highlight {
+            color: #FF9F1C;
+            font-weight: bold;
+        }
+        .role-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+            margin-left: 8px;
+        }
+        .role-ip {
+            background-color: #2EC4B6;
+        }
+        .role-store {
+            background-color: #FF9F1C;
+        }
+        .role-admin {
+            background-color: #6c757d;
+        }
+        .role-tmp {
+            background-color: #adb5bd;
+        }
+        .message-box {
+            background-color: #f0f9f8;
+            border: 1px solid #d1e7e5;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Collabond</h1>
+        <p style="color: white; margin-top: 10px;">점주와 IP 제공자의 콜라보 매칭 플랫폼</p>
+    </div>
+
+    <div class="content">
+        <div class="section">
+            <h2>📨 프로필 연락 요청이 도착했습니다</h2>
+            <p>
+                안녕하세요, <span class="highlight" th:text="${requestedProfileName}">프로필명</span>님!
+                귀하의 프로필을 보고 연락을 요청한 회원이 있습니다.
+            </p>
+        </div>
+
+        <div class="section">
+            <h2>👤 요청 회원 정보</h2>
+            <div class="info-box">
+                <div class="info-item">
+                    <span class="label">닉네임:</span>
+                    <span class="value" th:text="${requestedUserNickname}">요청 회원 닉네임</span>
+                    <span th:if="${requestedUserRole == 'ROLE_IP'}" class="role-badge role-ip">IP 제공자</span>
+                    <span th:if="${requestedUserRole == 'ROLE_STORE'}" class="role-badge role-store">점주</span>
+                    <span th:if="${requestedUserRole == 'ROLE_ADMIN'}" class="role-badge role-admin">관리자</span>
+                    <span th:if="${requestedUserRole == 'ROLE_TMP'}" class="role-badge role-tmp">임시회원</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">이메일:</span>
+                    <span class="value" th:text="${requestedUserEmail}">요청 회원 이메일</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">요청 시간:</span>
+                    <span class="value" th:text="${#temporals.format(requestedAt, 'yyyy년 MM월 dd일 HH시 mm분')}">2023년 5월 23일 14시 30분</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>💬 연락 방법</h2>
+            <p>
+                위 이메일 주소로 직접 연락하여 콜라보레이션에 대해 논의하실 수 있습니다.
+                상대방은 귀하의 프로필을 보고 관심을 표현했으니, 좋은 기회가 될 수 있습니다.
+            </p>
+
+            <div class="message-box">
+                <p style="margin-top: 0;">
+                    <strong>💡 참고사항</strong><br>
+                    • 상대방의 요청에 응답하는 것은 귀하의 선택입니다.<br>
+                    • 연락 시 Collabond를 통해 알게 되었다고 언급하시면 좋습니다.<br>
+                    • 협업 조건은 양측이 합의하여 결정하세요.<br>
+                </p>
+            </div>
+        </div>
+
+        <div class="section" style="text-align: center;">
+            <a href="http://localhost:3000/mypage" class="button">마이페이지로 이동</a>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>
+            본 이메일은 Collabond 서비스에서 자동으로 발송되었습니다.<br>
+        </p>
+        <p>© 2023 Collabond. All rights reserved.</p>
+    </div>
+</div>
+</body>
+</html>

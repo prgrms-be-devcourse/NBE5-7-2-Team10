@@ -1,0 +1,207 @@
+.recruitment-list-page {
+  padding-bottom: 40px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.filter-section {
+  margin-bottom: 24px;
+}
+
+.profile-type-filter {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.filter-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.filter-controls select {
+  min-width: 120px;
+}
+
+/* 그리드 레이아웃 */
+.recruitments-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+/* 카드 스타일 */
+.recruitment-card {
+  background-color: var(--white-color);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1px solid #eee;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.recruitment-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* 태그 스타일 */
+.recruitment-tag {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+}
+
+.store-tag {
+  background-color: #ff7a45;
+}
+
+.ip-tag {
+  background-color: #13c2c2;
+}
+
+/* 상태 표시 */
+.recruitment-status {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+}
+
+/* 제목 스타일 */
+.recruitment-title {
+  margin-top: 30px;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-bottom: 5px;
+}
+
+/* 정보 아이템 스타일 */
+.recruitment-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 5px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: #666;
+}
+
+.info-item .icon {
+  margin-right: 8px;
+  font-size: 16px;
+  width: 20px;
+  text-align: center;
+}
+
+/* 푸터 스타일 */
+.recruitment-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.profile-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-info img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-name {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.detail-button {
+  background-color: #f5f5f5;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  z-index: 2;
+}
+
+.detail-button:hover {
+  background-color: #e0e0e0;
+}
+
+/* 로딩 및 빈 상태 */
+.no-recruitments {
+  text-align: center;
+  padding: 40px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .recruitments-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .filter-controls {
+    flex-direction: column;
+  }
+}

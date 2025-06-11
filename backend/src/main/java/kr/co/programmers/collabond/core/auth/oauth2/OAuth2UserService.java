@@ -1,11 +1,12 @@
 package kr.co.programmers.collabond.core.auth.oauth2;
 
-import jakarta.persistence.EntityExistsException;
 import jakarta.transaction.Transactional;
 import kr.co.programmers.collabond.api.user.domain.Role;
 import kr.co.programmers.collabond.api.user.domain.User;
 import kr.co.programmers.collabond.api.user.infrastructure.UserRepository;
-import kr.co.programmers.collabond.core.auth.UnavailableProviderException;
+import kr.co.programmers.collabond.shared.exception.ErrorCode;
+import kr.co.programmers.collabond.shared.exception.custom.DuplicatedException;
+import kr.co.programmers.collabond.shared.exception.custom.InvalidException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -43,35 +44,24 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
                 oAuth2ResponseDto = new KakaoResponseDto(oAuth2User.getAttributes());
                 break;
             default:
-                throw new UnavailableProviderException("oauth 제공자가 없습니다.");
+                throw new InvalidException(ErrorCode.INVALID_PROVIDER);
         }
-
-        String providerId = oAuth2ResponseDto.getProvider() + "_" + oAuth2ResponseDto.getProviderId();
-        String email = oAuth2ResponseDto.getEmail();
-        String name = oAuth2ResponseDto.getName();
 
         // providerId로 사용자 찾기
+        String providerId = oAuth2ResponseDto.getProvider() + "_" + oAuth2ResponseDto.getProviderId();
         Optional<User> userByProviderId = userRepository.findByProviderId(providerId);
         if (userByProviderId.isPresent()) {
-            return OAuth2UserInfo.of(userByProviderId.get());
+            return OAuth2Mapper.toOAuth2UserInfo(userByProviderId.get());
         }
 
-        log.info("email = {}", email);
+        String email = oAuth2ResponseDto.getEmail();
         userRepository.findByEmail(email).ifPresent(user -> {
-            throw new EntityExistsException("다른 oauth로 가입된 상태입니다.");
+            throw new DuplicatedException(ErrorCode.DUPLICATED_USER_EMAIL);
         });
 
-        User newUser = userRepository.save(
-                User.builder()
-                        .providerId(providerId)
-                        .email(email)
-                        .nickname(name)
-                        .role(Role.ROLE_TMP)
-                        .build()
-        );
+        User newUser = userRepository.save(OAuth2Mapper.toUser(oAuth2ResponseDto, Role.ROLE_TMP));
 
-        return OAuth2UserInfo.of(newUser);
+        return OAuth2Mapper.toOAuth2UserInfo(newUser);
     }
-
 
 }

@@ -1,0 +1,47 @@
+.admin-page {
+  padding-bottom: 40px;
+}
+
+.admin-container {
+  background-color: var(--white-color);
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.admin-tabs {
+  display: flex;
+  border-bottom: 1px solid #eee;
+}
+
+.tab-button {
+  padding: 16px 24px;
+  background: none;
+  border: none;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex: 1;
+  text-align: center;
+}
+
+.tab-button:hover {
+  background-color: #f5f5f5;
+}
+
+.tab-button.active {
+  background-color: var(--primary-color);
+  color: var(--text-color);
+}
+
+.admin-content {
+  padding: 24px;
+}
+
+@media (max-width: 768px) {
+  .tab-button {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+}

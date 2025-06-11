@@ -26,8 +26,12 @@ public class ProfileTag {
     private Tag tag;
 
     @Builder
-    public ProfileTag(Profile profile, Tag tag) {
+    private ProfileTag(Profile profile, Tag tag) {
         this.profile = profile;
         this.tag = tag;
+    }
+
+    public void updateProfile(Profile profile) {
+        this.profile = profile;
     }
 }

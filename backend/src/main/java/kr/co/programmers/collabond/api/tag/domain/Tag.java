@@ -25,7 +25,7 @@ public class Tag extends CreatedEntity {
     private TagType type;
 
     @Builder
-    public Tag(String name, TagType type) {
+    private Tag(String name, TagType type) {
         this.name = name;
         this.type = type;
     }

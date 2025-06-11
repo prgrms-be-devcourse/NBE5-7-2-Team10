@@ -26,7 +26,7 @@ public class Attachment {
     private File file;
 
     @Builder
-    public Attachment(ApplyPost applyPost, File file) {
+    private Attachment(ApplyPost applyPost, File file) {
         this.applyPost = applyPost;
         this.file = file;
     }

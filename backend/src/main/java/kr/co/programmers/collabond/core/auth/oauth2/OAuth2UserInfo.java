@@ -1,8 +1,6 @@
 package kr.co.programmers.collabond.core.auth.oauth2;
 
 import kr.co.programmers.collabond.api.user.domain.Role;
-import kr.co.programmers.collabond.api.user.domain.User;
-import kr.co.programmers.collabond.core.auth.jwt.TokenBodyDto;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,7 +23,8 @@ public class OAuth2UserInfo implements OAuth2User {
     private Map<String, Object> attributes;
 
     @Builder
-    public OAuth2UserInfo(String username, String email, String name, Role role, Map<String, Object> attributes) {
+    public OAuth2UserInfo(String username, String email, String name, Role role,
+                          Map<String, Object> attributes) {
         this.username = username;
         this.email = email;
         this.name = name;
@@ -43,19 +42,7 @@ public class OAuth2UserInfo implements OAuth2User {
         return name;
     }
 
-    public static OAuth2UserInfo of(User user) {
-        return OAuth2UserInfo.builder()
-                .username(user.getProviderId())
-                .email(user.getEmail())
-                .name(user.getNickname())
-                .role(user.getRole())
-                .build();
-    }
-
-    public static OAuth2UserInfo of(TokenBodyDto tokenBodyDto) {
-        return OAuth2UserInfo.builder()
-                .username(tokenBodyDto.providerId())
-                .role(tokenBodyDto.role())
-                .build();
+    public String getProviderId() {
+        return username;
     }
 }

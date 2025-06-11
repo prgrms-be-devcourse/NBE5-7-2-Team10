@@ -4,7 +4,9 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import kr.co.programmers.collabond.core.auth.oauth2.OAuth2Mapper;
 import kr.co.programmers.collabond.core.auth.oauth2.OAuth2UserInfo;
+import kr.co.programmers.collabond.shared.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,15 +27,21 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
         String token = resolveToken(request);
 
-        if (token != null && tokenService.validate(token)) {
-            TokenBodyDto tokenBodyDto = tokenService.parseJwt(token);
-            OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfo.of(tokenBodyDto);
+        if (token != null) {
+            if(tokenService.validate(token)) {
+                TokenBodyDto tokenBodyDto = tokenService.parseJwt(token);
+                OAuth2UserInfo oAuth2UserInfo = OAuth2Mapper.toOAuth2UserInfo(tokenBodyDto);
 
-            Authentication authentication = new UsernamePasswordAuthenticationToken(
-                    oAuth2UserInfo, token, oAuth2UserInfo.getAuthorities()
-            );
+                Authentication authentication = new UsernamePasswordAuthenticationToken(
+                        oAuth2UserInfo, token, oAuth2UserInfo.getAuthorities()
+                );
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            } else {
+                response.setStatus(ErrorCode.EXPIRED_TOKEN.getStatus().value());
+                response.getWriter().write(ErrorCode.EXPIRED_TOKEN.getMessage());
+                return;
+            }
         }
 
         filterChain.doFilter(request, response);

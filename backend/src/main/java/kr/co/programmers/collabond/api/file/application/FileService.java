@@ -1,12 +1,14 @@
 package kr.co.programmers.collabond.api.file.application;
 
-import jakarta.transaction.Transactional;
 import kr.co.programmers.collabond.api.file.domain.File;
 import kr.co.programmers.collabond.api.file.infrastructure.FileRepository;
 import kr.co.programmers.collabond.api.file.interfaces.FileMapper;
+import kr.co.programmers.collabond.shared.exception.ErrorCode;
+import kr.co.programmers.collabond.shared.exception.custom.InvalidException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -24,10 +26,14 @@ public class FileService {
     private String fileDir;
 
     @Transactional
-    public File saveFile(MultipartFile multipartFile) throws IOException {
+    public File saveFile(MultipartFile multipartFile) {
         String originFileName = multipartFile.getOriginalFilename();
         String savedFileName = createStoreFileName(originFileName);
-        multipartFile.transferTo(new java.io.File(getFullPath(savedFileName)));
+        try {
+            multipartFile.transferTo(new java.io.File(getFullPath(savedFileName)));
+        } catch (IOException e) {
+            throw new InvalidException(ErrorCode.INVALID_REQUEST);
+        }
 
         File file = FileMapper.toEntity(originFileName, savedFileName);
 
@@ -50,7 +56,7 @@ public class FileService {
     }
 
     @Transactional
-    public List<File> saveFiles(List<MultipartFile> files) throws IOException {
+    public List<File> saveFiles(List<MultipartFile> files) {
         ArrayList<File> savedFilesResult = new ArrayList<>();
         for (MultipartFile file : files) {
             if (!file.isEmpty()) {
